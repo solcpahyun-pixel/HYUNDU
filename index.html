@@ -1,10 +1,16 @@
 <!--
 K-ICTC Speaking Reader
-Version 5.0
+Version 7.0
 
-변경사항
-5. 일시정지 시 음성과 화면 진행을 모두 정지
-6. TTS onboundary 기반으로 음성과 단어 하이라이트 싱크 개선
+Version 7.0
+- 좌측 메뉴 추가
+- 현재 페이지
+- 문장 저장소
+- 문장 저장 / 삭제 / 불러오기
+- LocalStorage 저장
+- 최대 500자 제한
+- HTML / 코드 형태 입력 보호
+- 기존 TTS / 단어 클릭 / 단어 정보 기능 유지
 -->
 
 <!DOCTYPE html>
@@ -19,12 +25,6 @@ content="width=device-width,
 initial-scale=1.0,
 maximum-scale=1.0,
 user-scalable=no">
-
-<meta name="apple-mobile-web-app-capable"
-content="yes">
-
-<meta name="apple-mobile-web-app-status-bar-style"
-content="black-translucent">
 
 <meta name="theme-color"
 content="#0b1220">
@@ -43,13 +43,9 @@ content="#0b1220">
 }
 
 body {
-
     margin: 0;
-
     background: #0b1220;
-
     color: #f8fafc;
-
     font-family:
         -apple-system,
         BlinkMacSystemFont,
@@ -57,11 +53,157 @@ body {
         sans-serif;
 }
 
+button {
+    border: 0;
+    border-radius: 12px;
+    min-height: 44px;
+    padding: 0 15px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.dark {
+    background: #263244;
+    color: white;
+}
+
+.green {
+    background: #22c55e;
+    color: #052e16;
+}
+
+
+/* =========================
+   HEADER
+========================= */
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 18px;
+}
+
+.header-left {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+}
+
+.menu-button {
+    width: 44px;
+    padding: 0;
+    font-size: 21px;
+}
+
+h1 {
+    font-size: 24px;
+    margin: 0 0 5px;
+}
+
+.sub {
+    color: #94a3b8;
+    font-size: 13px;
+}
+
+.version {
+    font-size: 11px;
+    color: #86efac;
+    background: #0f2a1a;
+    border: 1px solid #166534;
+    padding: 6px 9px;
+    border-radius: 20px;
+}
+
+
+/* =========================
+   SIDE MENU
+========================= */
+
+.menu-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.55);
+    z-index: 900;
+}
+
+.menu-overlay.show {
+    display: block;
+}
+
+.side-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+
+    width: 285px;
+
+    background: #111827;
+
+    border-right:
+        1px solid #334155;
+
+    z-index: 1000;
+
+    transform:
+        translateX(-100%);
+
+    transition:
+        transform .22s ease;
+
+    padding:
+        calc(22px + env(safe-area-inset-top))
+        16px 20px;
+}
+
+.side-menu.show {
+    transform:
+        translateX(0);
+}
+
+.menu-title {
+    font-size: 20px;
+    font-weight: 800;
+    margin-bottom: 5px;
+}
+
+.menu-version {
+    color: #64748b;
+    font-size: 12px;
+    margin-bottom: 25px;
+}
+
+.menu-item {
+    width: 100%;
+    min-height: 52px;
+
+    background: transparent;
+    color: #e2e8f0;
+
+    text-align: left;
+
+    margin-bottom: 7px;
+}
+
+.menu-item.active {
+    background: #1e293b;
+    color: #86efac;
+}
+
+.menu-item span {
+    margin-right: 8px;
+}
+
+
+/* =========================
+   MAIN
+========================= */
 
 main {
-
     max-width: 720px;
-
     margin: auto;
 
     padding:
@@ -72,66 +214,15 @@ main {
 
 
 /* =========================
-   HEADER
+   PAGES
 ========================= */
 
-.header {
-
-    display: flex;
-
-    justify-content:
-        space-between;
-
-    align-items:
-        flex-start;
-
-    margin-bottom:
-        18px;
+.page {
+    display: none;
 }
 
-
-h1 {
-
-    font-size:
-        25px;
-
-    margin:
-        0 0 6px;
-}
-
-
-.sub {
-
-    color:
-        #94a3b8;
-
-    font-size:
-        14px;
-}
-
-
-.version {
-
-    font-size:
-        12px;
-
-    color:
-        #86efac;
-
-    background:
-        #0f2a1a;
-
-    border:
-        1px solid #166534;
-
-    padding:
-        6px 9px;
-
-    border-radius:
-        20px;
-
-    white-space:
-        nowrap;
+.page.active {
+    display: block;
 }
 
 
@@ -140,176 +231,83 @@ h1 {
 ========================= */
 
 .input-tools {
-
-    display:
-        flex;
-
-    gap:
-        9px;
-
-    flex-wrap:
-        wrap;
-
-    margin:
-        10px 0;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin: 10px 0;
 }
 
-
 textarea {
-
-    width:
-        100%;
-
-    min-height:
-        145px;
+    width: 100%;
+    min-height: 145px;
 
     border:
         1px solid #334155;
 
-    border-radius:
-        16px;
+    border-radius: 16px;
 
-    background:
-        #111827;
+    background: #111827;
 
-    color:
-        white;
+    color: white;
 
-    padding:
-        15px;
+    padding: 15px;
 
-    font-size:
-        18px;
+    font-size: 18px;
 
-    line-height:
-        1.55;
+    line-height: 1.55;
 
-    outline:
-        none;
+    outline: none;
 }
 
-
 textarea:focus {
+    border-color: #22c55e;
+}
 
-    border-color:
-        #22c55e;
+.char-count {
+    text-align: right;
+    color: #64748b;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+.char-count.warning {
+    color: #facc15;
+}
+
+.char-count.error {
+    color: #ef4444;
 }
 
 
 /* =========================
-   BUTTON
+   CONTROLS
 ========================= */
 
 .row {
-
-    display:
-        flex;
-
-    gap:
-        9px;
-
-    flex-wrap:
-        wrap;
-
-    margin:
-        12px 0;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin: 12px 0;
 }
-
-
-button {
-
-    min-height:
-        46px;
-
-    border:
-        0;
-
-    border-radius:
-        12px;
-
-    padding:
-        0 16px;
-
-    font-size:
-        16px;
-
-    font-weight:
-        700;
-
-    cursor:
-        pointer;
-
-    -webkit-tap-highlight-color:
-        transparent;
-}
-
-
-.play {
-
-    background:
-        #22c55e;
-
-    color:
-        #052e16;
-}
-
-
-.dark {
-
-    background:
-        #263244;
-
-    color:
-        white;
-}
-
-
-/* =========================
-   SPEED
-========================= */
 
 .control {
-
-    background:
-        #111827;
-
-    border:
-        1px solid #334155;
-
-    border-radius:
-        14px;
-
-    padding:
-        12px 14px;
-
-    margin:
-        10px 0;
-
-    color:
-        #cbd5e1;
+    background: #111827;
+    border: 1px solid #334155;
+    border-radius: 14px;
+    padding: 12px 14px;
+    margin: 10px 0;
 }
-
 
 .speedline {
-
-    display:
-        flex;
-
-    justify-content:
-        space-between;
-
-    margin-bottom:
-        7px;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 7px;
+    color: #cbd5e1;
 }
 
-
 input[type="range"] {
-
-    width:
-        100%;
-
-    accent-color:
-        #22c55e;
+    width: 100%;
+    accent-color: #22c55e;
 }
 
 
@@ -318,136 +316,155 @@ input[type="range"] {
 ========================= */
 
 .reader {
+    margin-top: 14px;
 
-    margin-top:
-        14px;
-
-    background:
-        #111827;
+    background: #111827;
 
     border:
         1px solid #334155;
 
-    border-radius:
-        18px;
+    border-radius: 18px;
 
-    padding:
-        18px;
+    padding: 18px;
 
-    min-height:
-        190px;
+    min-height: 190px;
 
-    font-size:
-        25px;
+    font-size: 25px;
 
-    line-height:
-        1.9;
+    line-height: 1.9;
 }
-
-
-/* =========================
-   WORD
-========================= */
 
 .word {
+    display: inline-block;
 
-    display:
-        inline-block;
+    margin-right: .12em;
 
-    margin-right:
-        0.12em;
+    padding: 0 .08em;
 
-    padding:
-        0 0.08em;
+    border-radius: 7px;
 
-    border-radius:
-        7px;
+    cursor: pointer;
 
-    cursor:
-        pointer;
+    user-select: none;
 
-    transition:
-        background 0.08s,
-        color 0.08s,
-        transform 0.08s;
-
-    user-select:
-        none;
+    transition: .08s;
 }
-
 
 .word.done {
-
-    color:
-        #86efac;
+    color: #86efac;
 }
-
 
 .word.current {
-
-    background:
-        #22c55e;
-
-    color:
-        #052e16;
+    background: #22c55e;
+    color: #052e16;
 }
-
 
 .word.clicked {
-
-    background:
-        #facc15;
-
-    color:
-        #422006;
-
-    transform:
-        scale(1.04);
+    background: #facc15;
+    color: #422006;
 }
-
-
-/* =========================
-   STATUS
-========================= */
 
 .status {
-
-    color:
-        #94a3b8;
-
-    font-size:
-        13px;
-
-    margin:
-        10px 3px;
+    color: #94a3b8;
+    font-size: 13px;
+    margin: 10px 3px;
 }
 
-
 .note {
+    font-size: 13px;
+    line-height: 1.55;
 
-    font-size:
-        13px;
+    color: #cbd5e1;
 
-    line-height:
-        1.55;
-
-    color:
-        #cbd5e1;
-
-    background:
-        #0f2a1a;
+    background: #0f2a1a;
 
     border-left:
         4px solid #22c55e;
 
-    padding:
-        12px;
+    padding: 12px;
 
-    border-radius:
-        9px;
+    border-radius: 9px;
 
-    margin-top:
-        14px;
+    margin-top: 14px;
+}
+
+
+/* =========================
+   SAVE BUTTON
+========================= */
+
+.save-button {
+    width: 100%;
+    margin-top: 10px;
+
+    background: #334155;
+    color: white;
+}
+
+.save-button.saved {
+    background: #14532d;
+    color: #86efac;
+}
+
+
+/* =========================
+   SENTENCE STORAGE
+========================= */
+
+.storage-title {
+    font-size: 25px;
+    font-weight: 800;
+    margin-bottom: 5px;
+}
+
+.storage-sub {
+    color: #94a3b8;
+    font-size: 13px;
+    margin-bottom: 18px;
+}
+
+.empty {
+    text-align: center;
+    padding: 50px 20px;
+
+    color: #64748b;
+
+    background: #111827;
+
+    border:
+        1px solid #334155;
+
+    border-radius: 18px;
+}
+
+.sentence-card {
+    background: #111827;
+
+    border:
+        1px solid #334155;
+
+    border-radius: 16px;
+
+    padding: 15px;
+
+    margin-bottom: 10px;
+}
+
+.sentence-text {
+    font-size: 17px;
+    line-height: 1.55;
+    margin-bottom: 12px;
+}
+
+.sentence-buttons {
+    display: flex;
+    gap: 7px;
+    flex-wrap: wrap;
+}
+
+.sentence-buttons button {
+    min-height: 38px;
+    font-size: 13px;
 }
 
 
@@ -456,274 +473,109 @@ input[type="range"] {
 ========================= */
 
 .modal {
+    display: none;
 
-    display:
-        none;
+    position: fixed;
 
-    position:
-        fixed;
-
-    inset:
-        0;
+    inset: 0;
 
     background:
         rgba(0,0,0,.68);
 
-    z-index:
-        1000;
+    z-index: 1100;
 
-    align-items:
-        flex-end;
+    align-items: flex-end;
 
-    justify-content:
-        center;
+    justify-content: center;
 
-    padding:
-        12px;
+    padding: 12px;
 }
-
 
 .modal.show {
-
-    display:
-        flex;
+    display: flex;
 }
 
-
 .modal-card {
+    width: 100%;
+    max-width: 650px;
 
-    width:
-        100%;
-
-    max-width:
-        650px;
-
-    background:
-        #111827;
+    background: #111827;
 
     border:
         1px solid #334155;
 
-    border-radius:
-        24px;
+    border-radius: 24px;
 
-    padding:
-        22px;
-
-    box-shadow:
-        0 -10px 40px
-        rgba(0,0,0,.4);
-
-    animation:
-        slideUp .18s ease-out;
+    padding: 22px;
 }
-
-
-@keyframes slideUp {
-
-    from {
-
-        transform:
-            translateY(30px);
-
-        opacity:
-            0;
-
-    }
-
-    to {
-
-        transform:
-            translateY(0);
-
-        opacity:
-            1;
-
-    }
-
-}
-
 
 .modal-top {
-
-    display:
-        flex;
-
-    justify-content:
-        space-between;
-
-    align-items:
-        flex-start;
-
-    margin-bottom:
-        16px;
+    display: flex;
+    justify-content: space-between;
 }
-
 
 .modal-word {
-
-    font-size:
-        32px;
-
-    font-weight:
-        800;
+    font-size: 32px;
+    font-weight: 800;
 }
-
 
 .close {
-
-    min-height:
-        38px;
-
-    width:
-        38px;
-
-    padding:
-        0;
-
-    border-radius:
-        50%;
-
-    background:
-        #263244;
-
-    color:
-        white;
-
-    font-size:
-        20px;
+    width: 38px;
+    min-height: 38px;
+    padding: 0;
+    border-radius: 50%;
 }
-
 
 .pronunciation {
-
-    display:
-        flex;
-
-    align-items:
-        center;
-
-    gap:
-        10px;
-
-    margin-bottom:
-        14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 10px 0;
 }
-
 
 .ipa {
-
-    font-family:
-        "Times New Roman",
-        serif;
-
-    font-size:
-        20px;
-
-    color:
-        #86efac;
+    color: #86efac;
+    font-size: 20px;
 }
-
-
-.small-play {
-
-    min-height:
-        38px;
-
-    padding:
-        0 12px;
-
-    font-size:
-        14px;
-
-    background:
-        #22c55e;
-
-    color:
-        #052e16;
-}
-
 
 .part {
+    display: inline-block;
 
-    display:
-        inline-block;
+    background: #263244;
 
-    color:
-        #cbd5e1;
+    color: #cbd5e1;
 
-    background:
-        #263244;
+    padding: 5px 9px;
 
-    padding:
-        5px 9px;
+    border-radius: 8px;
 
-    border-radius:
-        8px;
-
-    font-size:
-        13px;
+    font-size: 13px;
 }
-
 
 .meaning {
-
-    font-size:
-        22px;
-
-    font-weight:
-        700;
-
-    margin-bottom:
-        18px;
+    font-size: 22px;
+    font-weight: 700;
+    margin: 18px 0;
 }
-
 
 .example-title {
-
-    color:
-        #94a3b8;
-
-    font-size:
-        13px;
-
-    margin-bottom:
-        6px;
+    color: #94a3b8;
+    font-size: 13px;
+    margin-bottom: 6px;
 }
-
 
 .example {
-
-    background:
-        #0b1220;
-
-    border-left:
-        3px solid #22c55e;
-
-    padding:
-        12px;
-
-    border-radius:
-        8px;
-
-    font-size:
-        16px;
-
-    line-height:
-        1.6;
+    background: #0b1220;
+    border-left: 3px solid #22c55e;
+    padding: 12px;
+    border-radius: 8px;
+    line-height: 1.6;
 }
 
-
 .example-ko {
-
-    color:
-        #94a3b8;
-
-    margin-top:
-        6px;
-
-    font-size:
-        14px;
+    color: #94a3b8;
+    margin-top: 6px;
+    font-size: 14px;
 }
 
 
@@ -734,37 +586,16 @@ input[type="range"] {
 @media(max-width:480px) {
 
     h1 {
-
-        font-size:
-            22px;
-
+        font-size: 21px;
     }
-
-
-    .version {
-
-        font-size:
-            10px;
-
-    }
-
 
     .reader {
-
-        font-size:
-            23px;
-
-        padding:
-            16px;
-
+        font-size: 23px;
+        padding: 16px;
     }
 
-
-    .modal-card {
-
-        padding:
-            20px;
-
+    .side-menu {
+        width: 82vw;
     }
 
 }
@@ -774,31 +605,104 @@ input[type="range"] {
 </head>
 
 
-
 <body>
+
+
+<!-- =========================
+     SIDE MENU
+========================= -->
+
+<div
+class="menu-overlay"
+id="menuOverlay">
+</div>
+
+
+<nav
+class="side-menu"
+id="sideMenu">
+
+
+<div class="menu-title">
+    🎖️ K-ICTC
+</div>
+
+<div class="menu-version">
+    Speaking Reader · Version 7.0
+</div>
+
+
+<button
+class="menu-item active"
+id="menuCurrent">
+
+    <span>🎙️</span>
+    현재 페이지
+
+</button>
+
+
+<button
+class="menu-item"
+id="menuStorage">
+
+    <span>📚</span>
+    문장 저장소
+
+</button>
+
+
+</nav>
+
 
 
 <main>
 
 
+<!-- =========================
+     CURRENT PAGE
+========================= -->
+
+<section
+class="page active"
+id="currentPage">
+
+
 <div class="header">
 
-    <div>
 
-        <h1>
-            🎙️ K-ICTC Speaking Reader
-        </h1>
+    <div class="header-left">
 
-        <div class="sub">
-            듣고 · 읽고 · 눌러서 배우기
+
+        <button
+        class="dark menu-button"
+        id="menuButton">
+
+            ☰
+
+        </button>
+
+
+        <div>
+
+            <h1>
+                K-ICTC Speaking Reader
+            </h1>
+
+            <div class="sub">
+                듣고 · 읽고 · 눌러서 배우기
+            </div>
+
         </div>
+
 
     </div>
 
 
     <div class="version">
-        Version 5.0
+        Version 7.0
     </div>
+
 
 </div>
 
@@ -807,6 +711,7 @@ input[type="range"] {
 <!-- INPUT TOOLS -->
 
 <div class="input-tools">
+
 
     <button
     class="dark"
@@ -821,15 +726,27 @@ input[type="range"] {
     class="dark"
     id="pasteText">
 
-        📋 클립보드 붙여넣기
+        📋 붙여넣기
 
     </button>
+
 
 </div>
 
 
 
-<textarea id="text">The platoon will assemble at the attack position, cross the line of departure when ordered, and move toward the objective, where it will seize the key terrain and secure the area.</textarea>
+<textarea
+id="text"
+maxlength="500">The platoon will assemble at the attack position, cross the line of departure when ordered, and move toward the objective, where it will seize the key terrain and secure the area.</textarea>
+
+
+<div
+class="char-count"
+id="charCount">
+
+    0 / 500
+
+</div>
 
 
 
@@ -837,8 +754,9 @@ input[type="range"] {
 
 <div class="row">
 
+
     <button
-    class="play"
+    class="green"
     id="play">
 
         ▶︎ 재생
@@ -863,6 +781,7 @@ input[type="range"] {
 
     </button>
 
+
 </div>
 
 
@@ -870,6 +789,7 @@ input[type="range"] {
 <!-- SPEED -->
 
 <div class="control">
+
 
     <div class="speedline">
 
@@ -892,6 +812,7 @@ input[type="range"] {
     step="0.05"
     value="0.85">
 
+
 </div>
 
 
@@ -904,6 +825,7 @@ id="reader">
 </div>
 
 
+
 <div
 class="status"
 id="status">
@@ -911,6 +833,19 @@ id="status">
     준비됨
 
 </div>
+
+
+
+<!-- SAVE -->
+
+<button
+class="save-button"
+id="saveSentence">
+
+    ⭐ 이 문장 저장
+
+</button>
+
 
 
 <div class="note">
@@ -921,113 +856,153 @@ id="status">
 </div>
 
 
+</section>
+
+
+
+<!-- =========================
+     STORAGE PAGE
+========================= -->
+
+<section
+class="page"
+id="storagePage">
+
+
+<div class="header">
+
+
+    <div>
+
+        <div class="storage-title">
+            📚 문장 저장소
+        </div>
+
+        <div class="storage-sub">
+            저장한 K-ICTC 영어 문장을 모아볼 수 있습니다.
+        </div>
+
+    </div>
+
+
+    <div class="version">
+        Version 7.0
+    </div>
+
+
+</div>
+
+
+
+<div
+id="sentenceList">
+</div>
+
+
+</section>
+
+
 </main>
 
 
 
-<!-- WORD MODAL -->
+<!-- =========================
+     WORD MODAL
+========================= -->
 
 <div
 class="modal"
 id="wordModal">
 
 
-    <div
-    class="modal-card"
-    id="modalCard">
+<div
+class="modal-card"
+id="modalCard">
 
 
-        <div class="modal-top">
+<div class="modal-top">
 
 
-            <div>
+<div>
 
-                <div
-                class="modal-word"
-                id="modalWord">
-                    word
-                </div>
-
-
-                <div class="pronunciation">
-
-                    <span
-                    class="ipa"
-                    id="modalIPA">
-                        /pronunciation/
-                    </span>
+<div
+class="modal-word"
+id="modalWord">
+</div>
 
 
-                    <button
-                    class="small-play"
-                    id="modalPlay">
-
-                        🔊 듣기
-
-                    </button>
-
-                </div>
+<div class="pronunciation">
 
 
-                <span
-                class="part"
-                id="modalPart">
-
-                    noun
-
-                </span>
-
-            </div>
+<span
+class="ipa"
+id="modalIPA">
+</span>
 
 
-            <button
-            class="close"
-            id="closeModal">
+<button
+class="green"
+id="modalPlay">
 
-                ×
+🔊 듣기
 
-            </button>
-
-        </div>
+</button>
 
 
+</div>
 
-        <div
-        class="meaning"
-        id="modalMeaning">
 
-            뜻
+<span
+class="part"
+id="modalPart">
+</span>
 
-        </div>
+
+</div>
+
+
+<button
+class="dark close"
+id="closeModal">
+
+×
+
+</button>
+
+
+</div>
 
 
 
-        <div class="example-title">
-
-            K-ICTC Example
-
-        </div>
-
-
-        <div class="example">
-
-            <div id="modalExample">
-                Example sentence.
-            </div>
+<div
+class="meaning"
+id="modalMeaning">
+</div>
 
 
-            <div
-            class="example-ko"
-            id="modalExampleKo">
 
-                예문 해석
-
-            </div>
-
-        </div>
+<div class="example-title">
+K-ICTC Example
+</div>
 
 
-    </div>
+<div class="example">
+
+
+<div id="modalExample">
+</div>
+
+
+<div
+class="example-ko"
+id="modalExampleKo">
+</div>
+
+
+</div>
+
+
+</div>
 
 </div>
 
@@ -1037,7 +1012,7 @@ id="wordModal">
 
 
 /* =========================
-   ELEMENTS
+   BASIC
 ========================= */
 
 const $ =
@@ -1052,15 +1027,7 @@ let bounds = [];
 
 let timer = null;
 
-let current = -1;
-
 let selectedWord = "";
-
-
-/*
-   Version 5.0
-   playback state
-*/
 
 let fallbackIndex = 0;
 
@@ -1090,7 +1057,6 @@ const wordData = {
         "소대는 목표를 향해 이동할 것입니다."
     },
 
-
     attack: {
         ipa: "/əˈtæk/",
         part: "noun / verb",
@@ -1100,7 +1066,6 @@ const wordData = {
         exampleKo:
         "화력지원이 완료된 후 공격이 시작될 것입니다."
     },
-
 
     position: {
         ipa: "/pəˈzɪʃən/",
@@ -1112,7 +1077,6 @@ const wordData = {
         "소대는 공격대기지점으로 이동할 것입니다."
     },
 
-
     objective: {
         ipa: "/əbˈdʒektɪv/",
         part: "noun",
@@ -1122,7 +1086,6 @@ const wordData = {
         exampleKo:
         "우리의 주요 목표는 245고지입니다."
     },
-
 
     secure: {
         ipa: "/sɪˈkjʊr/",
@@ -1134,7 +1097,6 @@ const wordData = {
         "소대는 목표를 확보할 것입니다."
     },
 
-
     seize: {
         ipa: "/siːz/",
         part: "verb",
@@ -1144,7 +1106,6 @@ const wordData = {
         exampleKo:
         "우리의 임무는 주요 지형을 점령하는 것입니다."
     },
-
 
     terrain: {
         ipa: "/təˈreɪn/",
@@ -1156,18 +1117,6 @@ const wordData = {
         "해당 지형은 통과하기 어렵습니다."
     },
 
-
-    destroy: {
-        ipa: "/dɪˈstrɔɪ/",
-        part: "verb",
-        meaning: "격멸하다; 파괴하다",
-        example:
-        "Our priority is to destroy the enemy position.",
-        exampleKo:
-        "우리의 우선순위는 적 진지를 격멸하는 것입니다."
-    },
-
-
     suppress: {
         ipa: "/səˈpres/",
         part: "verb",
@@ -1177,7 +1126,6 @@ const wordData = {
         exampleKo:
         "조공부대가 적을 제압할 것입니다."
     },
-
 
     clear: {
         ipa: "/klɪr/",
@@ -1189,7 +1137,6 @@ const wordData = {
         "우리는 다음 단계로 넘어가기 전에 해당 지역을 소탕할 것입니다."
     },
 
-
     breach: {
         ipa: "/briːtʃ/",
         part: "verb / noun",
@@ -1199,7 +1146,6 @@ const wordData = {
         exampleKo:
         "공병이 돌파를 실시할 것입니다."
     },
-
 
     reserve: {
         ipa: "/rɪˈzɜːrv/",
@@ -1211,18 +1157,6 @@ const wordData = {
         "예비대는 주공을 증원할 준비를 유지할 것입니다."
     },
 
-
-    reconnaissance: {
-        ipa: "/rɪˈkɑːnəsəns/",
-        part: "noun",
-        meaning: "정찰",
-        example:
-        "Reconnaissance will be conducted before the main body moves forward.",
-        exampleKo:
-        "주력이 전진하기 전에 정찰이 실시될 것입니다."
-    },
-
-
     recon: {
         ipa: "/ˈrekɑːn/",
         part: "noun",
@@ -1232,7 +1166,6 @@ const wordData = {
         exampleKo:
         "우리는 전진하기 전에 정찰을 실시할 것입니다."
     },
-
 
     front: {
         ipa: "/frʌnt/",
@@ -1244,7 +1177,6 @@ const wordData = {
         "우리는 정면에서 적과 접촉할 것으로 예상합니다."
     },
 
-
     depth: {
         ipa: "/depθ/",
         part: "noun",
@@ -1254,7 +1186,6 @@ const wordData = {
         exampleKo:
         "적 예비대는 종심에 배치되어 있습니다."
     },
-
 
     maneuver: {
         ipa: "/məˈnuːvər/",
@@ -1266,7 +1197,6 @@ const wordData = {
         "주공은 적의 측방으로 기동할 것입니다."
     },
 
-
     bypass: {
         ipa: "/ˈbaɪpæs/",
         part: "verb",
@@ -1277,17 +1207,15 @@ const wordData = {
         "가능하다면 적 진지를 우회할 수 있습니다."
     },
 
-
     fix: {
         ipa: "/fɪks/",
         part: "verb",
         meaning: "고착시키다",
         example:
-        "The supporting element will fix the enemy while the main effort maneuvers.",
+        "The supporting element will fix the enemy.",
         exampleKo:
-        "주공이 기동하는 동안 조공부대가 적을 고착시킬 것입니다."
+        "조공부대가 적을 고착시킬 것입니다."
     },
-
 
     assault: {
         ipa: "/əˈsɔːlt/",
@@ -1299,7 +1227,6 @@ const wordData = {
         "준비사격이 완료된 후 돌격이 시작될 것입니다."
     },
 
-
     flank: {
         ipa: "/flæŋk/",
         part: "noun",
@@ -1309,7 +1236,6 @@ const wordData = {
         exampleKo:
         "주공은 적의 측방을 공격할 것입니다."
     },
-
 
     overwatch: {
         ipa: "/ˈoʊvərwɑːtʃ/",
@@ -1321,7 +1247,6 @@ const wordData = {
         "2분대가 엄호를 실시할 것입니다."
     },
 
-
     fire: {
         ipa: "/faɪr/",
         part: "noun",
@@ -1331,7 +1256,6 @@ const wordData = {
         exampleKo:
         "돌격 중에 화력지원이 제공될 것입니다."
     },
-
 
     supporting: {
         ipa: "/səˈpɔːrtɪŋ/",
@@ -1348,23 +1272,854 @@ const wordData = {
 
 
 /* =========================
-   RESET STATE
+   MENU
 ========================= */
 
-function resetPlaybackState() {
+function openMenu() {
 
-    clearInterval(timer);
+    $("sideMenu")
+        .classList
+        .add("show");
 
-    clearTimeout(boundaryWatch);
+    $("menuOverlay")
+        .classList
+        .add("show");
+
+}
 
 
-    fallbackIndex = 0;
+function closeMenu() {
 
-    boundaryReceived = false;
+    $("sideMenu")
+        .classList
+        .remove("show");
 
-    fallbackStarted = false;
+    $("menuOverlay")
+        .classList
+        .remove("show");
 
-    pausedByUser = false;
+}
+
+
+$("menuButton").onclick =
+    openMenu;
+
+
+$("menuOverlay").onclick =
+    closeMenu;
+
+
+
+/* =========================
+   PAGE SWITCH
+========================= */
+
+function showPage(page) {
+
+    $("currentPage")
+        .classList
+        .remove("active");
+
+    $("storagePage")
+        .classList
+        .remove("active");
+
+
+    $("menuCurrent")
+        .classList
+        .remove("active");
+
+    $("menuStorage")
+        .classList
+        .remove("active");
+
+
+    if (page === "current") {
+
+        $("currentPage")
+            .classList
+            .add("active");
+
+        $("menuCurrent")
+            .classList
+            .add("active");
+
+    }
+
+    else {
+
+        $("storagePage")
+            .classList
+            .add("active");
+
+        $("menuStorage")
+            .classList
+            .add("active");
+
+        renderStorage();
+
+    }
+
+
+    closeMenu();
+
+}
+
+
+$("menuCurrent").onclick =
+    () => showPage("current");
+
+
+$("menuStorage").onclick =
+    () => showPage("storage");
+
+
+
+/* =========================
+   STORAGE
+========================= */
+
+function getSavedSentences() {
+
+    try {
+
+        return JSON.parse(
+            localStorage.getItem(
+                "kictcSentences"
+            )
+        ) || [];
+
+    }
+
+    catch {
+
+        return [];
+
+    }
+
+}
+
+
+function saveSentences(data) {
+
+    localStorage.setItem(
+        "kictcSentences",
+        JSON.stringify(data)
+    );
+
+}
+
+
+
+/* =========================
+   SAVE SENTENCE
+========================= */
+
+$("saveSentence").onclick =
+    () => {
+
+
+        const sentence =
+            $("text")
+                .value
+                .trim();
+
+
+        if (!sentence) {
+
+            $("status").textContent =
+                "저장할 문장이 없습니다.";
+
+            return;
+
+        }
+
+
+        if (sentence.length > 500) {
+
+            $("status").textContent =
+                "문장은 최대 500자까지 저장할 수 있습니다.";
+
+            return;
+
+        }
+
+
+        const saved =
+            getSavedSentences();
+
+
+        /*
+           같은 문장 중복 저장 방지
+        */
+
+        if (
+            saved.some(
+                item =>
+                    item.text === sentence
+            )
+        ) {
+
+            $("status").textContent =
+                "이미 저장된 문장입니다.";
+
+            return;
+
+        }
+
+
+        saved.unshift({
+
+            id:
+                Date.now(),
+
+            text:
+                sentence,
+
+            created:
+                new Date()
+                    .toLocaleString()
+
+        });
+
+
+        saveSentences(
+            saved
+        );
+
+
+        $("saveSentence")
+            .classList
+            .add("saved");
+
+
+        $("saveSentence")
+            .textContent =
+            "✓ 저장되었습니다";
+
+
+        $("status").textContent =
+            "문장이 저장되었습니다.";
+
+    };
+
+
+
+/* =========================
+   STORAGE RENDER
+========================= */
+
+function renderStorage() {
+
+
+    const list =
+        $("sentenceList");
+
+
+    const saved =
+        getSavedSentences();
+
+
+    if (!saved.length) {
+
+        list.innerHTML = `
+
+            <div class="empty">
+
+                📚 아직 저장된 문장이 없습니다.
+
+                <br><br>
+
+                현재 페이지에서
+                <b>⭐ 이 문장 저장</b>을 눌러보세요.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    list.innerHTML = "";
+
+
+    saved.forEach(
+        (item, index) => {
+
+
+            const card =
+                document.createElement(
+                    "div"
+                );
+
+
+            card.className =
+                "sentence-card";
+
+
+            const sentence =
+                document.createElement(
+                    "div"
+                );
+
+
+            sentence.className =
+                "sentence-text";
+
+
+            sentence.textContent =
+                item.text;
+
+
+            const buttons =
+                document.createElement(
+                    "div"
+                );
+
+
+            buttons.className =
+                "sentence-buttons";
+
+
+            const loadButton =
+                document.createElement(
+                    "button"
+                );
+
+
+            loadButton.className =
+                "green";
+
+
+            loadButton.textContent =
+                "▶︎ 불러오기";
+
+
+            loadButton.onclick =
+                () => {
+
+                    loadSentence(
+                        item.text
+                    );
+
+                };
+
+
+            const deleteButton =
+                document.createElement(
+                    "button"
+                );
+
+
+            deleteButton.className =
+                "dark";
+
+
+            deleteButton.textContent =
+                "🗑️ 삭제";
+
+
+            deleteButton.onclick =
+                () => {
+
+                    deleteSentence(
+                        index
+                    );
+
+                };
+
+
+            buttons.appendChild(
+                loadButton
+            );
+
+
+            buttons.appendChild(
+                deleteButton
+            );
+
+
+            card.appendChild(
+                sentence
+            );
+
+
+            card.appendChild(
+                buttons
+            );
+
+
+            list.appendChild(
+                card
+            );
+
+        }
+    );
+
+}
+
+
+
+/* =========================
+   LOAD SENTENCE
+========================= */
+
+function loadSentence(
+    sentence
+) {
+
+
+    showPage(
+        "current"
+    );
+
+
+    $("text").value =
+        sentence;
+
+
+    updateCharacterCount();
+
+
+    buildReader();
+
+
+    $("status").textContent =
+        "저장된 문장을 불러왔습니다.";
+
+}
+
+
+
+/* =========================
+   DELETE SENTENCE
+========================= */
+
+function deleteSentence(
+    index
+) {
+
+
+    const saved =
+        getSavedSentences();
+
+
+    saved.splice(
+        index,
+        1
+    );
+
+
+    saveSentences(
+        saved
+    );
+
+
+    renderStorage();
+
+}
+
+
+
+/* =========================
+   CHARACTER COUNT
+========================= */
+
+function updateCharacterCount() {
+
+
+    const length =
+        $("text")
+            .value
+            .length;
+
+
+    $("charCount")
+        .textContent =
+        `${length} / 500`;
+
+
+    $("charCount")
+        .classList
+        .remove(
+            "warning",
+            "error"
+        );
+
+
+    if (
+        length >= 450 &&
+        length <= 500
+    ) {
+
+        $("charCount")
+            .classList
+            .add(
+                "warning"
+            );
+
+    }
+
+
+    if (
+        length > 500
+    ) {
+
+        $("charCount")
+            .classList
+            .add(
+                "error"
+            );
+
+    }
+
+}
+
+
+
+/* =========================
+   INPUT VALIDATION
+========================= */
+
+function isUnsafeText(
+    text
+) {
+
+
+    const lower =
+        text.toLowerCase();
+
+
+    const dangerousPatterns = [
+
+        "<script",
+
+        "</script",
+
+        "<html",
+
+        "</html",
+
+        "<body",
+
+        "</body",
+
+        "<style",
+
+        "</style",
+
+        "<iframe",
+
+        "javascript:",
+
+        "data:text/html",
+
+        "onclick=",
+
+        "onerror=",
+
+        "onload="
+
+    ];
+
+
+    return dangerousPatterns.some(
+        pattern =>
+            lower.includes(
+                pattern
+            )
+    );
+
+}
+
+
+function cleanText(
+    text
+) {
+
+
+    /*
+       HTML 태그 제거
+    */
+
+    text =
+        text.replace(
+            /<[^>]*>/g,
+            " "
+        );
+
+
+    /*
+       여러 공백 정리
+    */
+
+    text =
+        text.replace(
+            /\s+/g,
+            " "
+        )
+        .trim();
+
+
+    return text;
+
+}
+
+
+
+/* =========================
+   TEXT INPUT
+========================= */
+
+$("text").oninput =
+    () => {
+
+
+        /*
+           textarea 자체도
+           500자 제한
+        */
+
+        if (
+            $("text")
+                .value
+                .length > 500
+        ) {
+
+            $("text").value =
+                $("text")
+                    .value
+                    .slice(
+                        0,
+                        500
+                    );
+
+        }
+
+
+        speechSynthesis.cancel();
+
+
+        resetPlaybackState();
+
+
+        buildReader();
+
+
+        updateCharacterCount();
+
+
+        $("status").textContent =
+            "준비됨";
+
+    };
+
+
+
+/* =========================
+   CLIPBOARD
+========================= */
+
+$("pasteText").onclick =
+    async () => {
+
+
+        try {
+
+
+            if (
+                !navigator.clipboard ||
+                !navigator.clipboard.readText
+            ) {
+
+                throw new Error(
+                    "Clipboard unavailable"
+                );
+
+            }
+
+
+            let text =
+                await navigator
+                    .clipboard
+                    .readText();
+
+
+            /*
+               500자 검사
+            */
+
+            if (
+                text.length > 500
+            ) {
+
+                $("status").textContent =
+                    `⚠️ 문장이 너무 깁니다. ${text.length}자입니다. 최대 500자까지 입력할 수 있습니다.`;
+
+                return;
+
+            }
+
+
+            /*
+               HTML / 코드 검사
+            */
+
+            if (
+                isUnsafeText(
+                    text
+                )
+            ) {
+
+                $("status").textContent =
+                    "⚠️ HTML 또는 코드 형태의 내용은 붙여넣을 수 없습니다.";
+
+                return;
+
+            }
+
+
+            /*
+               HTML 태그 제거
+            */
+
+            text =
+                cleanText(
+                    text
+                );
+
+
+            if (!text) {
+
+                $("status").textContent =
+                    "⚠️ 붙여넣을 수 있는 문장이 없습니다.";
+
+                return;
+
+            }
+
+
+            if (
+                text.length > 500
+            ) {
+
+                $("status").textContent =
+                    "⚠️ 정리 후에도 문장이 500자를 초과합니다.";
+
+                return;
+
+            }
+
+
+            speechSynthesis.cancel();
+
+
+            resetPlaybackState();
+
+
+            $("text").value =
+                text;
+
+
+            buildReader();
+
+
+            updateCharacterCount();
+
+
+            $("status").textContent =
+                "📋 문장을 붙여넣었습니다.";
+
+        }
+
+
+        catch(error) {
+
+            $("status").textContent =
+                "⚠️ Chrome에서 클립보드 접근을 허용해주세요.";
+
+        }
+
+    };
+
+
+
+/* =========================
+   CLEAR
+========================= */
+
+$("clearText").onclick =
+    () => {
+
+
+        speechSynthesis.cancel();
+
+
+        resetPlaybackState();
+
+
+        $("text").value =
+            "";
+
+
+        buildReader();
+
+
+        updateCharacterCount();
+
+
+        $("saveSentence")
+            .classList
+            .remove(
+                "saved"
+            );
+
+
+        $("saveSentence")
+            .textContent =
+            "⭐ 이 문장 저장";
+
+
+        $("status").textContent =
+            "문장이 삭제되었습니다.";
+
+    };
+
+
+
+/* =========================
+   ESCAPE
+========================= */
+
+function escapeHTML(
+    str
+) {
+
+    return str.replace(
+        /[&<>"']/g,
+
+        c => ({
+
+            "&":
+                "&amp;",
+
+            "<":
+                "&lt;",
+
+            ">":
+                "&gt;",
+
+            '"':
+                "&quot;",
+
+            "'":
+                "&#39;"
+
+        }[c])
+
+    );
 
 }
 
@@ -1376,13 +2131,18 @@ function resetPlaybackState() {
 
 function buildReader() {
 
+
     speechSynthesis.cancel();
 
-    clearInterval(timer);
+
+    clearInterval(
+        timer
+    );
 
 
     const text =
-        $("text").value;
+        $("text")
+            .value;
 
 
     const regex =
@@ -1402,7 +2162,8 @@ function buildReader() {
 
 
     while (
-        (match = regex.exec(text))
+        (match =
+            regex.exec(text))
     ) {
 
 
@@ -1461,103 +2222,52 @@ function buildReader() {
         );
 
 
-    $("reader").innerHTML =
+    $("reader")
+        .innerHTML =
         output;
 
-
-    current = -1;
-
 }
 
 
 
 /* =========================
-   ESCAPE
+   PLAYBACK STATE
 ========================= */
 
-function escapeHTML(str) {
+function resetPlaybackState() {
 
-    return str.replace(
-        /[&<>"']/g,
 
-        c => ({
-
-            "&": "&amp;",
-            "<": "&lt;",
-            ">": "&gt;",
-            '"': "&quot;",
-            "'": "&#39;"
-
-        }[c])
-
+    clearInterval(
+        timer
     );
 
-}
+
+    clearTimeout(
+        boundaryWatch
+    );
 
 
-
-/* =========================
-   HIGHLIGHT
-========================= */
-
-function highlightWord(index) {
-
-    if (
-        index < 0 ||
-        index >= words.length
-    ) {
-
-        return;
-
-    }
+    fallbackIndex =
+        0;
 
 
-    document
-        .querySelectorAll(".word")
-        .forEach(
-            (element, i) => {
+    boundaryReceived =
+        false;
 
 
-                element.classList.toggle(
-                    "done",
-                    i < index
-                );
+    fallbackStarted =
+        false;
 
 
-                element.classList.toggle(
-                    "current",
-                    i === index
-                );
-
-
-                if (
-                    i !== index
-                ) {
-
-                    element.classList.remove(
-                        "clicked"
-                    );
-
-                }
-
-            }
-        );
-
-
-    current =
-        index;
-
-
-    $("status").textContent =
-        "▶︎ " +
-        words[index];
+    pausedByUser =
+        false;
 
 }
 
 
 
 /* =========================
-   CHARACTER → WORD
+   FIND WORD
 ========================= */
 
 function findWordFromCharacter(
@@ -1598,10 +2308,73 @@ function findWordFromCharacter(
 
 
 /* =========================
+   HIGHLIGHT
+========================= */
+
+function highlightWord(
+    index
+) {
+
+
+    if (
+        index < 0 ||
+        index >= words.length
+    ) {
+
+        return;
+
+    }
+
+
+    document
+        .querySelectorAll(
+            ".word"
+        )
+        .forEach(
+            (element, i) => {
+
+
+                element.classList.toggle(
+                    "done",
+                    i < index
+                );
+
+
+                element.classList.toggle(
+                    "current",
+                    i === index
+                );
+
+
+                if (
+                    i !== index
+                ) {
+
+                    element.classList.remove(
+                        "clicked"
+                    );
+
+                }
+
+            }
+        );
+
+
+    $("status")
+        .textContent =
+        "▶︎ " +
+        words[index];
+
+}
+
+
+
+/* =========================
    FALLBACK
 ========================= */
 
 function startFallback() {
+
 
     if (
         fallbackStarted ||
@@ -1617,7 +2390,9 @@ function startFallback() {
         true;
 
 
-    clearInterval(timer);
+    clearInterval(
+        timer
+    );
 
 
     const interval =
@@ -1626,12 +2401,11 @@ function startFallback() {
             90,
 
             Math.round(
-
                 360 /
                 Number(
-                    $("speed").value
+                    $("speed")
+                        .value
                 )
-
             )
 
         );
@@ -1641,12 +2415,6 @@ function startFallback() {
         setInterval(
             () => {
 
-
-                /*
-                   핵심:
-                   일시정지 중에는
-                   절대 화면을 진행하지 않는다.
-                */
 
                 if (
 
@@ -1665,7 +2433,9 @@ function startFallback() {
                     !speechSynthesis.speaking
                 ) {
 
-                    clearInterval(timer);
+                    clearInterval(
+                        timer
+                    );
 
                     return;
 
@@ -1685,14 +2455,8 @@ function startFallback() {
 
                     fallbackIndex++;
 
-
                 }
 
-                else {
-
-                    clearInterval(timer);
-
-                }
 
             },
 
@@ -1705,147 +2469,12 @@ function startFallback() {
 
 
 /* =========================
-   WORD KEY
+   SPEAK WORD
 ========================= */
 
-function getWordKey(word) {
-
-    return word
-        .toLowerCase()
-        .replace(
-            /[.,!?;:"'()]/g,
-            ""
-        );
-
-}
-
-
-
-/* =========================
-   WORD INFO
-========================= */
-
-function openWordInfo(index) {
-
-
-    const originalWord =
-        words[index];
-
-
-    if (!originalWord) {
-
-        return;
-
-    }
-
-
-    selectedWord =
-        originalWord;
-
-
-    document
-        .querySelectorAll(".word")
-        .forEach(
-            element => {
-
-                element.classList.remove(
-                    "clicked"
-                );
-
-            }
-        );
-
-
-    const element =
-        document.querySelector(
-            `[data-index="${index}"]`
-        );
-
-
-    if (element) {
-
-        element.classList.add(
-            "clicked"
-        );
-
-    }
-
-
-    const data =
-        wordData[
-            getWordKey(
-                originalWord
-            )
-        ];
-
-
-    $("modalWord").textContent =
-        originalWord;
-
-
-    if (data) {
-
-
-        $("modalIPA").textContent =
-            data.ipa;
-
-
-        $("modalPart").textContent =
-            data.part;
-
-
-        $("modalMeaning").textContent =
-            data.meaning;
-
-
-        $("modalExample").textContent =
-            data.example;
-
-
-        $("modalExampleKo").textContent =
-            data.exampleKo;
-
-    }
-
-
-    else {
-
-
-        $("modalIPA").textContent =
-            "IPA 정보 준비 중";
-
-
-        $("modalPart").textContent =
-            "word";
-
-
-        $("modalMeaning").textContent =
-            "단어 정보 준비 중";
-
-
-        $("modalExample").textContent =
-            originalWord;
-
-
-        $("modalExampleKo").textContent =
-            "아직 K-ICTC 사전에 등록되지 않은 단어입니다.";
-
-    }
-
-
-    $("wordModal")
-        .classList
-        .add("show");
-
-}
-
-
-
-/* =========================
-   WORD SPEAK
-========================= */
-
-function speakWord(index) {
+function speakWord(
+    index
+) {
 
 
     const word =
@@ -1861,10 +2490,15 @@ function speakWord(index) {
 
     speechSynthesis.cancel();
 
-    clearInterval(timer);
+
+    clearInterval(
+        timer
+    );
 
 
-    openWordInfo(index);
+    openWordInfo(
+        index
+    );
 
 
     const u =
@@ -1881,14 +2515,11 @@ function speakWord(index) {
         0.72;
 
 
-    u.pitch =
-        1;
-
-
     u.onstart =
         () => {
 
-            $("status").textContent =
+            $("status")
+                .textContent =
                 "🔊 " +
                 word;
 
@@ -1898,14 +2529,118 @@ function speakWord(index) {
     u.onend =
         () => {
 
-            $("status").textContent =
+            $("status")
+                .textContent =
                 "✓ " +
                 word;
 
         };
 
 
-    speechSynthesis.speak(u);
+    speechSynthesis.speak(
+        u
+    );
+
+}
+
+
+
+/* =========================
+   WORD INFO
+========================= */
+
+function openWordInfo(
+    index
+) {
+
+
+    const word =
+        words[index];
+
+
+    selectedWord =
+        word;
+
+
+    const data =
+        wordData[
+            word
+                .toLowerCase()
+                .replace(
+                    /[.,!?;:"'()]/g,
+                    ""
+                )
+        ];
+
+
+    $("modalWord")
+        .textContent =
+        word;
+
+
+    if (data) {
+
+
+        $("modalIPA")
+            .textContent =
+            data.ipa;
+
+
+        $("modalPart")
+            .textContent =
+            data.part;
+
+
+        $("modalMeaning")
+            .textContent =
+            data.meaning;
+
+
+        $("modalExample")
+            .textContent =
+            data.example;
+
+
+        $("modalExampleKo")
+            .textContent =
+            data.exampleKo;
+
+    }
+
+
+    else {
+
+
+        $("modalIPA")
+            .textContent =
+            "IPA 정보 준비 중";
+
+
+        $("modalPart")
+            .textContent =
+            "word";
+
+
+        $("modalMeaning")
+            .textContent =
+            "단어 정보 준비 중";
+
+
+        $("modalExample")
+            .textContent =
+            word;
+
+
+        $("modalExampleKo")
+            .textContent =
+            "아직 K-ICTC 사전에 등록되지 않은 단어입니다.";
+
+    }
+
+
+    $("wordModal")
+        .classList
+        .add("show");
 
 }
 
@@ -1935,6 +2670,10 @@ function startSpeaking() {
 
     if (!text) {
 
+        $("status")
+            .textContent =
+            "문장을 입력해주세요.";
+
         return;
 
     }
@@ -1952,36 +2691,19 @@ function startSpeaking() {
 
     utterance.rate =
         Number(
-            $("speed").value
+            $("speed")
+                .value
         );
 
-
-    utterance.pitch =
-        1;
-
-
-
-    /* =====================
-       START
-    ===================== */
 
     utterance.onstart =
         () => {
 
 
-            pausedByUser =
-                false;
-
-
-            $("status").textContent =
+            $("status")
+                .textContent =
                 "재생 중…";
 
-
-            /*
-               0.8초 동안 실제
-               boundary 이벤트가 없으면
-               fallback 사용
-            */
 
             boundaryWatch =
                 setTimeout(
@@ -2015,11 +2737,6 @@ function startSpeaking() {
         };
 
 
-
-    /* =====================
-       REAL SYNC
-    ===================== */
-
     utterance.onboundary =
         event => {
 
@@ -2028,7 +2745,10 @@ function startSpeaking() {
                 true;
 
 
-            clearInterval(timer);
+            clearInterval(
+                timer
+            );
+
 
             clearTimeout(
                 boundaryWatch
@@ -2067,11 +2787,6 @@ function startSpeaking() {
         };
 
 
-
-    /* =====================
-       PAUSE
-    ===================== */
-
     utterance.onpause =
         () => {
 
@@ -2080,19 +2795,17 @@ function startSpeaking() {
                 true;
 
 
-            clearInterval(timer);
+            clearInterval(
+                timer
+            );
 
 
-            $("status").textContent =
+            $("status")
+                .textContent =
                 "Ⅱ 일시정지";
 
         };
 
-
-
-    /* =====================
-       RESUME
-    ===================== */
 
     utterance.onresume =
         () => {
@@ -2102,7 +2815,8 @@ function startSpeaking() {
                 false;
 
 
-            $("status").textContent =
+            $("status")
+                .textContent =
                 "재생 중…";
 
 
@@ -2123,16 +2837,13 @@ function startSpeaking() {
         };
 
 
-
-    /* =====================
-       END
-    ===================== */
-
     utterance.onend =
         () => {
 
 
-            clearInterval(timer);
+            clearInterval(
+                timer
+            );
 
 
             clearTimeout(
@@ -2140,19 +2851,16 @@ function startSpeaking() {
             );
 
 
-            pausedByUser =
-                false;
-
-
             document
-                .querySelectorAll(".word")
+                .querySelectorAll(
+                    ".word"
+                )
                 .forEach(
                     element => {
 
                         element.classList.remove(
                             "current"
                         );
-
 
                         element.classList.add(
                             "done"
@@ -2162,39 +2870,25 @@ function startSpeaking() {
                 );
 
 
-            $("status").textContent =
+            $("status")
+                .textContent =
                 "완료";
 
         };
 
 
-
-    /* =====================
-       ERROR
-    ===================== */
-
     utterance.onerror =
-        event => {
+        () => {
 
 
-            clearInterval(timer);
-
-
-            clearTimeout(
-                boundaryWatch
+            clearInterval(
+                timer
             );
 
 
-            $("status").textContent =
-
-                "음성 재생 오류: "
-
-                +
-
-                (
-                    event.error ||
-                    "unknown"
-                );
+            $("status")
+                .textContent =
+                "음성 재생 오류";
 
         };
 
@@ -2215,11 +2909,6 @@ $("play").onclick =
     () => {
 
 
-        /*
-           일시정지 상태라면
-           현재 위치에서 resume
-        */
-
         if (
 
             speechSynthesis.speaking
@@ -2231,15 +2920,7 @@ $("play").onclick =
         ) {
 
 
-            pausedByUser =
-                false;
-
-
             speechSynthesis.resume();
-
-
-            $("status").textContent =
-                "재생 중…";
 
 
             return;
@@ -2247,20 +2928,8 @@ $("play").onclick =
         }
 
 
-
-        /*
-           이미 재생 중이면
-           중복 재생하지 않는다.
-        */
-
         if (
-
             speechSynthesis.speaking
-
-            &&
-
-            !speechSynthesis.paused
-
         ) {
 
             return;
@@ -2293,25 +2962,20 @@ $("pause").onclick =
         ) {
 
 
-            /*
-               화면 timer를 먼저 정지
-            */
-
             pausedByUser =
                 true;
 
 
-            clearInterval(timer);
+            clearInterval(
+                timer
+            );
 
-
-            /*
-               음성 정지
-            */
 
             speechSynthesis.pause();
 
 
-            $("status").textContent =
+            $("status")
+                .textContent =
                 "Ⅱ 일시정지";
 
         }
@@ -2337,7 +3001,8 @@ $("stop").onclick =
         buildReader();
 
 
-        $("status").textContent =
+        $("status")
+            .textContent =
             "정지";
 
     };
@@ -2352,146 +3017,18 @@ $("speed").oninput =
     () => {
 
 
-        $("sv").textContent =
+        $("sv")
+            .textContent =
 
             Number(
-                $("speed").value
+                $("speed")
+                    .value
             )
             .toFixed(2)
 
             +
 
             "×";
-
-    };
-
-
-
-/* =========================
-   TEXT CHANGE
-========================= */
-
-$("text").oninput =
-    () => {
-
-
-        speechSynthesis.cancel();
-
-
-        resetPlaybackState();
-
-
-        buildReader();
-
-
-        $("status").textContent =
-            "준비됨";
-
-    };
-
-
-
-/* =========================
-   CLEAR
-========================= */
-
-$("clearText").onclick =
-    () => {
-
-
-        speechSynthesis.cancel();
-
-
-        resetPlaybackState();
-
-
-        $("text").value =
-            "";
-
-
-        buildReader();
-
-
-        $("status").textContent =
-            "문장이 삭제되었습니다.";
-
-    };
-
-
-
-/* =========================
-   CLIPBOARD
-========================= */
-
-$("pasteText").onclick =
-    async () => {
-
-
-        try {
-
-
-            if (
-
-                !navigator.clipboard
-
-                ||
-
-                !navigator.clipboard.readText
-
-            ) {
-
-                throw new Error(
-                    "Clipboard API unavailable"
-                );
-
-            }
-
-
-            const text =
-                await navigator
-                    .clipboard
-                    .readText();
-
-
-            if (!text) {
-
-
-                $("status").textContent =
-                    "클립보드에 텍스트가 없습니다.";
-
-
-                return;
-
-            }
-
-
-            speechSynthesis.cancel();
-
-
-            resetPlaybackState();
-
-
-            $("text").value =
-                text;
-
-
-            buildReader();
-
-
-            $("status").textContent =
-                "📋 클립보드 내용을 붙여넣었습니다.";
-
-        }
-
-
-        catch (error) {
-
-
-            $("status").textContent =
-
-                "⚠️ 클립보드 접근이 차단되었습니다. Chrome의 권한을 확인해주세요.";
-
-        }
 
     };
 
@@ -2529,10 +3066,11 @@ $("modalPlay").onclick =
             0.72;
 
 
-        speechSynthesis.speak(u);
+        speechSynthesis.speak(
+            u
+        );
 
     };
-
 
 
 $("closeModal").onclick =
@@ -2569,6 +3107,10 @@ $("modalCard").onclick =
 ========================= */
 
 buildReader();
+
+updateCharacterCount();
+
+renderStorage();
 
 </script>
 
