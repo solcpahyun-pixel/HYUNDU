@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta name="theme-color" content="#0b1220">
 
 <title>K-ICTC Speaking Reader</title>
@@ -16,7 +16,6 @@
 html,body{
     margin:0;
     padding:0;
-    min-height:100%;
     background:#0b1220;
     color:#f8fafc;
     font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;
@@ -34,7 +33,28 @@ button{
     font-size:15px;
     font-weight:700;
     cursor:pointer;
-    touch-action:manipulation;
+}
+
+textarea{
+    width:100%;
+    min-height:145px;
+    background:#111827;
+    color:white;
+    border:1px solid #334155;
+    border-radius:16px;
+    padding:15px;
+    font-size:18px;
+    line-height:1.55;
+    outline:none;
+    resize:vertical;
+}
+
+textarea:focus{
+    border-color:#22c55e;
+}
+
+button:active{
+    transform:scale(.98);
 }
 
 .dark{
@@ -56,8 +76,6 @@ main{
         16px
         calc(30px + env(safe-area-inset-bottom));
 }
-
-/* HEADER */
 
 .header{
     display:flex;
@@ -98,7 +116,15 @@ h1{
     border-radius:20px;
 }
 
-/* SIDE MENU */
+.page{
+    display:none;
+}
+
+.page.active{
+    display:block;
+}
+
+/* MENU */
 
 .menu-overlay{
     display:none;
@@ -158,41 +184,14 @@ h1{
     color:#86efac;
 }
 
-/* PAGE */
+/* CONTROLS */
 
-.page{
-    display:none;
-}
-
-.page.active{
-    display:block;
-}
-
-/* CURRENT */
-
-.input-tools{
+.input-tools,
+.row{
     display:flex;
     gap:8px;
     flex-wrap:wrap;
     margin:10px 0;
-}
-
-textarea{
-    width:100%;
-    min-height:145px;
-    border:1px solid #334155;
-    border-radius:16px;
-    background:#111827;
-    color:white;
-    padding:15px;
-    font-size:18px;
-    line-height:1.55;
-    outline:none;
-    resize:vertical;
-}
-
-textarea:focus{
-    border-color:#22c55e;
 }
 
 .char-count{
@@ -200,13 +199,6 @@ textarea:focus{
     color:#64748b;
     font-size:12px;
     margin-top:5px;
-}
-
-.row{
-    display:flex;
-    gap:8px;
-    flex-wrap:wrap;
-    margin:12px 0;
 }
 
 .control{
@@ -229,6 +221,14 @@ input[type="range"]{
     accent-color:#22c55e;
 }
 
+.status{
+    color:#94a3b8;
+    font-size:13px;
+    margin:10px 3px;
+}
+
+/* READER */
+
 .reader{
     margin-top:14px;
     background:#111827;
@@ -247,12 +247,8 @@ input[type="range"]{
     border-radius:7px;
     cursor:pointer;
     user-select:none;
-    transition:
-        background .12s ease,
-        color .12s ease;
+    transition:background .12s ease,color .12s ease;
 }
-
-/* ★ V8.2.1 HIGHLIGHT */
 
 .word.done{
     color:#86efac;
@@ -261,14 +257,7 @@ input[type="range"]{
 .word.current{
     background:#22c55e;
     color:#052e16;
-    border-radius:7px;
     padding:0 4px;
-}
-
-.status{
-    color:#94a3b8;
-    font-size:13px;
-    margin:10px 3px;
 }
 
 .note{
@@ -291,13 +280,15 @@ input[type="range"]{
 
 /* STORAGE */
 
-.storage-title{
+.storage-title,
+.flash-library-title{
     font-size:25px;
     font-weight:800;
     margin-bottom:5px;
 }
 
-.storage-sub{
+.storage-sub,
+.flash-library-sub{
     color:#94a3b8;
     font-size:13px;
     margin-bottom:16px;
@@ -340,27 +331,9 @@ input[type="range"]{
 .sentence-buttons{
     display:flex;
     gap:7px;
-    flex-wrap:wrap;
 }
 
-.sentence-buttons button{
-    min-height:38px;
-    font-size:13px;
-}
-
-/* FLASH LIBRARY */
-
-.flash-library-title{
-    font-size:25px;
-    font-weight:800;
-    margin-bottom:5px;
-}
-
-.flash-library-sub{
-    color:#94a3b8;
-    font-size:13px;
-    margin-bottom:18px;
-}
+/* FLASH */
 
 .deck-card{
     width:100%;
@@ -372,10 +345,6 @@ input[type="range"]{
     margin-bottom:12px;
     color:white;
     min-height:110px;
-}
-
-.deck-card:active{
-    transform:scale(.985);
 }
 
 .deck-icon{
@@ -402,10 +371,7 @@ input[type="range"]{
 
 .add-word-button{
     width:100%;
-    margin-top:5px;
 }
-
-/* FLASH */
 
 .flash-title{
     font-size:25px;
@@ -415,18 +381,12 @@ input[type="range"]{
 .flash-sub{
     color:#94a3b8;
     font-size:13px;
-    margin-top:4px;
 }
 
 .flash-progress{
     text-align:center;
     color:#94a3b8;
     font-size:13px;
-    margin-bottom:10px;
-}
-
-.flash-back{
-    width:100%;
     margin-bottom:10px;
 }
 
@@ -443,12 +403,8 @@ input[type="range"]{
     justify-content:center;
     align-items:center;
     text-align:center;
-    cursor:pointer;
     user-select:none;
-    -webkit-user-select:none;
     touch-action:pan-y;
-    box-shadow:0 15px 40px rgba(0,0,0,.25);
-    overflow:hidden;
 }
 
 .flash-page{
@@ -460,7 +416,6 @@ input[type="range"]{
 .flash-word{
     font-size:42px;
     font-weight:800;
-    letter-spacing:-1px;
 }
 
 .flash-ipa{
@@ -475,18 +430,15 @@ input[type="range"]{
 }
 
 .flash-example{
-    font-size:22px;
+    font-size:21px;
     line-height:1.6;
     font-weight:600;
-    max-width:600px;
 }
 
 .flash-example-ko{
     color:#94a3b8;
     font-size:15px;
-    line-height:1.5;
     margin-top:18px;
-    max-width:550px;
 }
 
 .flash-hint{
@@ -497,7 +449,6 @@ input[type="range"]{
 }
 
 .flash-audio{
-    display:block;
     width:100%;
     margin-top:12px;
 }
@@ -520,12 +471,20 @@ input[type="range"]{
     margin-top:15px;
 }
 
-.flash-setting-row{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:12px;
-    color:#cbd5e1;
+/* PODCAST */
+
+.podcast-current{
+    border-left:4px solid #22c55e;
+    padding-left:15px;
+    font-size:22px;
+    line-height:1.7;
+}
+
+.podcast-finished{
+    color:#86efac;
+    text-align:center;
+    padding:30px 0;
+    font-size:20px;
 }
 
 /* MODAL */
@@ -560,16 +519,16 @@ input[type="range"]{
     overflow-y:auto;
 }
 
+.modal-top{
+    display:flex;
+    justify-content:space-between;
+}
+
 .close{
     width:38px;
     min-height:38px;
     padding:0;
     border-radius:50%;
-}
-
-.modal-top{
-    display:flex;
-    justify-content:space-between;
 }
 
 .form-label{
@@ -587,7 +546,6 @@ input[type="range"]{
     border-radius:12px;
     padding:13px;
     font-size:16px;
-    outline:none;
 }
 
 .form-textarea{
@@ -671,17 +629,10 @@ input[type="range"]{
 
     .reader{
         font-size:23px;
-        padding:16px;
     }
 
     .side-menu{
         width:82vw;
-    }
-
-    .flash-card{
-        min-height:390px;
-        padding-left:18px;
-        padding-right:18px;
     }
 
     .flash-word{
@@ -701,8 +652,6 @@ input[type="range"]{
 
 <body>
 
-<!-- MENU -->
-
 <div class="menu-overlay" id="menuOverlay"></div>
 
 <nav class="side-menu" id="sideMenu">
@@ -712,7 +661,7 @@ input[type="range"]{
     </div>
 
     <div class="menu-version">
-        Speaking Reader · Version 8.2.1
+        Speaking Reader · Version 8.3
     </div>
 
     <button class="menu-item active" id="menuCurrent">
@@ -727,743 +676,872 @@ input[type="range"]{
         🃏 플래시 카드
     </button>
 
+    <button class="menu-item" id="menuPodcast">
+        🎧 Podcast
+    </button>
+
 </nav>
 
 <main>
 
-<!-- CURRENT PAGE -->
+<!-- =====================================================
+CURRENT PAGE
+===================================================== -->
 
 <section class="page active" id="currentPage">
 
-    <div class="header">
+<div class="header">
 
-        <div class="header-left">
+<div class="header-left">
 
-            <button class="dark menu-button" id="menuButton">
-                ☰
-            </button>
+<button class="dark menu-button" id="menuButton">
+☰
+</button>
 
-            <div>
+<div>
 
-                <h1>
-                    K-ICTC Speaking Reader
-                </h1>
+<h1>K-ICTC Speaking Reader</h1>
 
-                <div class="sub">
-                    듣고 · 읽고 · 눌러서 배우기
-                </div>
+<div class="sub">
+듣고 · 읽고 · 눌러서 배우기
+</div>
 
-            </div>
+</div>
 
-        </div>
+</div>
 
-        <div class="version">
-            Version 8.2.1
-        </div>
+<div class="version">
+Version 8.3
+</div>
 
-    </div>
+</div>
 
-    <div class="input-tools">
+<div class="input-tools">
 
-        <button class="dark" id="clearText">
-            🗑️ 전체 삭제
-        </button>
+<button class="dark" id="clearText">
+🗑️ 전체 삭제
+</button>
 
-        <button class="dark" id="pasteText">
-            📋 붙여넣기
-        </button>
+<button class="dark" id="pasteText">
+📋 붙여넣기
+</button>
 
-    </div>
+</div>
 
-    <textarea id="text" maxlength="500">The platoon will assemble at the attack position, cross the line of departure when ordered, and move toward the objective, where it will seize the key terrain and secure the area.</textarea>
+<textarea id="text">The platoon will assemble at the attack position, cross the line of departure when ordered, and move toward the objective.</textarea>
 
-    <div class="char-count" id="charCount">
-        0 / 500
-    </div>
+<div class="char-count" id="charCount">
+0 characters
+</div>
 
-    <div class="row">
+<div class="row">
 
-        <button class="green" id="play">
-            ▶︎ 재생
-        </button>
+<button class="green" id="play">
+▶︎ 재생
+</button>
 
-        <button class="dark" id="pause">
-            Ⅱ 일시정지
-        </button>
+<button class="dark" id="pause">
+Ⅱ 일시정지
+</button>
 
-        <button class="dark" id="stop">
-            ■ 정지
-        </button>
+<button class="dark" id="stop">
+■ 정지
+</button>
 
-    </div>
+</div>
 
-    <div class="control">
+<div class="control">
 
-        <div class="speedline">
+<div class="speedline">
 
-            <span>
-                재생 속도
-            </span>
+<span>재생 속도</span>
 
-            <b id="sv">
-                0.85×
-            </b>
+<b id="sv">0.85×</b>
 
-        </div>
+</div>
 
-        <input
-            id="speed"
-            type="range"
-            min="0.5"
-            max="1.5"
-            step="0.05"
-            value="0.85">
+<input
+id="speed"
+type="range"
+min="0.5"
+max="1.5"
+step="0.05"
+value="0.85">
 
-    </div>
+</div>
 
-    <div class="reader" id="reader"></div>
+<div class="reader" id="reader"></div>
 
-    <div class="status" id="status">
-        준비됨
-    </div>
+<div class="status" id="status">
+준비됨
+</div>
 
-    <button class="save-button" id="saveSentence">
-        ⭐ 이 문장 저장
-    </button>
+<button class="save-button" id="saveSentence">
+⭐ 이 문장 저장
+</button>
 
-    <div class="note">
-
-        👆 단어를 누르면
-        발음과 단어 정보를 확인할 수 있습니다.
-
-    </div>
+<div class="note">
+👆 단어를 누르면 발음과 단어 정보를 확인할 수 있습니다.
+</div>
 
 </section>
 
-<!-- STORAGE -->
+
+<!-- =====================================================
+STORAGE
+===================================================== -->
 
 <section class="page" id="storagePage">
 
-    <div class="header">
+<div class="header">
 
-        <div class="header-left">
+<div class="header-left">
 
-            <button class="dark menu-button" id="menuButtonStorage">
-                ☰
-            </button>
+<button class="dark menu-button" id="menuButtonStorage">
+☰
+</button>
 
-            <div>
+<div>
 
-                <div class="storage-title">
-                    📚 문장 저장소
-                </div>
+<div class="storage-title">
+📚 문장 저장소
+</div>
 
-                <div class="storage-sub">
-                    저장한 K-ICTC 영어 문장
-                </div>
+<div class="storage-sub">
+저장한 영어 문장
+</div>
 
-            </div>
+</div>
 
-        </div>
+</div>
 
-        <div class="version">
-            Version 8.2.1
-        </div>
+<div class="version">
+Version 8.3
+</div>
 
-    </div>
+</div>
 
-    <button class="green new-sentence" id="newSentence">
-        ＋ 새 문장 추가
-    </button>
+<button class="green new-sentence" id="newSentence">
+＋ 새 문장 추가
+</button>
 
-    <div id="sentenceList"></div>
+<div id="sentenceList"></div>
 
 </section>
 
-<!-- FLASH -->
+
+<!-- =====================================================
+FLASH CARD
+===================================================== -->
 
 <section class="page" id="flashPage">
 
-    <div id="deckSelection">
+<div id="deckSelection">
 
-        <div class="header">
+<div class="header">
 
-            <div class="header-left">
+<div class="header-left">
 
-                <button class="dark menu-button" id="menuButtonFlash">
-                    ☰
-                </button>
+<button class="dark menu-button" id="menuButtonFlash">
+☰
+</button>
 
-                <div>
+<div>
 
-                    <div class="flash-library-title">
-                        🃏 플래시 카드
-                    </div>
+<div class="flash-library-title">
+🃏 플래시 카드
+</div>
 
-                    <div class="flash-library-sub">
-                        학습할 단어집을 선택하세요.
-                    </div>
+<div class="flash-library-sub">
+학습할 단어집을 선택하세요.
+</div>
 
-                </div>
+</div>
 
-            </div>
+</div>
 
-            <div class="version">
-                Version 8.2.1
-            </div>
+<div class="version">
+V8.3
+</div>
 
-        </div>
+</div>
 
-        <button class="deck-card" id="kictcDeck">
+<button class="deck-card" id="kictcDeck">
 
-            <div class="deck-icon">
-                📕
-            </div>
+<div class="deck-icon">📕</div>
 
-            <div class="deck-name">
-                K-ICTC 핵심 단어
-            </div>
+<div class="deck-name">
+K-ICTC 핵심 단어
+</div>
 
-            <div class="deck-description">
-                현재 학습 중인 군사영어 핵심 단어
-            </div>
+<div class="deck-description">
+K-ICTC 군사영어 핵심 단어
+</div>
 
-            <div class="deck-count" id="kictcCount">
-                20 words
-            </div>
+<div class="deck-count" id="kictcCount">
+20 words
+</div>
 
-        </button>
+</button>
 
-        <button class="deck-card" id="myDeck">
+<button class="deck-card" id="myDeck">
 
-            <div class="deck-icon">
-                📗
-            </div>
+<div class="deck-icon">📗</div>
 
-            <div class="deck-name">
-                나의 단어장
-            </div>
+<div class="deck-name">
+나의 단어장
+</div>
 
-            <div class="deck-description">
-                내가 직접 추가한 단어
-            </div>
+<div class="deck-description">
+내가 직접 추가한 단어
+</div>
 
-            <div class="deck-count" id="myDeckCount">
-                0 words
-            </div>
+<div class="deck-count" id="myDeckCount">
+0 words
+</div>
 
-        </button>
+</button>
 
-        <button class="green add-word-button" id="openAddWord">
-            ＋ 나의 단어장에 단어 추가
-        </button>
+<button class="green add-word-button" id="openAddWord">
+＋ 나의 단어장에 단어 추가
+</button>
 
-    </div>
+</div>
 
-    <div id="flashStudy" style="display:none;">
 
-        <div class="header">
+<div id="flashStudy" style="display:none;">
 
-            <div class="header-left">
+<div class="header">
 
-                <button class="dark menu-button" id="flashBackToDeck">
-                    ←
-                </button>
+<div class="header-left">
 
-                <div>
+<button class="dark menu-button" id="flashBackToDeck">
+←
+</button>
 
-                    <div class="flash-title" id="selectedDeckName">
-                        Flash Cards
-                    </div>
+<div>
 
-                    <div class="flash-sub" id="selectedDeckSub"></div>
+<div class="flash-title" id="selectedDeckName">
+Flash Cards
+</div>
 
-                </div>
+<div class="flash-sub" id="selectedDeckSub"></div>
 
-            </div>
+</div>
 
-            <div class="version">
-                V8.2.1
-            </div>
+</div>
 
-        </div>
+<div class="version">
+V8.3
+</div>
 
-        <div class="flash-progress" id="flashProgress">
-            1 / 20 · 1P
-        </div>
+</div>
 
-        <div class="flash-card" id="flashCard">
+<div class="flash-progress" id="flashProgress">
+1 / 20 · 1P
+</div>
 
-            <div class="flash-page" id="flashPageLabel">
-                PAGE 1 · WORD
-            </div>
+<div class="flash-card" id="flashCard">
 
-            <div id="flashContent"></div>
+<div class="flash-page" id="flashPageLabel">
+PAGE 1 · WORD
+</div>
 
-            <div class="flash-hint">
-                TAP · SWIPE
-            </div>
+<div id="flashContent"></div>
 
-        </div>
+<div class="flash-hint">
+TAP · SWIPE
+</div>
 
-        <button class="green flash-audio" id="flashAudio">
-            🔊 다시 듣기
-        </button>
+</div>
 
-        <div class="flash-controls">
+<button class="green flash-audio" id="flashAudio">
+🔊 다시 듣기
+</button>
 
-            <button class="dark" id="flashPrev">
-                ← 이전 단어
-            </button>
+<div class="flash-controls">
 
-            <button class="dark" id="flashNext">
-                다음 단어 →
-            </button>
+<button class="dark" id="flashPrev">
+← 이전 단어
+</button>
 
-        </div>
+<button class="dark" id="flashNext">
+다음 단어 →
+</button>
 
-        <div class="flash-setting">
+</div>
 
-            <div class="flash-setting-row">
+<div class="flash-setting">
 
-                <span>
-                    🔊 자동 재생
-                </span>
+<div class="speedline">
 
-                <input type="checkbox" id="autoPlay" checked>
+<span>재생 속도</span>
 
-            </div>
+<b id="flashSpeedValue">
+0.85×
+</b>
 
-            <div class="speedline">
+</div>
 
-                <span>
-                    재생 속도
-                </span>
+<input
+type="range"
+id="flashSpeed"
+min="0.5"
+max="1.5"
+step="0.05"
+value="0.85">
 
-                <b id="flashSpeedValue">
-                    0.85×
-                </b>
+<button class="dark" id="restartFlash" style="width:100%;margin-top:15px;">
+↻ 처음부터 다시
+</button>
 
-            </div>
+</div>
 
-            <input
-                type="range"
-                id="flashSpeed"
-                min="0.5"
-                max="1.5"
-                step="0.05"
-                value="0.85">
+</div>
 
-            <button
-                class="dark"
-                id="restartFlash"
-                style="width:100%;margin-top:15px;">
+</section>
 
-                ↻ 처음부터 다시
 
-            </button>
+<!-- =====================================================
+PODCAST
+===================================================== -->
 
-        </div>
+<section class="page" id="podcastPage">
 
-    </div>
+<div class="header">
+
+<div class="header-left">
+
+<button class="dark menu-button" id="menuButtonPodcast">
+☰
+</button>
+
+<div>
+
+<h1>🎧 Podcast</h1>
+
+<div class="sub">
+긴 글을 들으며 영어 공부하기
+</div>
+
+</div>
+
+</div>
+
+<div class="version">
+Version 8.3
+</div>
+
+</div>
+
+
+<div class="input-tools">
+
+<button class="dark" id="podcastClear">
+🗑️ 전체 삭제
+</button>
+
+<button class="dark" id="podcastPaste">
+📋 붙여넣기
+</button>
+
+</div>
+
+
+<textarea
+id="podcastText"
+placeholder="팟캐스트로 듣고 싶은 긴 글을 입력하세요.
+
+예:
+Today, we're going to review the K-ICTC training process from Day 1 to Day 10."
+></textarea>
+
+
+<div class="char-count" id="podcastCharCount">
+0 characters
+</div>
+
+
+<div class="control">
+
+<div class="speedline">
+
+<span>
+재생 속도
+</span>
+
+<b id="podcastSpeedValue">
+0.85×
+</b>
+
+</div>
+
+<input
+id="podcastSpeed"
+type="range"
+min="0.5"
+max="1.5"
+step="0.05"
+value="0.85">
+
+</div>
+
+
+<div class="row">
+
+<button class="green" id="podcastPlay">
+▶︎ 재생
+</button>
+
+<button class="dark" id="podcastPause">
+Ⅱ 일시정지
+</button>
+
+<button class="dark" id="podcastStop">
+■ 정지
+</button>
+
+</div>
+
+
+<div class="status" id="podcastStatus">
+준비됨
+</div>
+
+
+<div class="reader" id="podcastCurrentSentence">
+
+팟캐스트를 시작하면
+현재 읽고 있는 문장이 표시됩니다.
+
+</div>
+
+
+<div class="note">
+
+🎧 긴 글은 문장 단위로 자동 분리하여 순서대로 재생합니다.
+
+<br><br>
+
+출퇴근 중 K-ICTC 영어 복습이나
+내가 작성한 내용을 듣는 용도로 사용할 수 있습니다.
+
+</div>
 
 </section>
 
 </main>
 
-<!-- ADD SENTENCE -->
+
+<!-- =====================================================
+ADD SENTENCE MODAL
+===================================================== -->
 
 <div class="modal modal-center" id="addModal">
 
-    <div class="modal-card">
+<div class="modal-card">
 
-        <div class="modal-top">
+<div class="modal-top">
 
-            <div>
-                <div class="add-title">
-                    ＋ 새 문장 추가
-                </div>
-            </div>
+<h2>＋ 새 문장 추가</h2>
 
-            <button class="dark close" id="closeAddModal">
-                ×
-            </button>
-
-        </div>
-
-        <textarea
-            class="form-input form-textarea"
-            id="addText"
-            maxlength="500"
-            placeholder="영어 문장을 입력하세요..."></textarea>
-
-        <div class="form-message" id="addMessage"></div>
-
-        <div class="form-actions">
-
-            <button class="dark" id="cancelAdd">
-                취소
-            </button>
-
-            <button class="green" id="confirmAdd">
-                ✓ 저장
-            </button>
-
-        </div>
-
-    </div>
+<button class="dark close" id="closeAddModal">
+×
+</button>
 
 </div>
 
-<!-- ADD WORD -->
+<textarea
+class="form-input form-textarea"
+id="addText"
+placeholder="영어 문장을 입력하세요."
+></textarea>
+
+<div class="form-message" id="addMessage"></div>
+
+<div class="form-actions">
+
+<button class="dark" id="cancelAdd">
+취소
+</button>
+
+<button class="green" id="confirmAdd">
+✓ 저장
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- =====================================================
+ADD WORD MODAL
+===================================================== -->
 
 <div class="modal modal-center" id="wordAddModal">
 
-    <div class="modal-card">
+<div class="modal-card">
 
-        <div class="modal-top">
+<div class="modal-top">
 
-            <div>
-                <div class="add-title">
-                    ＋ 단어 추가
-                </div>
-            </div>
+<h2>＋ 단어 추가</h2>
 
-            <button class="dark close" id="closeWordAdd">
-                ×
-            </button>
-
-        </div>
-
-        <label class="form-label">
-            Word *
-        </label>
-
-        <input
-            class="form-input"
-            id="newWord"
-            placeholder="예: suppress">
-
-        <label class="form-label">
-            Pronunciation
-        </label>
-
-        <input
-            class="form-input"
-            id="newIPA"
-            placeholder="/səˈpres/">
-
-        <label class="form-label">
-            Meaning *
-        </label>
-
-        <input
-            class="form-input"
-            id="newMeaning"
-            placeholder="예: 제압하다">
-
-        <label class="form-label">
-            Example *
-        </label>
-
-        <textarea
-            class="form-input form-textarea"
-            id="newExample"
-            placeholder="예: The supporting element will suppress the enemy."></textarea>
-
-        <label class="form-label">
-            Example Korean
-        </label>
-
-        <textarea
-            class="form-input form-textarea"
-            id="newExampleKo"
-            placeholder="예: 조공부대가 적을 제압할 것입니다."></textarea>
-
-        <div class="form-message" id="wordAddMessage"></div>
-
-        <div class="form-actions">
-
-            <button class="dark" id="cancelWordAdd">
-                취소
-            </button>
-
-            <button class="green" id="saveWord">
-                ✓ 단어 저장
-            </button>
-
-        </div>
-
-    </div>
+<button class="dark close" id="closeWordAdd">
+×
+</button>
 
 </div>
 
-<!-- WORD INFO -->
+<label class="form-label">
+Word
+</label>
+
+<input
+class="form-input"
+id="newWord"
+placeholder="예: suppress">
+
+<label class="form-label">
+Pronunciation
+</label>
+
+<input
+class="form-input"
+id="newIPA"
+placeholder="/səˈpres/">
+
+<label class="form-label">
+Meaning
+</label>
+
+<input
+class="form-input"
+id="newMeaning"
+placeholder="예: 제압하다">
+
+<label class="form-label">
+Example
+</label>
+
+<textarea
+class="form-input form-textarea"
+id="newExample"
+placeholder="The supporting element will suppress the enemy."
+></textarea>
+
+<label class="form-label">
+Example Korean
+</label>
+
+<textarea
+class="form-input form-textarea"
+id="newExampleKo"
+placeholder="조공부대가 적을 제압할 것입니다."
+></textarea>
+
+<div class="form-message" id="wordAddMessage"></div>
+
+<div class="form-actions">
+
+<button class="dark" id="cancelWordAdd">
+취소
+</button>
+
+<button class="green" id="saveWord">
+✓ 저장
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- =====================================================
+WORD INFO MODAL
+===================================================== -->
 
 <div class="modal" id="wordModal">
 
-    <div class="modal-card" id="modalCard">
+<div class="modal-card" id="modalCard">
 
-        <div class="modal-top">
+<div class="modal-top">
 
-            <div>
+<div>
 
-                <div class="modal-word" id="modalWord"></div>
+<div class="modal-word" id="modalWord"></div>
 
-                <div class="pronunciation">
+<div class="pronunciation">
 
-                    <span class="ipa" id="modalIPA"></span>
+<span class="ipa" id="modalIPA"></span>
 
-                    <button class="green" id="modalPlay">
-                        🔊 듣기
-                    </button>
-
-                </div>
-
-                <span class="part" id="modalPart"></span>
-
-            </div>
-
-            <button class="dark close" id="closeModal">
-                ×
-            </button>
-
-        </div>
-
-        <div class="meaning" id="modalMeaning"></div>
-
-        <div class="example-title">
-            K-ICTC Example
-        </div>
-
-        <div class="example">
-
-            <div id="modalExample"></div>
-
-            <div class="example-ko" id="modalExampleKo"></div>
-
-        </div>
-
-    </div>
+<button class="green" id="modalPlay">
+🔊 듣기
+</button>
 
 </div>
+
+<span class="part" id="modalPart">
+word
+</span>
+
+</div>
+
+<button class="dark close" id="closeModal">
+×
+</button>
+
+</div>
+
+<div class="meaning" id="modalMeaning"></div>
+
+<div class="example-title">
+K-ICTC Example
+</div>
+
+<div class="example">
+
+<div id="modalExample"></div>
+
+<div class="example-ko" id="modalExampleKo"></div>
+
+</div>
+
+</div>
+
+</div>
+
 
 <script>
 
 /* =====================================================
-   HELPER
+HELPER
 ===================================================== */
 
-const $ = id =>
-    document.getElementById(id);
+const $ = id => document.getElementById(id);
+
+function escapeHTML(str){
+
+    return String(str).replace(
+        /[&<>"']/g,
+        c => ({
+            "&":"&amp;",
+            "<":"&lt;",
+            ">":"&gt;",
+            '"':"&quot;",
+            "'":"&#39;"
+        }[c])
+    );
+
+}
 
 
 /* =====================================================
-   WORD DATABASE
+WORD DATABASE
 ===================================================== */
 
 const kictcWords = [
 
-    {
-        key:"platoon",
-        ipa:"/pləˈtuːn/",
-        part:"noun",
-        meaning:"소대",
-        example:"The platoon will move toward the objective.",
-        exampleKo:"소대는 목표를 향해 이동할 것입니다."
-    },
+{
+key:"platoon",
+ipa:"/pləˈtuːn/",
+part:"noun",
+meaning:"소대",
+example:"The platoon will move toward the objective.",
+exampleKo:"소대는 목표를 향해 이동할 것입니다."
+},
 
-    {
-        key:"attack",
-        ipa:"/əˈtæk/",
-        part:"noun / verb",
-        meaning:"공격; 공격하다",
-        example:"The attack will begin after the fire support is complete.",
-        exampleKo:"화력지원이 완료된 후 공격이 시작될 것입니다."
-    },
+{
+key:"attack",
+ipa:"/əˈtæk/",
+part:"noun / verb",
+meaning:"공격; 공격하다",
+example:"The attack will begin after the fire support is complete.",
+exampleKo:"화력지원이 완료된 후 공격이 시작될 것입니다."
+},
 
-    {
-        key:"position",
-        ipa:"/pəˈzɪʃən/",
-        part:"noun",
-        meaning:"위치; 진지",
-        example:"The platoon will move to the attack position.",
-        exampleKo:"소대는 공격대기지점으로 이동할 것입니다."
-    },
+{
+key:"position",
+ipa:"/pəˈzɪʃən/",
+part:"noun",
+meaning:"위치; 진지",
+example:"The platoon will move to the attack position.",
+exampleKo:"소대는 공격대기지점으로 이동할 것입니다."
+},
 
-    {
-        key:"objective",
-        ipa:"/əbˈdʒektɪv/",
-        part:"noun",
-        meaning:"목표",
-        example:"Our primary objective is Hill 245.",
-        exampleKo:"우리의 주요 목표는 245고지입니다."
-    },
+{
+key:"objective",
+ipa:"/əbˈdʒektɪv/",
+part:"noun",
+meaning:"목표",
+example:"Our primary objective is Hill 245.",
+exampleKo:"우리의 주요 목표는 245고지입니다."
+},
 
-    {
-        key:"secure",
-        ipa:"/sɪˈkjʊr/",
-        part:"verb",
-        meaning:"확보하다",
-        example:"The platoon will secure the objective.",
-        exampleKo:"소대는 목표를 확보할 것입니다."
-    },
+{
+key:"secure",
+ipa:"/sɪˈkjʊr/",
+part:"verb",
+meaning:"확보하다",
+example:"The platoon will secure the objective.",
+exampleKo:"소대는 목표를 확보할 것입니다."
+},
 
-    {
-        key:"seize",
-        ipa:"/siːz/",
-        part:"verb",
-        meaning:"점령하다; 탈취하다",
-        example:"Our mission is to seize the key terrain.",
-        exampleKo:"우리의 임무는 주요 지형을 점령하는 것입니다."
-    },
+{
+key:"seize",
+ipa:"/siːz/",
+part:"verb",
+meaning:"점령하다; 탈취하다",
+example:"Our mission is to seize the key terrain.",
+exampleKo:"우리의 임무는 주요 지형을 점령하는 것입니다."
+},
 
-    {
-        key:"terrain",
-        ipa:"/təˈreɪn/",
-        part:"noun",
-        meaning:"지형",
-        example:"The terrain is difficult to move through.",
-        exampleKo:"해당 지형은 통과하기 어렵습니다."
-    },
+{
+key:"terrain",
+ipa:"/təˈreɪn/",
+part:"noun",
+meaning:"지형",
+example:"The terrain is difficult to move through.",
+exampleKo:"해당 지형은 통과하기 어렵습니다."
+},
 
-    {
-        key:"suppress",
-        ipa:"/səˈpres/",
-        part:"verb",
-        meaning:"제압하다",
-        example:"The supporting element will suppress the enemy.",
-        exampleKo:"조공부대가 적을 제압할 것입니다."
-    },
+{
+key:"suppress",
+ipa:"/səˈpres/",
+part:"verb",
+meaning:"제압하다",
+example:"The supporting element will suppress the enemy.",
+exampleKo:"조공부대가 적을 제압할 것입니다."
+},
 
-    {
-        key:"clear",
-        ipa:"/klɪr/",
-        part:"verb",
-        meaning:"소탕하다; 제거하다",
-        example:"We're going to clear the area before moving on.",
-        exampleKo:"우리는 다음 단계로 넘어가기 전에 해당 지역을 소탕할 것입니다."
-    },
+{
+key:"clear",
+ipa:"/klɪr/",
+part:"verb",
+meaning:"소탕하다; 제거하다",
+example:"We're going to clear the area before moving on.",
+exampleKo:"우리는 다음 단계로 넘어가기 전에 해당 지역을 소탕할 것입니다."
+},
 
-    {
-        key:"breach",
-        ipa:"/briːtʃ/",
-        part:"verb / noun",
-        meaning:"돌파하다; 돌파",
-        example:"The engineers will conduct the breach.",
-        exampleKo:"공병이 돌파를 실시할 것입니다."
-    },
+{
+key:"breach",
+ipa:"/briːtʃ/",
+part:"verb / noun",
+meaning:"돌파하다; 돌파",
+example:"The engineers will conduct the breach.",
+exampleKo:"공병이 돌파를 실시할 것입니다."
+},
 
-    {
-        key:"reserve",
-        ipa:"/rɪˈzɜːrv/",
-        part:"noun",
-        meaning:"예비대",
-        example:"The reserve will remain ready to reinforce the main effort.",
-        exampleKo:"예비대는 주공을 증원할 준비를 유지할 것입니다."
-    },
+{
+key:"reserve",
+ipa:"/rɪˈzɜːrv/",
+part:"noun",
+meaning:"예비대",
+example:"The reserve will remain ready to reinforce the main effort.",
+exampleKo:"예비대는 주공을 증원할 준비를 유지할 것입니다."
+},
 
-    {
-        key:"recon",
-        ipa:"/ˈrekɑːn/",
-        part:"noun",
-        meaning:"정찰",
-        example:"We're going to conduct recon before moving forward.",
-        exampleKo:"우리는 전진하기 전에 정찰을 실시할 것입니다."
-    },
+{
+key:"recon",
+ipa:"/ˈrekɑːn/",
+part:"noun",
+meaning:"정찰",
+example:"We're going to conduct recon before moving forward.",
+exampleKo:"우리는 전진하기 전에 정찰을 실시할 것입니다."
+},
 
-    {
-        key:"front",
-        ipa:"/frʌnt/",
-        part:"noun",
-        meaning:"정면; 전방",
-        example:"We expect enemy contact to our front.",
-        exampleKo:"우리는 정면에서 적과 접촉할 것으로 예상합니다."
-    },
+{
+key:"front",
+ipa:"/frʌnt/",
+part:"noun",
+meaning:"정면; 전방",
+example:"We expect enemy contact to our front.",
+exampleKo:"우리는 정면에서 적과 접촉할 것으로 예상합니다."
+},
 
-    {
-        key:"depth",
-        ipa:"/depθ/",
-        part:"noun",
-        meaning:"종심",
-        example:"Enemy reserves are positioned in depth.",
-        exampleKo:"적 예비대는 종심에 배치되어 있습니다."
-    },
+{
+key:"depth",
+ipa:"/depθ/",
+part:"noun",
+meaning:"종심",
+example:"Enemy reserves are positioned in depth.",
+exampleKo:"적 예비대는 종심에 배치되어 있습니다."
+},
 
-    {
-        key:"maneuver",
-        ipa:"/məˈnuːvər/",
-        part:"verb / noun",
-        meaning:"기동하다; 기동",
-        example:"The main effort will maneuver to the enemy's flank.",
-        exampleKo:"주공은 적의 측방으로 기동할 것입니다."
-    },
+{
+key:"maneuver",
+ipa:"/məˈnuːvər/",
+part:"verb / noun",
+meaning:"기동하다; 기동",
+example:"The main effort will maneuver to the enemy's flank.",
+exampleKo:"주공은 적의 측방으로 기동할 것입니다."
+},
 
-    {
-        key:"bypass",
-        ipa:"/ˈbaɪpæs/",
-        part:"verb",
-        meaning:"우회하다",
-        example:"We may bypass the enemy position if possible.",
-        exampleKo:"가능하다면 적 진지를 우회할 수 있습니다."
-    },
+{
+key:"bypass",
+ipa:"/ˈbaɪpæs/",
+part:"verb",
+meaning:"우회하다",
+example:"We may bypass the enemy position if possible.",
+exampleKo:"가능하다면 적 진지를 우회할 수 있습니다."
+},
 
-    {
-        key:"fix",
-        ipa:"/fɪks/",
-        part:"verb",
-        meaning:"고착시키다",
-        example:"The supporting element will fix the enemy.",
-        exampleKo:"조공부대가 적을 고착시킬 것입니다."
-    },
+{
+key:"fix",
+ipa:"/fɪks/",
+part:"verb",
+meaning:"고착시키다",
+example:"The supporting element will fix the enemy.",
+exampleKo:"조공부대가 적을 고착시킬 것입니다."
+},
 
-    {
-        key:"assault",
-        ipa:"/əˈsɔːlt/",
-        part:"noun / verb",
-        meaning:"돌격; 돌격하다",
-        example:"The assault will begin after the preparatory fires are complete.",
-        exampleKo:"준비사격이 완료된 후 돌격이 시작될 것입니다."
-    },
+{
+key:"assault",
+ipa:"/əˈsɔːlt/",
+part:"noun / verb",
+meaning:"돌격; 돌격하다",
+example:"The assault will begin after the preparatory fires are complete.",
+exampleKo:"준비사격이 완료된 후 돌격이 시작될 것입니다."
+},
 
-    {
-        key:"flank",
-        ipa:"/flæŋk/",
-        part:"noun",
-        meaning:"측방; 측면",
-        example:"The main effort will attack the enemy's flank.",
-        exampleKo:"주공은 적의 측방을 공격할 것입니다."
-    },
+{
+key:"flank",
+ipa:"/flæŋk/",
+part:"noun",
+meaning:"측방; 측면",
+example:"The main effort will attack the enemy's flank.",
+exampleKo:"주공은 적의 측방을 공격할 것입니다."
+},
 
-    {
-        key:"fire",
-        ipa:"/faɪr/",
-        part:"noun",
-        meaning:"화력; 사격",
-        example:"Fire support will be available during the assault.",
-        exampleKo:"돌격 중에 화력지원이 제공될 것입니다."
-    }
+{
+key:"fire",
+ipa:"/faɪr/",
+part:"noun",
+meaning:"화력; 사격",
+example:"Fire support will be available during the assault.",
+exampleKo:"돌격 중에 화력지원이 제공될 것입니다."
+}
 
 ];
 
 
 /* =====================================================
-   MY WORDS
+MY WORDS
 ===================================================== */
 
 function getMyWords(){
 
     try{
-
         return JSON.parse(
             localStorage.getItem("kictcMyWords")
         ) || [];
-
     }catch{
-
         return [];
-
     }
+
 }
 
 function saveMyWords(words){
@@ -1477,7 +1555,7 @@ function saveMyWords(words){
 
 
 /* =====================================================
-   MENU
+MENU
 ===================================================== */
 
 function openMenu(){
@@ -1494,26 +1572,37 @@ function closeMenu(){
 
 }
 
-$("menuButton").onclick = openMenu;
-$("menuButtonStorage").onclick = openMenu;
-$("menuButtonFlash").onclick = openMenu;
+$("menuButton").onclick=openMenu;
+$("menuButtonStorage").onclick=openMenu;
+$("menuButtonFlash").onclick=openMenu;
+$("menuButtonPodcast").onclick=openMenu;
 
-$("menuOverlay").onclick = closeMenu;
+$("menuOverlay").onclick=closeMenu;
 
 
 /* =====================================================
-   PAGE SWITCH
+PAGE
 ===================================================== */
 
 function showPage(page){
 
-    $("currentPage").classList.remove("active");
-    $("storagePage").classList.remove("active");
-    $("flashPage").classList.remove("active");
+    [
+        "currentPage",
+        "storagePage",
+        "flashPage",
+        "podcastPage"
+    ].forEach(
+        id => $(id).classList.remove("active")
+    );
 
-    $("menuCurrent").classList.remove("active");
-    $("menuStorage").classList.remove("active");
-    $("menuFlash").classList.remove("active");
+    [
+        "menuCurrent",
+        "menuStorage",
+        "menuFlash",
+        "menuPodcast"
+    ].forEach(
+        id => $(id).classList.remove("active")
+    );
 
     if(page==="current"){
 
@@ -1522,7 +1611,7 @@ function showPage(page){
 
     }
 
-    else if(page==="storage"){
+    if(page==="storage"){
 
         $("storagePage").classList.add("active");
         $("menuStorage").classList.add("active");
@@ -1531,7 +1620,7 @@ function showPage(page){
 
     }
 
-    else if(page==="flash"){
+    if(page==="flash"){
 
         $("flashPage").classList.add("active");
         $("menuFlash").classList.add("active");
@@ -1540,22 +1629,428 @@ function showPage(page){
 
     }
 
+    if(page==="podcast"){
+
+        $("podcastPage").classList.add("active");
+        $("menuPodcast").classList.add("active");
+
+    }
+
     closeMenu();
 
 }
 
-$("menuCurrent").onclick =
-    () => showPage("current");
-
-$("menuStorage").onclick =
-    () => showPage("storage");
-
-$("menuFlash").onclick =
-    () => showPage("flash");
+$("menuCurrent").onclick=()=>showPage("current");
+$("menuStorage").onclick=()=>showPage("storage");
+$("menuFlash").onclick=()=>showPage("flash");
+$("menuPodcast").onclick=()=>showPage("podcast");
 
 
 /* =====================================================
-   SENTENCE STORAGE
+VOICE
+===================================================== */
+
+function getEnglishVoice(){
+
+    const voices=speechSynthesis.getVoices();
+
+    return voices.find(
+        v=>v.lang.toLowerCase()==="en-us"
+    )
+    ||
+    voices.find(
+        v=>v.lang.toLowerCase().startsWith("en")
+    )
+    ||
+    null;
+
+}
+
+function speakText(text,rate=.85){
+
+    speechSynthesis.cancel();
+
+    const u=new SpeechSynthesisUtterance(text);
+
+    u.lang="en-US";
+    u.rate=rate;
+
+    const voice=getEnglishVoice();
+
+    if(voice) u.voice=voice;
+
+    speechSynthesis.speak(u);
+
+}
+
+
+/* =====================================================
+CURRENT READER
+===================================================== */
+
+let words=[];
+let currentUtterance=null;
+
+function buildReader(){
+
+    const text=$("text").value;
+
+    const regex=/\S+/g;
+
+    let match;
+    let last=0;
+
+    let output="";
+
+    words=[];
+
+    while((match=regex.exec(text))){
+
+        output+=escapeHTML(
+            text.slice(last,match.index)
+        );
+
+        const index=words.length;
+
+        words.push(match[0]);
+
+        output+=`
+        <span
+            class="word"
+            id="word-${index}"
+            onclick="speakWord(${index})">
+            ${escapeHTML(match[0])}
+        </span>`;
+
+        last=match.index+match[0].length;
+
+    }
+
+    output+=escapeHTML(
+        text.slice(last)
+    );
+
+    $("reader").innerHTML=output;
+
+}
+
+function resetHighlights(){
+
+    document.querySelectorAll(".word")
+    .forEach(
+        el=>{
+            el.classList.remove("current");
+            el.classList.remove("done");
+        }
+    );
+
+}
+
+function highlightWordAt(charIndex){
+
+    const text=$("text").value;
+
+    const before=text.slice(0,charIndex);
+
+    const matches=before.match(/\S+/g);
+
+    let index=matches?matches.length:0;
+
+    if(index>=words.length)
+        index=words.length-1;
+
+    if(index<0) return;
+
+    for(let i=0;i<index;i++){
+
+        const el=$(`word-${i}`);
+
+        if(el){
+
+            el.classList.add("done");
+            el.classList.remove("current");
+
+        }
+
+    }
+
+    const current=$(`word-${index}`);
+
+    if(current){
+
+        current.classList.remove("done");
+        current.classList.add("current");
+
+        current.scrollIntoView({
+            behavior:"smooth",
+            block:"center"
+        });
+
+    }
+
+}
+
+$("play").onclick=()=>{
+
+    const text=$("text").value.trim();
+
+    if(!text){
+
+        $("status").textContent=
+            "문장을 입력해주세요.";
+
+        return;
+
+    }
+
+    speechSynthesis.cancel();
+
+    resetHighlights();
+
+    currentUtterance=
+        new SpeechSynthesisUtterance(text);
+
+    currentUtterance.lang="en-US";
+
+    currentUtterance.rate=
+        Number($("speed").value);
+
+    const voice=getEnglishVoice();
+
+    if(voice)
+        currentUtterance.voice=voice;
+
+    currentUtterance.onstart=()=>{
+        $("status").textContent="🔊 읽는 중…";
+    };
+
+    currentUtterance.onboundary=e=>{
+
+        if(
+            !e.name ||
+            e.name==="word"
+        ){
+
+            highlightWordAt(
+                e.charIndex
+            );
+
+        }
+
+    };
+
+    currentUtterance.onend=()=>{
+
+        words.forEach(
+            (_,i)=>{
+
+                const el=$(`word-${i}`);
+
+                if(el){
+
+                    el.classList.remove("current");
+                    el.classList.add("done");
+
+                }
+
+            }
+        );
+
+        $("status").textContent="✓ 완료";
+
+    };
+
+    currentUtterance.onerror=e=>{
+
+        $("status").textContent=
+            "⚠️ TTS 오류: "+
+            (e.error||"unknown");
+
+    };
+
+    speechSynthesis.speak(
+        currentUtterance
+    );
+
+};
+
+$("pause").onclick=()=>{
+
+    if(
+        speechSynthesis.speaking &&
+        !speechSynthesis.paused
+    ){
+
+        speechSynthesis.pause();
+
+        $("status").textContent=
+            "Ⅱ 일시정지";
+
+    }
+    else if(speechSynthesis.paused){
+
+        speechSynthesis.resume();
+
+        $("status").textContent=
+            "🔊 읽는 중…";
+
+    }
+
+};
+
+$("stop").onclick=()=>{
+
+    speechSynthesis.cancel();
+
+    currentUtterance=null;
+
+    resetHighlights();
+
+    $("status").textContent="정지";
+
+};
+
+$("speed").oninput=()=>{
+
+    $("sv").textContent=
+        Number($("speed").value)
+        .toFixed(2)+"×";
+
+};
+
+$("text").oninput=()=>{
+
+    buildReader();
+
+    $("charCount").textContent=
+        `${$("text").value.length.toLocaleString()} characters`;
+
+};
+
+$("clearText").onclick=()=>{
+
+    $("text").value="";
+
+    buildReader();
+
+    $("charCount").textContent=
+        "0 characters";
+
+};
+
+$("pasteText").onclick=async()=>{
+
+    try{
+
+        const text=
+            await navigator.clipboard.readText();
+
+        $("text").value=
+            text
+            .replace(/<[^>]*>/g," ")
+            .trim();
+
+        buildReader();
+
+        $("charCount").textContent=
+            `${$("text").value.length.toLocaleString()} characters`;
+
+    }catch{
+
+        $("status").textContent=
+            "⚠️ 클립보드 접근이 차단되었습니다.";
+
+    }
+
+};
+
+
+/* =====================================================
+WORD INFO
+===================================================== */
+
+let selectedWord="";
+
+function findWordData(key){
+
+    return kictcWords.find(
+        x=>x.key.toLowerCase()===key
+    )
+    ||
+    getMyWords().find(
+        x=>x.key.toLowerCase()===key
+    )
+    ||
+    null;
+
+}
+
+function speakWord(index){
+
+    const word=words[index];
+
+    if(!word)return;
+
+    selectedWord=word;
+
+    const key=word
+        .toLowerCase()
+        .replace(/[.,!?;:"'()]/g,"");
+
+    const data=findWordData(key);
+
+    $("modalWord").textContent=word;
+
+    if(data){
+
+        $("modalIPA").textContent=data.ipa||"";
+        $("modalPart").textContent=data.part||"word";
+        $("modalMeaning").textContent=data.meaning;
+        $("modalExample").textContent=data.example;
+        $("modalExampleKo").textContent=data.exampleKo||"";
+
+    }else{
+
+        $("modalIPA").textContent="";
+        $("modalPart").textContent="word";
+        $("modalMeaning").textContent="단어 정보가 없습니다.";
+        $("modalExample").textContent=word;
+        $("modalExampleKo").textContent="";
+
+    }
+
+    $("wordModal").classList.add("show");
+
+    speakText(word,.72);
+
+}
+
+$("modalPlay").onclick=e=>{
+
+    e.stopPropagation();
+
+    speakText(
+        selectedWord,
+        .72
+    );
+
+};
+
+$("closeModal").onclick=()=>{
+    $("wordModal").classList.remove("show");
+};
+
+$("wordModal").onclick=()=>{
+    $("wordModal").classList.remove("show");
+};
+
+$("modalCard").onclick=e=>{
+    e.stopPropagation();
+};
+
+
+/* =====================================================
+SENTENCE STORAGE
 ===================================================== */
 
 function getSavedSentences(){
@@ -1564,7 +2059,7 @@ function getSavedSentences(){
 
         return JSON.parse(
             localStorage.getItem("kictcSentences")
-        ) || [];
+        )||[];
 
     }catch{
 
@@ -1585,113 +2080,120 @@ function saveSentences(data){
 
 function renderStorage(){
 
-    const list = $("sentenceList");
+    const list=$("sentenceList");
 
-    const saved = getSavedSentences();
+    const saved=getSavedSentences();
 
     if(!saved.length){
 
-        list.innerHTML = `
-            <div class="empty">
-                📚 아직 저장된 문장이 없습니다.
-            </div>
-        `;
+        list.innerHTML=`
+        <div class="empty">
+            📚 아직 저장된 문장이 없습니다.
+        </div>`;
 
         return;
 
     }
 
-    list.innerHTML = "";
+    list.innerHTML="";
 
-    saved.forEach((item,index)=>{
+    saved.forEach(
+        (item,index)=>{
 
-        const card =
-            document.createElement("div");
+            const card=
+                document.createElement("div");
 
-        card.className =
-            "sentence-card";
+            card.className="sentence-card";
 
-        const sentence =
-            document.createElement("div");
+            card.innerHTML=`
+            <div class="sentence-text">
+                ${escapeHTML(item.text)}
+            </div>
 
-        sentence.className =
-            "sentence-text";
+            <div class="sentence-date">
+                ${escapeHTML(item.created||"")}
+            </div>
 
-        sentence.textContent =
-            item.text;
+            <div class="sentence-buttons">
 
-        const date =
-            document.createElement("div");
+                <button class="green">
+                    ▶︎ 불러오기
+                </button>
 
-        date.className =
-            "sentence-date";
+                <button class="dark">
+                    🗑️ 삭제
+                </button>
 
-        date.textContent =
-            item.created || "";
+            </div>`;
 
-        const buttons =
-            document.createElement("div");
+            card.children[2]
+                .children[0]
+                .onclick=()=>{
 
-        buttons.className =
-            "sentence-buttons";
+                    $("text").value=item.text;
 
-        const load =
-            document.createElement("button");
+                    buildReader();
 
-        load.className =
-            "green";
+                    $("charCount").textContent=
+                        `${item.text.length.toLocaleString()} characters`;
 
-        load.textContent =
-            "▶︎ 불러오기";
+                    showPage("current");
 
-        load.onclick =
-            () => loadSentence(item.text);
+                };
 
-        const del =
-            document.createElement("button");
+            card.children[2]
+                .children[1]
+                .onclick=()=>{
 
-        del.className =
-            "dark";
+                    const data=
+                        getSavedSentences();
 
-        del.textContent =
-            "🗑️ 삭제";
+                    data.splice(index,1);
 
-        del.onclick =
-            () => {
+                    saveSentences(data);
 
-                const data =
-                    getSavedSentences();
+                    renderStorage();
 
-                data.splice(index,1);
+                };
 
-                saveSentences(data);
+            list.appendChild(card);
 
-                renderStorage();
-
-            };
-
-        buttons.appendChild(load);
-        buttons.appendChild(del);
-
-        card.appendChild(sentence);
-        card.appendChild(date);
-        card.appendChild(buttons);
-
-        list.appendChild(card);
-
-    });
+        }
+    );
 
 }
 
+$("saveSentence").onclick=()=>{
+
+    const text=$("text").value.trim();
+
+    if(!text)return;
+
+    const saved=getSavedSentences();
+
+    saved.unshift({
+        id:Date.now(),
+        text:text,
+        created:new Date().toLocaleString()
+    });
+
+    saveSentences(saved);
+
+    $("status").textContent=
+        "✓ 저장되었습니다.";
+
+};
+
 
 /* =====================================================
-   ADD SENTENCE
+ADD SENTENCE
 ===================================================== */
 
-$("newSentence").onclick = () => {
+$("newSentence").onclick=()=>{
 
-    $("addText").value = "";
-    $("addMessage").textContent = "";
+    $("addText").value="";
+
+    $("addMessage").textContent="";
 
     $("addModal").classList.add("show");
 
@@ -1703,41 +2205,28 @@ function closeAddModal(){
 
 }
 
-$("closeAddModal").onclick = closeAddModal;
-$("cancelAdd").onclick = closeAddModal;
+$("closeAddModal").onclick=closeAddModal;
+$("cancelAdd").onclick=closeAddModal;
 
-$("confirmAdd").onclick = () => {
+$("confirmAdd").onclick=()=>{
 
-    const text =
-        $("addText").value.trim();
+    const text=$("addText").value.trim();
 
     if(!text){
 
-        $("addMessage").textContent =
+        $("addMessage").textContent=
             "문장을 입력해주세요.";
 
         return;
 
     }
 
-    if(text.length>500){
-
-        $("addMessage").textContent =
-            "500자를 초과했습니다.";
-
-        return;
-
-    }
-
-    const saved =
-        getSavedSentences();
+    const saved=getSavedSentences();
 
     saved.unshift({
-
         id:Date.now(),
         text:text,
         created:new Date().toLocaleString()
-
     });
 
     saveSentences(saved);
@@ -1749,851 +2238,212 @@ $("confirmAdd").onclick = () => {
 };
 
 
-function loadSentence(text){
-
-    $("text").value = text;
-
-    buildReader();
-
-    updateCharacterCount();
-
-    showPage("current");
-
-}
-
-
 /* =====================================================
-   MAIN TEXT
+FLASH CARDS
 ===================================================== */
 
-$("text").oninput = () => {
-
-    if($("text").value.length>500){
-
-        $("text").value =
-            $("text").value.slice(0,500);
-
-    }
-
-    buildReader();
-    updateCharacterCount();
-
-};
-
-
-$("clearText").onclick = () => {
-
-    $("text").value = "";
-
-    buildReader();
-    updateCharacterCount();
-
-};
-
-
-$("pasteText").onclick = async () => {
-
-    try{
-
-        const text =
-            await navigator.clipboard.readText();
-
-        if(text.length>500){
-
-            $("status").textContent =
-                "⚠️ 500자를 초과했습니다.";
-
-            return;
-
-        }
-
-        $("text").value =
-            text
-                .replace(/<[^>]*>/g," ")
-                .replace(/\s+/g," ")
-                .trim();
-
-        buildReader();
-        updateCharacterCount();
-
-    }catch{
-
-        $("status").textContent =
-            "⚠️ 클립보드 접근이 차단되었습니다.";
-
-    }
-
-};
-
-
-function updateCharacterCount(){
-
-    $("charCount").textContent =
-        `${$("text").value.length} / 500`;
-
-}
-
-
-$("saveSentence").onclick = () => {
-
-    const text =
-        $("text").value.trim();
-
-    if(!text) return;
-
-    const saved =
-        getSavedSentences();
-
-    saved.unshift({
-
-        id:Date.now(),
-        text:text,
-        created:new Date().toLocaleString()
-
-    });
-
-    saveSentences(saved);
-
-    $("status").textContent =
-        "✓ 저장되었습니다.";
-
-};
-
-
-/* =====================================================
-   READER
-===================================================== */
-
-let words = [];
-
-
-function escapeHTML(str){
-
-    return str.replace(
-        /[&<>"']/g,
-        c => ({
-
-            "&":"&amp;",
-            "<":"&lt;",
-            ">":"&gt;",
-            '"':"&quot;",
-            "'":"&#39;"
-
-        }[c])
-    );
-
-}
-
-
-function buildReader(){
-
-    const text =
-        $("text").value;
-
-    const regex = /\S+/g;
-
-    let match;
-
-    let last = 0;
-
-    let output = "";
-
-    words = [];
-
-    while((match=regex.exec(text))){
-
-        output +=
-            escapeHTML(
-                text.slice(last,match.index)
-            );
-
-        const index =
-            words.length;
-
-        words.push(match[0]);
-
-        output += `
-            <span
-                class="word"
-                id="word-${index}"
-                onclick="speakWord(${index})">
-
-                ${escapeHTML(match[0])}
-
-            </span>
-        `;
-
-        last =
-            match.index +
-            match[0].length;
-
-    }
-
-    output +=
-        escapeHTML(
-            text.slice(last)
-        );
-
-    $("reader").innerHTML =
-        output;
-
-}
-
-
-/* =====================================================
-   TTS VOICE
-===================================================== */
-
-function getEnglishVoice(){
-
-    const voices =
-        speechSynthesis.getVoices();
-
-    return (
-
-        voices.find(
-            voice =>
-                voice.lang.toLowerCase()==="en-us"
-        )
-
-        ||
-
-        voices.find(
-            voice =>
-                voice.lang.toLowerCase().startsWith("en")
-        )
-
-        ||
-
-        null
-
-    );
-
-}
-
-
-/* =====================================================
-   GENERAL TTS
-===================================================== */
-
-function speakText(text,rate=0.85){
-
-    if(!text) return;
-
-    speechSynthesis.cancel();
-
-    const utterance =
-        new SpeechSynthesisUtterance(text);
-
-    utterance.lang = "en-US";
-
-    utterance.rate = rate;
-
-    const voice =
-        getEnglishVoice();
-
-    if(voice){
-        utterance.voice = voice;
-    }
-
-    speechSynthesis.speak(utterance);
-
-}
-
-
-/* =====================================================
-   WORD INFORMATION
-===================================================== */
-
-let selectedWord = "";
-
-
-function speakWord(index){
-
-    const word =
-        words[index];
-
-    if(!word) return;
-
-    selectedWord = word;
-
-    openWordInfo(word);
-
-    speakText(word,0.72);
-
-}
-
-
-function openWordInfo(word){
-
-    const key =
-        word
-            .toLowerCase()
-            .replace(/[.,!?;:"'()]/g,"");
-
-    const data =
-        findWordData(key);
-
-    $("modalWord").textContent =
-        word;
-
-    if(data){
-
-        $("modalIPA").textContent =
-            data.ipa || "";
-
-        $("modalPart").textContent =
-            data.part || "word";
-
-        $("modalMeaning").textContent =
-            data.meaning;
-
-        $("modalExample").textContent =
-            data.example;
-
-        $("modalExampleKo").textContent =
-            data.exampleKo || "";
-
-    }else{
-
-        $("modalIPA").textContent =
-            "";
-
-        $("modalPart").textContent =
-            "word";
-
-        $("modalMeaning").textContent =
-            "단어 정보가 없습니다.";
-
-        $("modalExample").textContent =
-            word;
-
-        $("modalExampleKo").textContent =
-            "";
-
-    }
-
-    $("wordModal").classList.add("show");
-
-}
-
-
-function findWordData(key){
-
-    const kictc =
-        kictcWords.find(
-            item =>
-                item.key.toLowerCase()===key
-        );
-
-    if(kictc){
-        return kictc;
-    }
-
-    const mine =
-        getMyWords().find(
-            item =>
-                item.key.toLowerCase()===key
-        );
-
-    return mine || null;
-
-}
-
-
-$("modalPlay").onclick = event => {
-
-    event.stopPropagation();
-
-    speakText(
-        selectedWord,
-        0.72
-    );
-
-};
-
-
-$("closeModal").onclick = () => {
-
-    $("wordModal").classList.remove("show");
-
-};
-
-
-$("wordModal").onclick = () => {
-
-    $("wordModal").classList.remove("show");
-
-};
-
-
-$("modalCard").onclick =
-    event =>
-        event.stopPropagation();
-
-
-/* =====================================================
-   ★ V8.2.1 HIGHLIGHT SYSTEM
-===================================================== */
-
-let currentUtterance = null;
-
-
-/*
-    모든 하이라이트 초기화
-*/
-
-function resetHighlights(){
-
-    document
-        .querySelectorAll(".word")
-        .forEach(element=>{
-
-            element.classList.remove("current");
-            element.classList.remove("done");
-
-        });
-
-}
-
-
-/*
-    TTS의 실제 charIndex를 이용해서
-    현재 단어를 찾는다.
-*/
-
-function highlightWordAt(charIndex){
-
-    const originalText =
-        $("text").value;
-
-    /*
-        charIndex 이전의 문자열에서
-        몇 번째 단어까지 나왔는지 계산
-    */
-
-    const before =
-        originalText.slice(0,charIndex);
-
-    const matches =
-        before.match(/\S+/g);
-
-    let currentIndex =
-        matches
-            ? matches.length
-            : 0;
-
-    /*
-        TTS boundary가
-        단어 시작 위치를 가리키기 때문에
-        한 칸 보정
-    */
-
-    if(
-        currentIndex >= words.length
-    ){
-
-        currentIndex =
-            words.length - 1;
-
-    }
-
-    if(currentIndex < 0){
-        return;
-    }
-
-
-    /*
-        이전 단어
-    */
-
-    for(
-        let i=0;
-        i<currentIndex;
-        i++
-    ){
-
-        const element =
-            $(`word-${i}`);
-
-        if(element){
-
-            element.classList.add("done");
-            element.classList.remove("current");
-
-        }
-
-    }
-
-
-    /*
-        현재 단어
-    */
-
-    const currentElement =
-        $(`word-${currentIndex}`);
-
-
-    if(currentElement){
-
-        currentElement.classList.remove("done");
-        currentElement.classList.add("current");
-
-
-        /*
-            현재 단어를 화면 중앙으로 이동
-        */
-
-        currentElement.scrollIntoView({
-
-            behavior:"smooth",
-            block:"center",
-            inline:"nearest"
-
-        });
-
-    }
-
-}
-
-
-/*
-    TTS 재생
-*/
-
-$("play").onclick = () => {
-
-    const text =
-        $("text")
-            .value
-            .trim();
-
-    if(!text){
-
-        $("status").textContent =
-            "문장을 입력해주세요.";
-
-        return;
-
-    }
-
-
-    const synth =
-        window.speechSynthesis;
-
-
-    /*
-        기존 TTS 종료
-    */
-
-    synth.cancel();
-
-
-    /*
-        기존 하이라이트 제거
-    */
-
-    resetHighlights();
-
-
-    /*
-        Utterance 생성
-    */
-
-    currentUtterance =
-        new SpeechSynthesisUtterance(text);
-
-
-    currentUtterance.lang =
-        "en-US";
-
-
-    currentUtterance.rate =
-        Number(
-            $("speed").value
-        );
-
-
-    const voice =
-        getEnglishVoice();
-
-
-    if(voice){
-
-        currentUtterance.voice =
-            voice;
-
-    }
-
-
-    /*
-        TTS 시작
-    */
-
-    currentUtterance.onstart =
-        () => {
-
-            $("status").textContent =
-                "🔊 읽는 중…";
-
-        };
-
-
-    /*
-        실제 음성 엔진이
-        단어를 읽을 때 발생
-    */
-
-    currentUtterance.onboundary =
-        event => {
-
-            if(
-                event.name &&
-                event.name !== "word"
-            ){
-
-                return;
-
-            }
-
-            highlightWordAt(
-                event.charIndex
-            );
-
-        };
-
-
-    /*
-        완료
-    */
-
-    currentUtterance.onend =
-        () => {
-
-            words.forEach(
-                (_,index)=>{
-
-                    const element =
-                        $(`word-${index}`);
-
-                    if(element){
-
-                        element.classList.remove("current");
-                        element.classList.add("done");
-
-                    }
-
-                }
-            );
-
-            $("status").textContent =
-                "✓ 완료";
-
-        };
-
-
-    /*
-        오류
-    */
-
-    currentUtterance.onerror =
-        event => {
-
-            $("status").textContent =
-                "⚠️ TTS 오류: " +
-                (
-                    event.error ||
-                    "unknown"
-                );
-
-        };
-
-
-    synth.speak(
-        currentUtterance
-    );
-
-};
-
-
-/* =====================================================
-   PAUSE / RESUME
-===================================================== */
-
-$("pause").onclick = () => {
-
-    const synth =
-        window.speechSynthesis;
-
-
-    if(
-        synth.speaking &&
-        !synth.paused
-    ){
-
-        synth.pause();
-
-        $("status").textContent =
-            "Ⅱ 일시정지";
-
-    }
-
-    else if(
-        synth.paused
-    ){
-
-        synth.resume();
-
-        $("status").textContent =
-            "🔊 읽는 중…";
-
-    }
-
-};
-
-
-/* =====================================================
-   STOP
-===================================================== */
-
-$("stop").onclick = () => {
-
-    speechSynthesis.cancel();
-
-    currentUtterance = null;
-
-    resetHighlights();
-
-    $("status").textContent =
-        "정지";
-
-};
-
-
-/* =====================================================
-   SPEED
-===================================================== */
-
-$("speed").oninput = () => {
-
-    $("sv").textContent =
-        Number(
-            $("speed").value
-        )
-        .toFixed(2)
-        + "×";
-
-};
-
-
-/* =====================================================
-   FLASH STATE
-===================================================== */
-
-let selectedDeck = null;
-
-let flashCards = [];
-
-let flashIndex = 0;
-
-let flashPage = 1;
-
-
-/* =====================================================
-   DECK
-===================================================== */
+let selectedDeck=null;
+let flashCards=[];
+let flashIndex=0;
+let flashPage=1;
 
 function showDeckSelection(){
 
-    $("deckSelection").style.display =
-        "block";
+    $("deckSelection").style.display="block";
+    $("flashStudy").style.display="none";
 
-    $("flashStudy").style.display =
-        "none";
-
-    $("myDeckCount").textContent =
+    $("myDeckCount").textContent=
         `${getMyWords().length} words`;
 
 }
 
+$("kictcDeck").onclick=()=>{
 
-$("kictcDeck").onclick = () => {
-
-    selectedDeck = "kictc";
-
-    startFlashStudy();
-
-};
-
-
-$("myDeck").onclick = () => {
-
-    selectedDeck = "my";
+    selectedDeck="kictc";
 
     startFlashStudy();
 
 };
 
+$("myDeck").onclick=()=>{
+
+    selectedDeck="my";
+
+    startFlashStudy();
+
+};
 
 function startFlashStudy(){
 
     if(selectedDeck==="kictc"){
 
-        flashCards =
-            kictcWords;
+        flashCards=kictcWords;
 
-        $("selectedDeckName").textContent =
+        $("selectedDeckName").textContent=
             "📕 K-ICTC 핵심 단어";
 
-        $("selectedDeckSub").textContent =
+        $("selectedDeckSub").textContent=
             "K-ICTC 군사영어 핵심 단어";
 
     }else{
 
-        flashCards =
-            getMyWords();
+        flashCards=getMyWords();
 
-        $("selectedDeckName").textContent =
+        $("selectedDeckName").textContent=
             "📗 나의 단어장";
 
-        $("selectedDeckSub").textContent =
+        $("selectedDeckSub").textContent=
             `${flashCards.length}개의 단어`;
 
     }
 
-
     if(!flashCards.length){
 
-        alert(
-            "이 단어집에는 아직 단어가 없습니다."
-        );
+        alert("이 단어집에는 아직 단어가 없습니다.");
 
         return;
 
     }
 
+    flashIndex=0;
+    flashPage=1;
 
-    flashIndex = 0;
-    flashPage = 1;
-
-    $("deckSelection").style.display =
-        "none";
-
-    $("flashStudy").style.display =
-        "block";
+    $("deckSelection").style.display="none";
+    $("flashStudy").style.display="block";
 
     renderFlashCard();
 
-    autoPlayFlashAudio();
+    autoPlayFlash();
 
 }
 
+function renderFlashCard(){
 
-/* =====================================================
-   FLASH BACK
-===================================================== */
+    const card=flashCards[flashIndex];
 
-$("flashBackToDeck").onclick = () => {
+    $("flashProgress").textContent=
+        `${flashIndex+1} / ${flashCards.length} · ${flashPage}P`;
+
+    if(flashPage===1){
+
+        $("flashPageLabel").textContent=
+            "PAGE 1 · WORD";
+
+        $("flashContent").innerHTML=`
+
+        <div class="flash-word">
+            ${escapeHTML(card.key)}
+        </div>
+
+        <div class="flash-ipa">
+            ${escapeHTML(card.ipa||"")}
+        </div>`;
+
+    }
+
+    else if(flashPage===2){
+
+        $("flashPageLabel").textContent=
+            "PAGE 2 · MEANING";
+
+        $("flashContent").innerHTML=`
+
+        <div class="flash-word" style="font-size:26px">
+            ${escapeHTML(card.key)}
+        </div>
+
+        <div class="flash-meaning">
+            ${escapeHTML(card.meaning)}
+        </div>`;
+
+    }
+
+    else{
+
+        $("flashPageLabel").textContent=
+            "PAGE 3 · EXAMPLE";
+
+        $("flashContent").innerHTML=`
+
+        <div class="flash-example">
+            ${escapeHTML(card.example)}
+        </div>
+
+        <div class="flash-example-ko">
+            ${escapeHTML(card.exampleKo||"")}
+        </div>`;
+
+    }
+
+}
+
+function playFlashAudio(){
+
+    const card=flashCards[flashIndex];
+
+    if(!card)return;
+
+    if(flashPage===1)
+        speakText(card.key,Number($("flashSpeed").value));
+
+    if(flashPage===3)
+        speakText(card.example,Number($("flashSpeed").value));
+
+}
+
+function autoPlayFlash(){
+
+    if(
+        flashPage===1 ||
+        flashPage===3
+    ){
+
+        playFlashAudio();
+
+    }
+
+}
+
+function nextFlash(){
+
+    speechSynthesis.cancel();
+
+    flashIndex++;
+
+    if(flashIndex>=flashCards.length)
+        flashIndex=0;
+
+    flashPage=1;
+
+    renderFlashCard();
+
+    autoPlayFlash();
+
+}
+
+function prevFlash(){
+
+    speechSynthesis.cancel();
+
+    flashIndex--;
+
+    if(flashIndex<0)
+        flashIndex=flashCards.length-1;
+
+    flashPage=1;
+
+    renderFlashCard();
+
+    autoPlayFlash();
+
+}
+
+$("flashNext").onclick=nextFlash;
+$("flashPrev").onclick=prevFlash;
+
+$("flashAudio").onclick=playFlashAudio;
+
+$("flashBackToDeck").onclick=()=>{
 
     speechSynthesis.cancel();
 
@@ -2601,281 +2451,85 @@ $("flashBackToDeck").onclick = () => {
 
 };
 
-
-/* =====================================================
-   FLASH RENDER
-===================================================== */
-
-function renderFlashCard(){
-
-    if(!flashCards.length){
-        return;
-    }
-
-    const card =
-        flashCards[flashIndex];
-
-    $("flashProgress").textContent =
-        `${flashIndex+1} / ${flashCards.length} · ${flashPage}P`;
-
-
-    if(flashPage===1){
-
-        $("flashPageLabel").textContent =
-            "PAGE 1 · WORD";
-
-        $("flashContent").innerHTML = `
-
-            <div class="flash-word">
-                ${escapeHTML(card.key)}
-            </div>
-
-            <div class="flash-ipa">
-                ${escapeHTML(card.ipa || "")}
-            </div>
-
-        `;
-
-    }
-
-    else if(flashPage===2){
-
-        $("flashPageLabel").textContent =
-            "PAGE 2 · MEANING";
-
-        $("flashContent").innerHTML = `
-
-            <div
-                class="flash-word"
-                style="
-                    font-size:26px;
-                    margin-bottom:25px;
-                ">
-
-                ${escapeHTML(card.key)}
-
-            </div>
-
-            <div class="flash-meaning">
-
-                ${escapeHTML(card.meaning)}
-
-            </div>
-
-        `;
-
-    }
-
-    else{
-
-        $("flashPageLabel").textContent =
-            "PAGE 3 · EXAMPLE";
-
-        $("flashContent").innerHTML = `
-
-            <div class="flash-example">
-
-                ${escapeHTML(card.example)}
-
-            </div>
-
-            <div class="flash-example-ko">
-
-                ${escapeHTML(card.exampleKo || "")}
-
-            </div>
-
-        `;
-
-    }
-
-}
-
-
-/* =====================================================
-   FLASH AUDIO
-===================================================== */
-
-function playFlashAudio(){
-
-    const card =
-        flashCards[flashIndex];
-
-    if(!card){
-        return;
-    }
-
-    const rate =
-        Number(
-            $("flashSpeed").value
-        );
-
-
-    if(flashPage===1){
-
-        speakText(
-            card.key,
-            rate
-        );
-
-    }
-
-    else if(flashPage===3){
-
-        speakText(
-            card.example,
-            rate
-        );
-
-    }
-
-}
-
-
-function autoPlayFlashAudio(){
-
-    if(!$("autoPlay").checked){
-        return;
-    }
-
-    if(flashPage===2){
-        return;
-    }
-
-    playFlashAudio();
-
-}
-
-
-/* =====================================================
-   FLASH NAV
-===================================================== */
-
-function goToPreviousFlashCard(){
+$("restartFlash").onclick=()=>{
 
     speechSynthesis.cancel();
 
-    flashIndex--;
-
-    if(flashIndex<0){
-
-        flashIndex =
-            flashCards.length-1;
-
-    }
-
-    flashPage = 1;
+    flashIndex=0;
+    flashPage=1;
 
     renderFlashCard();
 
-    autoPlayFlashAudio();
+    autoPlayFlash();
 
-}
+};
 
+$("flashSpeed").oninput=()=>{
 
-function goToNextFlashCard(){
+    $("flashSpeedValue").textContent=
+        Number($("flashSpeed").value)
+        .toFixed(2)+"×";
 
-    speechSynthesis.cancel();
+};
 
-    flashIndex++;
-
-    if(
-        flashIndex >=
-        flashCards.length
-    ){
-
-        flashIndex = 0;
-
-    }
-
-    flashPage = 1;
-
-    renderFlashCard();
-
-    autoPlayFlashAudio();
-
-}
-
-
-/* =====================================================
-   FLASH SWIPE
-===================================================== */
-
-let touchStartX = 0;
-let touchStartY = 0;
-
-const SWIPE_THRESHOLD = 60;
-
+let touchStartX=0;
 
 $("flashCard").addEventListener(
     "touchstart",
-    event => {
-
-        const touch =
-            event.changedTouches[0];
-
-        touchStartX =
-            touch.clientX;
-
-        touchStartY =
-            touch.clientY;
-
+    e=>{
+        touchStartX=
+            e.changedTouches[0].clientX;
     },
     {passive:true}
 );
-
 
 $("flashCard").addEventListener(
     "touchend",
-    event => {
+    e=>{
 
-        const touch =
-            event.changedTouches[0];
-
-        const deltaX =
-            touch.clientX -
+        const delta=
+            e.changedTouches[0].clientX-
             touchStartX;
 
-        const deltaY =
-            touch.clientY -
-            touchStartY;
+        if(delta<-60){
 
-
-        if(
-            Math.abs(deltaY) >
-            Math.abs(deltaX)
-        ){
+            prevFlash();
 
             return;
 
         }
 
+        if(delta>60){
 
-        if(
-            deltaX <=
-            -SWIPE_THRESHOLD
-        ){
-
-            goToPreviousFlashCard();
+            nextFlash();
 
             return;
 
         }
 
+        if(flashPage===1){
 
-        if(
-            deltaX >=
-            SWIPE_THRESHOLD
-        ){
+            flashPage=2;
 
-            goToNextFlashCard();
-
-            return;
+            renderFlashCard();
 
         }
 
+        else if(flashPage===2){
 
-        handleFlashTap();
+            flashPage=3;
+
+            renderFlashCard();
+
+            autoPlayFlash();
+
+        }
+
+        else{
+
+            nextFlash();
+
+        }
 
     },
     {passive:true}
@@ -2883,242 +2537,482 @@ $("flashCard").addEventListener(
 
 
 /* =====================================================
-   FLASH TAP
+ADD WORD
 ===================================================== */
 
-function handleFlashTap(){
+$("openAddWord").onclick=()=>{
 
-    if(flashPage===1){
-
-        flashPage = 2;
-
-        renderFlashCard();
-
-        return;
-
-    }
-
-
-    if(flashPage===2){
-
-        flashPage = 3;
-
-        renderFlashCard();
-
-        autoPlayFlashAudio();
-
-        return;
-
-    }
-
-
-    if(flashPage===3){
-
-        goToNextFlashCard();
-
-    }
-
-}
-
-
-$("flashAudio").onclick =
-    event => {
-
-        event.stopPropagation();
-
-        playFlashAudio();
-
-    };
-
-
-$("flashPrev").onclick =
-    goToPreviousFlashCard;
-
-$("flashNext").onclick =
-    goToNextFlashCard;
-
-
-$("restartFlash").onclick = () => {
-
-    speechSynthesis.cancel();
-
-    flashIndex = 0;
-    flashPage = 1;
-
-    renderFlashCard();
-
-    autoPlayFlashAudio();
-
-};
-
-
-$("flashSpeed").oninput = () => {
-
-    $("flashSpeedValue").textContent =
-        Number(
-            $("flashSpeed").value
-        )
-        .toFixed(2)
-        + "×";
-
-};
-
-
-/* =====================================================
-   ADD WORD
-===================================================== */
-
-$("openAddWord").onclick = () => {
-
-    clearWordForm();
+    $("newWord").value="";
+    $("newIPA").value="";
+    $("newMeaning").value="";
+    $("newExample").value="";
+    $("newExampleKo").value="";
+    $("wordAddMessage").textContent="";
 
     $("wordAddModal").classList.add("show");
 
 };
 
-
-function clearWordForm(){
-
-    $("newWord").value = "";
-    $("newIPA").value = "";
-    $("newMeaning").value = "";
-    $("newExample").value = "";
-    $("newExampleKo").value = "";
-
-    $("wordAddMessage").textContent = "";
-
-}
-
-
-function closeWordAdd(){
+function closeWordModal(){
 
     $("wordAddModal").classList.remove("show");
 
 }
 
+$("closeWordAdd").onclick=closeWordModal;
+$("cancelWordAdd").onclick=closeWordModal;
 
-$("closeWordAdd").onclick =
-    closeWordAdd;
+$("saveWord").onclick=()=>{
 
-$("cancelWordAdd").onclick =
-    closeWordAdd;
+    const key=$("newWord").value.trim();
+    const ipa=$("newIPA").value.trim();
+    const meaning=$("newMeaning").value.trim();
+    const example=$("newExample").value.trim();
+    const exampleKo=$("newExampleKo").value.trim();
 
+    if(!key||!meaning||!example){
 
-/* =====================================================
-   SAVE WORD
-===================================================== */
-
-$("saveWord").onclick = () => {
-
-    const key =
-        $("newWord").value.trim();
-
-    const ipa =
-        $("newIPA").value.trim();
-
-    const meaning =
-        $("newMeaning").value.trim();
-
-    const example =
-        $("newExample").value.trim();
-
-    const exampleKo =
-        $("newExampleKo").value.trim();
-
-
-    if(
-        !key ||
-        !meaning ||
-        !example
-    ){
-
-        $("wordAddMessage").textContent =
+        $("wordAddMessage").textContent=
             "Word, Meaning, Example은 필수입니다.";
 
         return;
 
     }
 
+    const words=getMyWords();
 
-    const words =
-        getMyWords();
-
-
-    const duplicate =
+    if(
         words.some(
-            item =>
-                item.key.toLowerCase() ===
-                key.toLowerCase()
-        );
+            x=>x.key.toLowerCase()===key.toLowerCase()
+        )
+    ){
 
-
-    if(duplicate){
-
-        $("wordAddMessage").textContent =
+        $("wordAddMessage").textContent=
             "이미 존재하는 단어입니다.";
 
         return;
 
     }
 
-
     words.push({
-
         key:key,
-
-        ipa:
-            ipa ||
-            "IPA 준비 중",
-
+        ipa:ipa||"IPA 준비 중",
         part:"word",
-
         meaning:meaning,
-
         example:example,
-
         exampleKo:exampleKo
-
     });
-
 
     saveMyWords(words);
 
-    closeWordAdd();
-
-    $("myDeckCount").textContent =
+    $("myDeckCount").textContent=
         `${words.length} words`;
+
+    closeWordModal();
 
 };
 
 
 /* =====================================================
-   INITIALIZE
+PODCAST ENGINE — V8.3
+===================================================== */
+
+let podcastSentences=[];
+let podcastIndex=0;
+let podcastPlaying=false;
+let podcastUtterance=null;
+let podcastTimer=null;
+
+
+/*
+    긴 글을 문장 단위로 나눈다.
+*/
+
+function splitPodcastText(text){
+
+    /*
+        마침표, 물음표, 느낌표,
+        줄바꿈 등을 기준으로 분리한다.
+    */
+
+    return text
+        .replace(/\r\n/g,"\n")
+        .split(/\n+/)
+        .flatMap(
+            paragraph =>
+                paragraph.match(
+                    /[^.!?]+[.!?]+|[^.!?]+$/g
+                )||[]
+        )
+        .map(
+            x=>x.trim()
+        )
+        .filter(
+            x=>x.length>0
+        );
+
+}
+
+
+/*
+    글자 수
+*/
+
+$("podcastText").oninput=()=>{
+
+    $("podcastCharCount").textContent=
+        `${$("podcastText").value.length.toLocaleString()} characters`;
+
+};
+
+
+/*
+    Podcast 붙여넣기
+*/
+
+$("podcastPaste").onclick=async()=>{
+
+    try{
+
+        const text=
+            await navigator.clipboard.readText();
+
+        $("podcastText").value=text;
+
+        $("podcastCharCount").textContent=
+            `${text.length.toLocaleString()} characters`;
+
+    }catch{
+
+        $("podcastStatus").textContent=
+            "⚠️ 클립보드 접근이 차단되었습니다.";
+
+    }
+
+};
+
+
+/*
+    Podcast 전체 삭제
+*/
+
+$("podcastClear").onclick=()=>{
+
+    speechSynthesis.cancel();
+
+    podcastPlaying=false;
+
+    podcastSentences=[];
+
+    podcastIndex=0;
+
+    $("podcastText").value="";
+
+    $("podcastCharCount").textContent=
+        "0 characters";
+
+    $("podcastCurrentSentence").textContent=
+        "팟캐스트를 시작하면 현재 읽고 있는 문장이 표시됩니다.";
+
+    $("podcastStatus").textContent=
+        "준비됨";
+
+};
+
+
+/*
+    Podcast 속도
+*/
+
+$("podcastSpeed").oninput=()=>{
+
+    $("podcastSpeedValue").textContent=
+        Number($("podcastSpeed").value)
+        .toFixed(2)+"×";
+
+};
+
+
+/*
+    현재 문장 표시
+*/
+
+function showPodcastSentence(){
+
+    if(!podcastSentences.length)
+        return;
+
+    const sentence=
+        podcastSentences[podcastIndex];
+
+    $("podcastCurrentSentence").innerHTML=`
+
+        <div class="podcast-current">
+
+            ${escapeHTML(sentence)}
+
+        </div>
+
+    `;
+
+    $("podcastStatus").textContent=
+        `🔊 ${podcastIndex+1} / ${podcastSentences.length} 문장`;
+
+}
+
+
+/*
+    다음 문장 재생
+*/
+
+function playPodcastSentence(){
+
+    if(!podcastPlaying)
+        return;
+
+    if(
+        podcastIndex>=
+        podcastSentences.length
+    ){
+
+        podcastPlaying=false;
+
+        $("podcastStatus").textContent=
+            "✓ Podcast 완료";
+
+        $("podcastCurrentSentence").innerHTML=`
+
+            <div class="podcast-finished">
+
+                ✓ 모든 문장을 재생했습니다.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+    showPodcastSentence();
+
+    const sentence=
+        podcastSentences[podcastIndex];
+
+    podcastUtterance=
+        new SpeechSynthesisUtterance(sentence);
+
+    podcastUtterance.lang="en-US";
+
+    podcastUtterance.rate=
+        Number($("podcastSpeed").value);
+
+    const voice=getEnglishVoice();
+
+    if(voice)
+        podcastUtterance.voice=voice;
+
+
+    podcastUtterance.onend=()=>{
+
+        if(!podcastPlaying)
+            return;
+
+        podcastIndex++;
+
+        podcastTimer=setTimeout(
+            ()=>{
+                if(podcastPlaying)
+                    playPodcastSentence();
+            },
+            180
+        );
+
+    };
+
+
+    podcastUtterance.onerror=e=>{
+
+        if(!podcastPlaying)
+            return;
+
+        /*
+            iOS에서 cancel 직후 발생하는
+            오류는 무시한다.
+        */
+
+        if(e.error==="canceled")
+            return;
+
+        $("podcastStatus").textContent=
+            "⚠️ TTS 오류";
+
+    };
+
+
+    speechSynthesis.speak(
+        podcastUtterance
+    );
+
+}
+
+
+/*
+    Podcast 시작
+*/
+
+$("podcastPlay").onclick=()=>{
+
+    const text=
+        $("podcastText")
+        .value
+        .trim();
+
+
+    if(!text){
+
+        $("podcastStatus").textContent=
+            "먼저 글을 입력해주세요.";
+
+        return;
+
+    }
+
+
+    /*
+        일시정지 상태라면
+        처음부터 시작하지 않고
+        이어서 재생한다.
+    */
+
+    if(
+        speechSynthesis.paused &&
+        podcastPlaying
+    ){
+
+        speechSynthesis.resume();
+
+        $("podcastStatus").textContent=
+            `🔊 ${podcastIndex+1} / ${podcastSentences.length} 문장`;
+
+        return;
+
+    }
+
+
+    speechSynthesis.cancel();
+
+    clearTimeout(podcastTimer);
+
+
+    podcastSentences=
+        splitPodcastText(text);
+
+
+    if(!podcastSentences.length){
+
+        $("podcastStatus").textContent=
+            "읽을 문장이 없습니다.";
+
+        return;
+
+    }
+
+
+    podcastIndex=0;
+
+    podcastPlaying=true;
+
+    playPodcastSentence();
+
+};
+
+
+/*
+    Podcast 일시정지 / 재개
+*/
+
+$("podcastPause").onclick=()=>{
+
+    if(
+        speechSynthesis.speaking &&
+        !speechSynthesis.paused
+    ){
+
+        speechSynthesis.pause();
+
+        $("podcastStatus").textContent=
+            `Ⅱ 일시정지 · ${podcastIndex+1} / ${podcastSentences.length}`;
+
+    }
+
+    else if(
+        speechSynthesis.paused
+    ){
+
+        speechSynthesis.resume();
+
+        $("podcastStatus").textContent=
+            `🔊 ${podcastIndex+1} / ${podcastSentences.length} 문장`;
+
+    }
+
+};
+
+
+/*
+    Podcast 정지
+*/
+
+$("podcastStop").onclick=()=>{
+
+    podcastPlaying=false;
+
+    speechSynthesis.cancel();
+
+    clearTimeout(podcastTimer);
+
+    podcastUtterance=null;
+
+    podcastIndex=0;
+
+    $("podcastStatus").textContent=
+        "정지";
+
+    $("podcastCurrentSentence").textContent=
+        "Podcast가 정지되었습니다.";
+
+};
+
+
+/* =====================================================
+INITIALIZE
 ===================================================== */
 
 buildReader();
 
-updateCharacterCount();
+$("charCount").textContent=
+    `${$("text").value.length.toLocaleString()} characters`;
 
 renderStorage();
 
 showDeckSelection();
 
+$("myDeckCount").textContent=
+    `${getMyWords().length} words`;
+
 
 /*
-    iOS / Chrome에서
-    음성 목록이 늦게 로드되는 경우 대응
+    iPhone / Chrome 음성 목록 로딩
 */
 
 if(
     "speechSynthesis" in window
 ){
 
-    speechSynthesis.onvoiceschanged =
-        () => {
-
-            getEnglishVoice();
-
-        };
+    speechSynthesis.onvoiceschanged=()=>{
+        getEnglishVoice();
+    };
 
 }
 
