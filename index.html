@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0,
+               maximum-scale=1.0, user-scalable=no">
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent">
+
+<meta name="theme-color" content="#0b1220">
+
+<title>K-ICTC Speaking Reader</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: #0b1220;
+    color: #f8fafc;
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "SF Pro Display",
+        sans-serif;
+}
+
+main {
+    max-width: 720px;
+    margin: auto;
+    padding:
+        calc(18px + env(safe-area-inset-top))
+        16px
+        calc(30px + env(safe-area-inset-bottom));
+}
+
+h1 {
+    font-size: 26px;
+    margin: 0 0 6px;
+}
+
+.sub {
+    color: #94a3b8;
+    font-size: 14px;
+    margin-bottom: 18px;
+}
+
+textarea {
+    width: 100%;
+    min-height: 145px;
+
+    border: 1px solid #334155;
+    border-radius: 16px;
+
+    background: #111827;
+    color: white;
+
+    padding: 15px;
+
+    font-size: 18px;
+    line-height: 1.55;
+
+    outline: none;
+}
+
+textarea:focus {
+    border-color: #22c55e;
+}
+
+.row {
+    display: flex;
+    gap: 9px;
+    flex-wrap: wrap;
+    margin: 12px 0;
+}
+
+button {
+    min-height: 46px;
+
+    border: 0;
+    border-radius: 12px;
+
+    padding: 0 16px;
+
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.play {
+    background: #22c55e;
+    color: #052e16;
+}
+
+.dark {
+    background: #263244;
+    color: white;
+}
+
+.control {
+    background: #111827;
+
+    border: 1px solid #334155;
+    border-radius: 14px;
+
+    padding: 12px 14px;
+
+    margin: 10px 0;
+
+    color: #cbd5e1;
+}
+
+.speedline {
+    display: flex;
+    justify-content: space-between;
+
+    margin-bottom: 7px;
+}
+
+input[type="range"] {
+    width: 100%;
+    accent-color: #22c55e;
+}
+
+.reader {
+    margin-top: 14px;
+
+    background: #111827;
+
+    border: 1px solid #334155;
+
+    border-radius: 18px;
+
+    padding: 18px;
+
+    min-height: 190px;
+
+    font-size: 25px;
+
+    line-height: 1.9;
+}
+
+.word {
+    display: inline-block;
+
+    margin-right: 0.12em;
+
+    padding: 0 0.05em;
+
+    border-radius: 7px;
+
+    transition:
+        background 0.08s,
+        color 0.08s;
+}
+
+.word.done {
+    color: #86efac;
+}
+
+.word.current {
+    background: #22c55e;
+    color: #052e16;
+}
+
+.status {
+    color: #94a3b8;
+
+    font-size: 13px;
+
+    margin: 10px 3px;
+}
+
+.note {
+    font-size: 13px;
+
+    line-height: 1.55;
+
+    color: #cbd5e1;
+
+    background: #0f2a1a;
+
+    border-left: 4px solid #22c55e;
+
+    padding: 12px;
+
+    border-radius: 9px;
+
+    margin-top: 14px;
+}
+
+</style>
+</head>
+
+
+<body>
+
+<main>
+
+<h1>🎙️ K-ICTC Speaking Reader</h1>
+
+<div class="sub">
+음성을 들으면서 현재 단어를 따라가 보세요.
+</div>
+
+
+<textarea id="text">The platoon will assemble at the attack position, cross the line of departure when ordered, and move toward the objective, where it will seize the key terrain and secure the area.</textarea>
+
+
+<div class="row">
+
+<button class="play" id="play">
+▶︎ 재생
+</button>
+
+<button class="dark" id="pause">
+Ⅱ 일시정지
+</button>
+
+<button class="dark" id="stop">
+■ 정지
+</button>
+
+</div>
+
+
+<div class="control">
+
+<div class="speedline">
+
+<span>
+재생 속도
+</span>
+
+<b id="sv">
+0.85×
+</b>
+
+</div>
+
+
+<input
+    id="speed"
+    type="range"
+    min="0.5"
+    max="1.5"
+    step="0.05"
+    value="0.85"
+>
+
+</div>
+
+
+<div
+    class="reader"
+    id="reader">
+</div>
+
+
+<div
+    class="status"
+    id="status">
+준비됨
+</div>
+
+
+<div class="note">
+
+아이폰 Safari에서 실행하세요.
+음성은 iPhone의 영어 음성 엔진을 사용합니다.
+단어 경계 이벤트 지원 여부에 따라
+강조 타이밍은 조금 달라질 수 있습니다.
+
+</div>
+
+</main>
+
+
+<script>
+
+const $ = id =>
+    document.getElementById(id);
+
+
+let utterance = null;
+
+let words = [];
+
+let bounds = [];
+
+let timer = null;
+
+let current = -1;
+
+
+
+function escapeHTML(str) {
+
+    return str.replace(
+        /[&<>"']/g,
+
+        c => ({
+
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;'
+
+        }[c])
+
+    );
+
+}
+
+
+
+function buildReader() {
+
+    speechSynthesis.cancel();
+
+    clearInterval(timer);
+
+
+    const text = $('text').value;
+
+    const regex = /\S+/g;
+
+
+    let match;
+
+    let last = 0;
+
+    let output = '';
+
+
+    words = [];
+
+    bounds = [];
+
+
+    while ((match = regex.exec(text))) {
+
+        output += escapeHTML(
+            text.slice(last, match.index)
+        );
+
+
+        const index = words.length;
+
+
+        words.push(match[0]);
+
+
+        bounds.push([
+
+            match.index,
+
+            match.index + match[0].length
+
+        ]);
+
+
+        output +=
+            `<span
+                class="word"
+                data-index="${index}">
+                ${escapeHTML(match[0])}
+            </span>`;
+
+
+        last =
+            match.index +
+            match[0].length;
+
+    }
+
+
+    output += escapeHTML(
+        text.slice(last)
+    );
+
+
+    $('reader').innerHTML =
+        output;
+
+
+    current = -1;
+
+}
+
+
+
+function highlightWord(index) {
+
+    if (
+        index < 0 ||
+        index >= words.length
+    ) {
+        return;
+    }
+
+
+    document
+        .querySelectorAll('.word')
+        .forEach((element, i) => {
+
+            element.classList.toggle(
+                'done',
+                i < index
+            );
+
+            element.classList.toggle(
+                'current',
+                i === index
+            );
+
+        });
+
+
+    current = index;
+
+
+    $('status').textContent =
+        '▶︎ ' + words[index];
+
+}
+
+
+
+function findWordFromCharacter(charIndex) {
+
+    for (
+        let i = 0;
+        i < bounds.length;
+        i++
+    ) {
+
+        if (
+            charIndex >= bounds[i][0] &&
+            charIndex < bounds[i][1]
+        ) {
+
+            return i;
+
+        }
+
+    }
+
+
+    return -1;
+
+}
+
+
+
+function fallbackHighlight() {
+
+    clearInterval(timer);
+
+
+    const wordCount =
+        words.length;
+
+
+    const rate =
+        Number($('speed').value);
+
+
+    const interval =
+        Math.max(
+            90,
+            Math.round(360 / rate)
+        );
+
+
+    let index = 0;
+
+
+    timer = setInterval(() => {
+
+        if (
+            !speechSynthesis.speaking
+        ) {
+
+            clearInterval(timer);
+
+            return;
+
+        }
+
+
+        highlightWord(index);
+
+
+        index++;
+
+
+        if (
+            index >= wordCount
+        ) {
+
+            clearInterval(timer);
+
+        }
+
+    }, interval);
+
+}
+
+
+
+function startSpeaking() {
+
+    speechSynthesis.cancel();
+
+    clearInterval(timer);
+
+    buildReader();
+
+
+    const text =
+        $('text').value.trim();
+
+
+    if (!text) {
+
+        return;
+
+    }
+
+
+    utterance =
+        new SpeechSynthesisUtterance(
+            text
+        );
+
+
+    utterance.lang =
+        'en-US';
+
+
+    utterance.rate =
+        Number($('speed').value);
+
+
+    utterance.pitch =
+        1;
+
+
+    utterance.onstart =
+        () => {
+
+            $('status').textContent =
+                '재생 중…';
+
+            fallbackHighlight();
+
+        };
+
+
+    utterance.onboundary =
+        event => {
+
+            if (
+                typeof event.charIndex ===
+                'number'
+            ) {
+
+                const index =
+                    findWordFromCharacter(
+                        event.charIndex
+                    );
+
+
+                highlightWord(index);
+
+            }
+
+        };
+
+
+    utterance.onend =
+        () => {
+
+            clearInterval(timer);
+
+
+            document
+                .querySelectorAll('.word')
+                .forEach(element => {
+
+                    element.classList.remove(
+                        'current'
+                    );
+
+                    element.classList.add(
+                        'done'
+                    );
+
+                });
+
+
+            $('status').textContent =
+                '완료';
+
+        };
+
+
+    utterance.onerror =
+        event => {
+
+            $('status').textContent =
+                '음성 재생 오류: ' +
+                (event.error ||
+                 'unknown');
+
+        };
+
+
+    speechSynthesis.speak(
+        utterance
+    );
+
+}
+
+
+
+$('play').onclick =
+    () => {
+
+        if (
+            speechSynthesis.speaking &&
+            speechSynthesis.paused
+        ) {
+
+            speechSynthesis.resume();
+
+            $('status').textContent =
+                '재생 중…';
+
+            return;
+
+        }
+
+
+        startSpeaking();
+
+    };
+
+
+
+$('pause').onclick =
+    () => {
+
+        if (
+            speechSynthesis.speaking
+        ) {
+
+            speechSynthesis.pause();
+
+            $('status').textContent =
+                '일시정지';
+
+        }
+
+    };
+
+
+
+$('stop').onclick =
+    () => {
+
+        speechSynthesis.cancel();
+
+        clearInterval(timer);
+
+        buildReader();
+
+        $('status').textContent =
+            '정지';
+
+    };
+
+
+
+$('speed').oninput =
+    () => {
+
+        $('sv').textContent =
+            Number(
+                $('speed').value
+            ).toFixed(2) + '×';
+
+    };
+
+
+
+$('text').oninput =
+    () => {
+
+        speechSynthesis.cancel();
+
+        clearInterval(timer);
+
+        buildReader();
+
+        $('status').textContent =
+            '준비됨';
+
+    };
+
+
+
+buildReader();
+
+</script>
+
+</body>
+</html>
