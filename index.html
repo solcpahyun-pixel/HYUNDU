@@ -3,6 +3,18 @@
 
 <head>
 
+<!--
+K-ICTC Speaking Reader
+Version 3.0
+
+Version 3.0 Changes:
+- UI에 현재 버전 표시
+- 단어 클릭 시 발음 재생
+- 단어 정보 팝업 추가
+- IPA / 품사 / 뜻 / K-ICTC 예문 표시
+- 팝업에서 단어 발음 재생
+-->
+
 <meta charset="UTF-8">
 
 <meta name="viewport"
@@ -26,7 +38,7 @@ content="#0b1220">
 <style>
 
 /* =========================
-   기본 화면
+   BASIC
 ========================= */
 
 * {
@@ -62,6 +74,26 @@ main {
 }
 
 
+
+/* =========================
+   HEADER
+========================= */
+
+.header {
+
+    display: flex;
+
+    justify-content:
+        space-between;
+
+    align-items:
+        flex-start;
+
+    margin-bottom:
+        18px;
+}
+
+
 h1 {
 
     font-size: 26px;
@@ -73,43 +105,78 @@ h1 {
 
 .sub {
 
-    color: #94a3b8;
+    color:
+        #94a3b8;
 
-    font-size: 14px;
+    font-size:
+        14px;
+}
 
-    margin-bottom: 18px;
+
+.version {
+
+    font-size:
+        12px;
+
+    color:
+        #86efac;
+
+    background:
+        #0f2a1a;
+
+    border:
+        1px solid #166534;
+
+    padding:
+        6px 9px;
+
+    border-radius:
+        20px;
+
+    white-space:
+        nowrap;
 }
 
 
 
 /* =========================
-   문장 입력창
+   TEXTAREA
 ========================= */
 
 textarea {
 
-    width: 100%;
+    width:
+        100%;
 
-    min-height: 145px;
+    min-height:
+        145px;
 
     border:
         1px solid #334155;
 
-    border-radius: 16px;
+    border-radius:
+        16px;
 
-    background: #111827;
+    background:
+        #111827;
 
-    color: white;
+    color:
+        white;
 
-    padding: 15px;
+    padding:
+        15px;
 
-    font-size: 18px;
+    font-size:
+        18px;
 
-    line-height: 1.55;
+    line-height:
+        1.55;
 
-    outline: none;
+    outline:
+        none;
 
-    -webkit-appearance: none;
+    -webkit-appearance:
+        none;
 }
 
 
@@ -122,37 +189,47 @@ textarea:focus {
 
 
 /* =========================
-   버튼
+   BUTTONS
 ========================= */
 
 .row {
 
-    display: flex;
+    display:
+        flex;
 
-    gap: 9px;
+    gap:
+        9px;
 
-    flex-wrap: wrap;
+    flex-wrap:
+        wrap;
 
-    margin: 12px 0;
+    margin:
+        12px 0;
 }
 
 
 button {
 
-    min-height: 46px;
+    min-height:
+        46px;
 
-    border: 0;
+    border:
+        0;
 
-    border-radius: 12px;
+    border-radius:
+        12px;
 
     padding:
         0 16px;
 
-    font-size: 16px;
+    font-size:
+        16px;
 
-    font-weight: 700;
+    font-weight:
+        700;
 
-    cursor: pointer;
+    cursor:
+        pointer;
 
     -webkit-tap-highlight-color:
         transparent;
@@ -181,7 +258,7 @@ button {
 
 
 /* =========================
-   속도 조절
+   SPEED
 ========================= */
 
 .control {
@@ -231,7 +308,7 @@ input[type="range"] {
 
 
 /* =========================
-   영어 문장
+   READER
 ========================= */
 
 .reader {
@@ -264,7 +341,7 @@ input[type="range"] {
 
 
 /* =========================
-   각각의 단어
+   WORD
 ========================= */
 
 .word {
@@ -289,11 +366,6 @@ input[type="range"] {
         color 0.08s,
         transform 0.08s;
 
-    /*
-       아이폰에서 터치할 때
-       파란색 선택 표시 방지
-    */
-
     -webkit-tap-highlight-color:
         transparent;
 
@@ -302,18 +374,12 @@ input[type="range"] {
 }
 
 
-
-/* 이미 읽은 단어 */
-
 .word.done {
 
     color:
         #86efac;
 }
 
-
-
-/* 현재 읽는 단어 */
 
 .word.current {
 
@@ -324,9 +390,6 @@ input[type="range"] {
         #052e16;
 }
 
-
-
-/* 클릭한 단어 */
 
 .word.clicked {
 
@@ -343,7 +406,7 @@ input[type="range"] {
 
 
 /* =========================
-   상태 표시
+   STATUS
 ========================= */
 
 .status {
@@ -361,7 +424,7 @@ input[type="range"] {
 
 
 /* =========================
-   안내문
+   NOTE
 ========================= */
 
 .note {
@@ -391,6 +454,343 @@ input[type="range"] {
         14px;
 }
 
+
+
+/* =========================
+   WORD POPUP
+========================= */
+
+.modal {
+
+    display:
+        none;
+
+    position:
+        fixed;
+
+    inset:
+        0;
+
+    background:
+        rgba(0, 0, 0, 0.68);
+
+    z-index:
+        1000;
+
+    align-items:
+        flex-end;
+
+    justify-content:
+        center;
+
+    padding:
+        12px;
+}
+
+
+.modal.show {
+
+    display:
+        flex;
+}
+
+
+.modal-card {
+
+    width:
+        100%;
+
+    max-width:
+        650px;
+
+    background:
+        #111827;
+
+    border:
+        1px solid #334155;
+
+    border-radius:
+        24px;
+
+    padding:
+        22px;
+
+    box-shadow:
+        0 -10px 40px
+        rgba(0,0,0,.4);
+
+    animation:
+        slideUp
+        .18s
+        ease-out;
+}
+
+
+@keyframes slideUp {
+
+    from {
+
+        transform:
+            translateY(30px);
+
+        opacity:
+            0;
+
+    }
+
+    to {
+
+        transform:
+            translateY(0);
+
+        opacity:
+            1;
+
+    }
+
+}
+
+
+.modal-top {
+
+    display:
+        flex;
+
+    justify-content:
+        space-between;
+
+    align-items:
+        flex-start;
+
+    margin-bottom:
+        16px;
+}
+
+
+.modal-word {
+
+    font-size:
+        32px;
+
+    font-weight:
+        800;
+
+    color:
+        #f8fafc;
+}
+
+
+.close {
+
+    min-height:
+        38px;
+
+    width:
+        38px;
+
+    padding:
+        0;
+
+    border-radius:
+        50%;
+
+    background:
+        #263244;
+
+    color:
+        white;
+
+    font-size:
+        20px;
+}
+
+
+.pronunciation {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        10px;
+
+    margin-bottom:
+        14px;
+}
+
+
+.ipa {
+
+    font-family:
+        "Times New Roman",
+        serif;
+
+    font-size:
+        20px;
+
+    color:
+        #86efac;
+}
+
+
+.small-play {
+
+    min-height:
+        38px;
+
+    padding:
+        0 12px;
+
+    font-size:
+        14px;
+
+    background:
+        #22c55e;
+
+    color:
+        #052e16;
+}
+
+
+.part {
+
+    display:
+        inline-block;
+
+    color:
+        #cbd5e1;
+
+    background:
+        #263244;
+
+    padding:
+        5px 9px;
+
+    border-radius:
+        8px;
+
+    font-size:
+        13px;
+
+    margin-bottom:
+        12px;
+}
+
+
+.meaning {
+
+    font-size:
+        22px;
+
+    font-weight:
+        700;
+
+    margin-bottom:
+        18px;
+}
+
+
+.example-title {
+
+    color:
+        #94a3b8;
+
+    font-size:
+        13px;
+
+    margin-bottom:
+        6px;
+}
+
+
+.example {
+
+    background:
+        #0b1220;
+
+    border-left:
+        3px solid #22c55e;
+
+    padding:
+        12px;
+
+    border-radius:
+        8px;
+
+    font-size:
+        16px;
+
+    line-height:
+        1.6;
+}
+
+
+.example-ko {
+
+    color:
+        #94a3b8;
+
+    margin-top:
+        6px;
+
+    font-size:
+        14px;
+}
+
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 480px) {
+
+    .header {
+
+        align-items:
+            flex-start;
+
+    }
+
+
+    h1 {
+
+        font-size:
+            22px;
+
+    }
+
+
+    .version {
+
+        font-size:
+            10px;
+
+    }
+
+
+    .reader {
+
+        font-size:
+            23px;
+
+        padding:
+            16px;
+
+    }
+
+
+    .modal-card {
+
+        padding:
+            20px;
+
+    }
+
+}
+
 </style>
 
 </head>
@@ -403,27 +803,48 @@ input[type="range"] {
 <main>
 
 
-<h1>
-🎙️ K-ICTC Speaking Reader
-</h1>
+<!-- =========================
+     HEADER
+========================= -->
+
+<div class="header">
+
+    <div>
+
+        <h1>
+            🎙️ K-ICTC Speaking Reader
+        </h1>
+
+        <div class="sub">
+
+            듣고 · 읽고 · 눌러서 배우기
+
+        </div>
+
+    </div>
 
 
-<div class="sub">
+    <div class="version">
 
-문장을 듣고,
-단어를 눌러 발음을 연습해보세요.
+        Version 3.0
+
+    </div>
 
 </div>
 
 
 
-<textarea id="text">
+<!-- =========================
+     TEXT
+========================= -->
 
-The platoon will assemble at the attack position, cross the line of departure when ordered, and move toward the objective, where it will seize the key terrain and secure the area.
-
-</textarea>
+<textarea id="text">The platoon will assemble at the attack position, cross the line of departure when ordered, and move toward the objective, where it will seize the key terrain and secure the area.</textarea>
 
 
+
+<!-- =========================
+     CONTROLS
+========================= -->
 
 <div class="row">
 
@@ -437,7 +858,6 @@ id="play">
 </button>
 
 
-
 <button
 class="dark"
 id="pause">
@@ -445,7 +865,6 @@ id="pause">
 Ⅱ 일시정지
 
 </button>
-
 
 
 <button
@@ -461,28 +880,25 @@ id="stop">
 
 
 
+<!-- =========================
+     SPEED
+========================= -->
+
 <div class="control">
 
 
 <div class="speedline">
 
-
 <span>
-
 재생 속도
-
 </span>
 
 
 <b id="sv">
-
 0.85×
-
 </b>
 
-
 </div>
-
 
 
 <input
@@ -494,10 +910,13 @@ step="0.05"
 value="0.85"
 >
 
-
 </div>
 
 
+
+<!-- =========================
+     READER
+========================= -->
 
 <div
 class="reader"
@@ -519,8 +938,8 @@ id="status">
 
 <div class="note">
 
-👆 영어 단어를 누르면
-그 단어만 천천히 발음합니다.
+👆 단어를 누르면
+발음과 단어 정보를 확인할 수 있습니다.
 
 </div>
 
@@ -529,11 +948,131 @@ id="status">
 
 
 
+<!-- =========================
+     WORD INFO MODAL
+========================= -->
+
+<div
+class="modal"
+id="wordModal">
+
+
+<div
+class="modal-card"
+onclick="event.stopPropagation()">
+
+
+<div class="modal-top">
+
+
+<div>
+
+<div
+class="modal-word"
+id="modalWord">
+
+word
+
+</div>
+
+
+<div class="pronunciation">
+
+
+<span
+class="ipa"
+id="modalIPA">
+
+/pronunciation/
+
+</span>
+
+
+<button
+class="small-play"
+id="modalPlay">
+
+🔊 듣기
+
+</button>
+
+</div>
+
+
+<span
+class="part"
+id="modalPart">
+
+noun
+
+</span>
+
+</div>
+
+
+
+<button
+class="close"
+id="closeModal">
+
+×
+</button>
+
+
+</div>
+
+
+
+<div
+class="meaning"
+id="modalMeaning">
+
+뜻
+
+</div>
+
+
+
+<div class="example-title">
+
+K-ICTC Example
+
+</div>
+
+
+<div class="example">
+
+
+<div id="modalExample">
+
+Example sentence.
+
+</div>
+
+
+<div
+class="example-ko"
+id="modalExampleKo">
+
+예문 해석
+
+</div>
+
+
+</div>
+
+
+</div>
+
+</div>
+
+
+
 <script>
 
 
 /* =========================
-   기본 변수
+   ELEMENTS
 ========================= */
 
 const $ =
@@ -550,10 +1089,448 @@ let timer = null;
 
 let current = -1;
 
+let selectedWord = "";
+
 
 
 /* =========================
-   HTML 특수문자 처리
+   K-ICTC WORD DATABASE
+========================= */
+
+const wordData = {
+
+
+    "platoon": {
+
+        ipa: "/pləˈtuːn/",
+
+        part: "noun",
+
+        meaning: "소대",
+
+        example:
+        "The platoon will move toward the objective.",
+
+        exampleKo:
+        "소대는 목표를 향해 이동할 것입니다."
+
+    },
+
+
+    "attack": {
+
+        ipa: "/əˈtæk/",
+
+        part: "noun / verb",
+
+        meaning: "공격; 공격하다",
+
+        example:
+        "The attack will begin after the fire support is complete.",
+
+        exampleKo:
+        "화력지원이 완료된 후 공격이 시작될 것입니다."
+
+    },
+
+
+    "position": {
+
+        ipa: "/pəˈzɪʃən/",
+
+        part: "noun",
+
+        meaning: "위치; 진지",
+
+        example:
+        "The platoon will move to the attack position.",
+
+        exampleKo:
+        "소대는 공격대기지점으로 이동할 것입니다."
+
+    },
+
+
+    "objective": {
+
+        ipa: "/əbˈdʒektɪv/",
+
+        part: "noun",
+
+        meaning: "목표",
+
+        example:
+        "Our primary objective is Hill 245.",
+
+        exampleKo:
+        "우리의 주요 목표는 245고지입니다."
+
+    },
+
+
+    "secure": {
+
+        ipa: "/sɪˈkjʊr/",
+
+        part: "verb",
+
+        meaning: "확보하다",
+
+        example:
+        "The platoon will secure the objective.",
+
+        exampleKo:
+        "소대는 목표를 확보할 것입니다."
+
+    },
+
+
+    "seize": {
+
+        ipa: "/siːz/",
+
+        part: "verb",
+
+        meaning: "점령하다; 탈취하다",
+
+        example:
+        "Our mission is to seize the key terrain.",
+
+        exampleKo:
+        "우리의 임무는 주요 지형을 점령하는 것입니다."
+
+    },
+
+
+    "terrain": {
+
+        ipa: "/təˈreɪn/",
+
+        part: "noun",
+
+        meaning: "지형",
+
+        example:
+        "The terrain is difficult to move through.",
+
+        exampleKo:
+        "해당 지형은 통과하기 어렵습니다."
+
+    },
+
+
+    "destroy": {
+
+        ipa: "/dɪˈstrɔɪ/",
+
+        part: "verb",
+
+        meaning: "격멸하다; 파괴하다",
+
+        example:
+        "Our priority is to destroy the enemy position.",
+
+        exampleKo:
+        "우리의 우선순위는 적 진지를 격멸하는 것입니다."
+
+    },
+
+
+    "suppress": {
+
+        ipa: "/səˈpres/",
+
+        part: "verb",
+
+        meaning: "제압하다",
+
+        example:
+        "The supporting element will suppress the enemy.",
+
+        exampleKo:
+        "조공부대가 적을 제압할 것입니다."
+
+    },
+
+
+    "clear": {
+
+        ipa: "/klɪr/",
+
+        part: "verb",
+
+        meaning: "소탕하다; 제거하다",
+
+        example:
+        "We're going to clear the area before moving on.",
+
+        exampleKo:
+        "우리는 다음 단계로 넘어가기 전에 해당 지역을 소탕할 것입니다."
+
+    },
+
+
+    "breach": {
+
+        ipa: "/briːtʃ/",
+
+        part: "verb / noun",
+
+        meaning: "돌파하다; 돌파",
+
+        example:
+        "The engineers will conduct the breach.",
+
+        exampleKo:
+        "공병이 돌파를 실시할 것입니다."
+
+    },
+
+
+    "reserve": {
+
+        ipa: "/rɪˈzɜːrv/",
+
+        part: "noun",
+
+        meaning: "예비대",
+
+        example:
+        "The reserve will remain ready to reinforce the main effort.",
+
+        exampleKo:
+        "예비대는 주공을 증원할 준비를 유지할 것입니다."
+
+    },
+
+
+    "reconnaissance": {
+
+        ipa: "/rɪˈkɑːnəsəns/",
+
+        part: "noun",
+
+        meaning: "정찰",
+
+        example:
+        "Reconnaissance will be conducted before the main body moves forward.",
+
+        exampleKo:
+        "주력이 전진하기 전에 정찰이 실시될 것입니다."
+
+    },
+
+
+    "recon": {
+
+        ipa: "/ˈrekɑːn/",
+
+        part: "noun",
+
+        meaning: "정찰",
+
+        example:
+        "We're going to conduct recon before moving forward.",
+
+        exampleKo:
+        "우리는 전진하기 전에 정찰을 실시할 것입니다."
+
+    },
+
+
+    "front": {
+
+        ipa: "/frʌnt/",
+
+        part: "noun",
+
+        meaning: "정면; 전방",
+
+        example:
+        "We expect enemy contact to our front.",
+
+        exampleKo:
+        "우리는 정면에서 적과 접촉할 것으로 예상합니다."
+
+    },
+
+
+    "depth": {
+
+        ipa: "/depθ/",
+
+        part: "noun",
+
+        meaning: "종심",
+
+        example:
+        "Enemy reserves are positioned in depth.",
+
+        exampleKo:
+        "적 예비대는 종심에 배치되어 있습니다."
+
+    },
+
+
+    "maneuver": {
+
+        ipa: "/məˈnuːvər/",
+
+        part: "verb / noun",
+
+        meaning: "기동하다; 기동",
+
+        example:
+        "The main effort will maneuver to the enemy's flank.",
+
+        exampleKo:
+        "주공은 적의 측방으로 기동할 것입니다."
+
+    },
+
+
+    "bypass": {
+
+        ipa: "/ˈbaɪpæs/",
+
+        part: "verb",
+
+        meaning: "우회하다",
+
+        example:
+        "We may bypass the enemy position if possible.",
+
+        exampleKo:
+        "가능하다면 적 진지를 우회할 수 있습니다."
+
+    },
+
+
+    "fix": {
+
+        ipa: "/fɪks/",
+
+        part: "verb",
+
+        meaning: "고착시키다",
+
+        example:
+        "The supporting element will fix the enemy while the main effort maneuvers.",
+
+        exampleKo:
+        "주공이 기동하는 동안 조공부대가 적을 고착시킬 것입니다."
+
+    },
+
+
+    "assault": {
+
+        ipa: "/əˈsɔːlt/",
+
+        part: "noun / verb",
+
+        meaning: "돌격; 돌격하다",
+
+        example:
+        "The assault will begin after the preparatory fires are complete.",
+
+        exampleKo:
+        "준비사격이 완료된 후 돌격이 시작될 것입니다."
+
+    },
+
+
+    "flank": {
+
+        ipa: "/flæŋk/",
+
+        part: "noun",
+
+        meaning: "측방; 측면",
+
+        example:
+        "The main effort will attack the enemy's flank.",
+
+        exampleKo:
+        "주공은 적의 측방을 공격할 것입니다."
+
+    },
+
+
+    "overwatch": {
+
+        ipa: "/ˈoʊvərwɑːtʃ/",
+
+        part: "noun / verb",
+
+        meaning: "엄호",
+
+        example:
+        "The second squad will provide overwatch.",
+
+        exampleKo:
+        "2분대가 엄호를 실시할 것입니다."
+
+    },
+
+
+    "fire": {
+
+        ipa: "/faɪr/",
+
+        part: "noun",
+
+        meaning: "화력; 사격",
+
+        example:
+        "Fire support will be available during the assault.",
+
+        exampleKo:
+        "돌격 중에 화력지원이 제공될 것입니다."
+
+    },
+
+
+    "supporting": {
+
+        ipa: "/səˈpɔːrtɪŋ/",
+
+        part: "adjective",
+
+        meaning: "지원하는; 조공의",
+
+        example:
+        "The supporting element will fix the enemy.",
+
+        exampleKo:
+        "조공부대가 적을 고착시킬 것입니다."
+
+    },
+
+
+    "attack": {
+
+        ipa: "/əˈtæk/",
+
+        part: "noun / verb",
+
+        meaning: "공격; 공격하다",
+
+        example:
+        "The attack will begin at H-hour.",
+
+        exampleKo:
+        "공격은 H-hour에 시작될 것입니다."
+
+    }
+
+
+};
+
+
+
+/* =========================
+   ESCAPE HTML
 ========================= */
 
 function escapeHTML(str) {
@@ -564,13 +1541,9 @@ function escapeHTML(str) {
         c => ({
 
             '&': '&amp;',
-
             '<': '&lt;',
-
             '>': '&gt;',
-
             '"': '&quot;',
-
             "'": '&#39;'
 
         }[c])
@@ -582,14 +1555,13 @@ function escapeHTML(str) {
 
 
 /* =========================
-   문장을 단어별로 분리
+   BUILD READER
 ========================= */
 
 function buildReader() {
 
 
     speechSynthesis.cancel();
-
 
     clearInterval(timer);
 
@@ -606,7 +1578,7 @@ function buildReader() {
 
     let last = 0;
 
-    let output = '';
+    let output = "";
 
 
     words = [];
@@ -620,10 +1592,6 @@ function buildReader() {
     ) {
 
 
-        /*
-           단어 앞의 공백
-        */
-
         output +=
             escapeHTML(
                 text.slice(
@@ -633,16 +1601,13 @@ function buildReader() {
             );
 
 
-
         const index =
             words.length;
-
 
 
         words.push(
             match[0]
         );
-
 
 
         bounds.push([
@@ -655,12 +1620,6 @@ function buildReader() {
         ]);
 
 
-
-        /*
-           ⭐ 중요
-           단어를 클릭하면
-           speakWord(index) 실행
-        */
 
         output +=
 
@@ -676,7 +1635,6 @@ function buildReader() {
             </span>`;
 
 
-
         last =
             match.index +
             match[0].length;
@@ -685,15 +1643,10 @@ function buildReader() {
 
 
 
-    /*
-       마지막 부분
-    */
-
     output +=
         escapeHTML(
             text.slice(last)
         );
-
 
 
     $('reader').innerHTML =
@@ -707,7 +1660,7 @@ function buildReader() {
 
 
 /* =========================
-   현재 단어 강조
+   HIGHLIGHT
 ========================= */
 
 function highlightWord(index) {
@@ -723,11 +1676,9 @@ function highlightWord(index) {
     }
 
 
-
     document
         .querySelectorAll('.word')
         .forEach(
-
             (element, i) => {
 
 
@@ -743,10 +1694,6 @@ function highlightWord(index) {
                 );
 
 
-                /*
-                   클릭 효과 제거
-                */
-
                 if (
                     i !== index
                 ) {
@@ -758,9 +1705,7 @@ function highlightWord(index) {
                 }
 
             }
-
         );
-
 
 
     current =
@@ -776,7 +1721,7 @@ function highlightWord(index) {
 
 
 /* =========================
-   글자 위치 → 단어 찾기
+   FIND WORD
 ========================= */
 
 function findWordFromCharacter(
@@ -817,7 +1762,7 @@ function findWordFromCharacter(
 
 
 /* =========================
-   백업용 단어 진행
+   FALLBACK
 ========================= */
 
 function fallbackHighlight() {
@@ -848,10 +1793,8 @@ function fallbackHighlight() {
     let index = 0;
 
 
-
     timer =
         setInterval(
-
             () => {
 
 
@@ -859,23 +1802,17 @@ function fallbackHighlight() {
                     !speechSynthesis.speaking
                 ) {
 
-                    clearInterval(
-                        timer
-                    );
+                    clearInterval(timer);
 
                     return;
 
                 }
 
 
-
-                highlightWord(
-                    index
-                );
+                highlightWord(index);
 
 
                 index++;
-
 
 
                 if (
@@ -883,16 +1820,12 @@ function fallbackHighlight() {
                     wordCount
                 ) {
 
-                    clearInterval(
-                        timer
-                    );
+                    clearInterval(timer);
 
                 }
 
             },
-
             interval
-
         );
 
 }
@@ -900,7 +1833,164 @@ function fallbackHighlight() {
 
 
 /* =========================
-   ⭐ 단어 하나 발음
+   WORD INFO
+========================= */
+
+function getWordKey(word) {
+
+
+    return word
+        .toLowerCase()
+        .replace(
+            /[.,!?;:"'()]/g,
+            ""
+        );
+
+}
+
+
+
+/* =========================
+   OPEN WORD MODAL
+========================= */
+
+function openWordInfo(index) {
+
+
+    const originalWord =
+        words[index];
+
+
+    if (!originalWord) {
+
+        return;
+
+    }
+
+
+    selectedWord =
+        originalWord;
+
+
+
+    const key =
+        getWordKey(
+            originalWord
+        );
+
+
+    const data =
+        wordData[key];
+
+
+
+    /*
+       클릭 단어 강조
+    */
+
+    document
+        .querySelectorAll('.word')
+        .forEach(
+            element => {
+
+                element.classList.remove(
+                    'clicked'
+                );
+
+            }
+        );
+
+
+    const element =
+        document.querySelector(
+            `[data-index="${index}"]`
+        );
+
+
+    if (element) {
+
+        element.classList.add(
+            'clicked'
+        );
+
+    }
+
+
+
+    /*
+       기본값
+    */
+
+    $('modalWord').textContent =
+        originalWord;
+
+
+
+    if (data) {
+
+
+        $('modalIPA').textContent =
+            data.ipa;
+
+
+        $('modalPart').textContent =
+            data.part;
+
+
+        $('modalMeaning').textContent =
+            data.meaning;
+
+
+        $('modalExample').textContent =
+            data.example;
+
+
+        $('modalExampleKo').textContent =
+            data.exampleKo;
+
+
+    }
+
+    else {
+
+
+        /*
+           아직 사전에 없는 단어
+        */
+
+        $('modalIPA').textContent =
+            "IPA 정보 준비 중";
+
+
+        $('modalPart').textContent =
+            "word";
+
+
+        $('modalMeaning').textContent =
+            "단어 정보 준비 중";
+
+
+        $('modalExample').textContent =
+            originalWord;
+
+
+        $('modalExampleKo').textContent =
+            "이 단어는 아직 K-ICTC 사전에 등록되지 않았습니다.";
+
+    }
+
+
+
+    $('wordModal')
+        .classList
+        .add('show');
+
+}
+
+
+
+/* =========================
+   SPEAK WORD
 ========================= */
 
 function speakWord(index) {
@@ -917,50 +2007,21 @@ function speakWord(index) {
     }
 
 
-
     /*
-       현재 문장 전체 TTS 중지
+       기존 음성 중지
     */
 
     speechSynthesis.cancel();
-
 
     clearInterval(timer);
 
 
 
     /*
-       단어 강조
+       단어 정보 표시
     */
 
-    document
-        .querySelectorAll('.word')
-        .forEach(
-            element => {
-
-                element.classList.remove(
-                    'clicked'
-                );
-
-            }
-        );
-
-
-
-    const element =
-        document.querySelector(
-            `[data-index="${index}"]`
-        );
-
-
-
-    if (element) {
-
-        element.classList.add(
-            'clicked'
-        );
-
-    }
+    openWordInfo(index);
 
 
 
@@ -974,18 +2035,9 @@ function speakWord(index) {
         );
 
 
-    /*
-       미국식 영어
-    */
-
     wordUtterance.lang =
-        'en-US';
+        "en-US";
 
-
-
-    /*
-       단어는 천천히
-    */
 
     wordUtterance.rate =
         0.72;
@@ -993,7 +2045,6 @@ function speakWord(index) {
 
     wordUtterance.pitch =
         1;
-
 
 
     wordUtterance.onstart =
@@ -1006,28 +2057,14 @@ function speakWord(index) {
         };
 
 
-
     wordUtterance.onend =
         () => {
 
-            setTimeout(
-                () => {
-
-                    if (element) {
-
-                        element.classList.remove(
-                            'clicked'
-                        );
-
-                    }
-
-                },
-
-                300
-            );
+            $('status').textContent =
+                '✓ ' +
+                word;
 
         };
-
 
 
     speechSynthesis.speak(
@@ -1039,7 +2076,77 @@ function speakWord(index) {
 
 
 /* =========================
-   전체 문장 읽기
+   MODAL PLAY BUTTON
+========================= */
+
+$('modalPlay').onclick =
+    () => {
+
+
+        if (!selectedWord) {
+
+            return;
+
+        }
+
+
+        speechSynthesis.cancel();
+
+
+        const utterance =
+            new SpeechSynthesisUtterance(
+                selectedWord
+            );
+
+
+        utterance.lang =
+            "en-US";
+
+
+        utterance.rate =
+            0.72;
+
+
+        speechSynthesis.speak(
+            utterance
+        );
+
+    };
+
+
+
+/* =========================
+   CLOSE MODAL
+========================= */
+
+$('closeModal').onclick =
+    () => {
+
+        $('wordModal')
+            .classList
+            .remove('show');
+
+    };
+
+
+
+/*
+   팝업 바깥 클릭
+*/
+
+$('wordModal').onclick =
+    () => {
+
+        $('wordModal')
+            .classList
+            .remove('show');
+
+    };
+
+
+
+/* =========================
+   FULL SENTENCE
 ========================= */
 
 function startSpeaking() {
@@ -1047,19 +2154,16 @@ function startSpeaking() {
 
     speechSynthesis.cancel();
 
-
     clearInterval(timer);
 
 
     buildReader();
 
 
-
     const text =
         $('text')
             .value
             .trim();
-
 
 
     if (!text) {
@@ -1069,17 +2173,14 @@ function startSpeaking() {
     }
 
 
-
     utterance =
         new SpeechSynthesisUtterance(
             text
         );
 
 
-
     utterance.lang =
-        'en-US';
-
+        "en-US";
 
 
     utterance.rate =
@@ -1088,19 +2189,15 @@ function startSpeaking() {
         );
 
 
-
     utterance.pitch =
         1;
-
 
 
     utterance.onstart =
         () => {
 
-
             $('status').textContent =
-                '재생 중…';
-
+                "재생 중…";
 
 
             fallbackHighlight();
@@ -1108,19 +2205,13 @@ function startSpeaking() {
         };
 
 
-
-    /*
-       브라우저가 지원하면
-       실제 음성 위치를 이용
-    */
-
     utterance.onboundary =
         event => {
 
 
             if (
                 typeof event.charIndex ===
-                'number'
+                "number"
             ) {
 
 
@@ -1139,29 +2230,21 @@ function startSpeaking() {
         };
 
 
-
     utterance.onend =
         () => {
 
 
-            clearInterval(
-                timer
-            );
-
+            clearInterval(timer);
 
 
             document
-                .querySelectorAll(
-                    '.word'
-                )
+                .querySelectorAll('.word')
                 .forEach(
                     element => {
-
 
                         element.classList.remove(
                             'current'
                         );
-
 
                         element.classList.add(
                             'done'
@@ -1171,27 +2254,23 @@ function startSpeaking() {
                 );
 
 
-
             $('status').textContent =
-                '완료';
+                "완료";
 
         };
-
 
 
     utterance.onerror =
         event => {
 
-
             $('status').textContent =
-                '음성 재생 오류: ' +
+                "음성 재생 오류: " +
                 (
                     event.error ||
-                    'unknown'
+                    "unknown"
                 );
 
         };
-
 
 
     speechSynthesis.speak(
@@ -1203,7 +2282,7 @@ function startSpeaking() {
 
 
 /* =========================
-   재생 버튼
+   PLAY
 ========================= */
 
 $('play').onclick =
@@ -1223,13 +2302,12 @@ $('play').onclick =
 
 
             $('status').textContent =
-                '재생 중…';
+                "재생 중…";
 
 
             return;
 
         }
-
 
 
         startSpeaking();
@@ -1239,7 +2317,7 @@ $('play').onclick =
 
 
 /* =========================
-   일시정지
+   PAUSE
 ========================= */
 
 $('pause').onclick =
@@ -1255,7 +2333,7 @@ $('pause').onclick =
 
 
             $('status').textContent =
-                '일시정지';
+                "일시정지";
 
         }
 
@@ -1264,7 +2342,7 @@ $('pause').onclick =
 
 
 /* =========================
-   정지
+   STOP
 ========================= */
 
 $('stop').onclick =
@@ -1274,23 +2352,21 @@ $('stop').onclick =
         speechSynthesis.cancel();
 
 
-        clearInterval(
-            timer
-        );
+        clearInterval(timer);
 
 
         buildReader();
 
 
         $('status').textContent =
-            '정지';
+            "정지";
 
     };
 
 
 
 /* =========================
-   속도 변경
+   SPEED
 ========================= */
 
 $('speed').oninput =
@@ -1305,14 +2381,14 @@ $('speed').oninput =
 
             +
 
-            '×';
+            "×";
 
     };
 
 
 
 /* =========================
-   문장 수정
+   TEXT CHANGE
 ========================= */
 
 $('text').oninput =
@@ -1322,27 +2398,24 @@ $('text').oninput =
         speechSynthesis.cancel();
 
 
-        clearInterval(
-            timer
-        );
+        clearInterval(timer);
 
 
         buildReader();
 
 
         $('status').textContent =
-            '준비됨';
+            "준비됨";
 
     };
 
 
 
 /* =========================
-   최초 실행
+   INITIALIZE
 ========================= */
 
 buildReader();
-
 
 </script>
 
