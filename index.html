@@ -1,10 +1,10 @@
 <!--
 K-ICTC Speaking Reader
-Version 4.0
+Version 5.0
 
-Version 4.0 Changes
-1. 전체 삭제 버튼
-2. Chrome 클립보드 붙여넣기 버튼
+변경사항
+5. 일시정지 시 음성과 화면 진행을 모두 정지
+6. TTS onboundary 기반으로 음성과 단어 하이라이트 싱크 개선
 -->
 
 <!DOCTYPE html>
@@ -71,7 +71,6 @@ main {
 }
 
 
-
 /* =========================
    HEADER
 ========================= */
@@ -94,7 +93,7 @@ main {
 h1 {
 
     font-size:
-        26px;
+        25px;
 
     margin:
         0 0 6px;
@@ -136,9 +135,8 @@ h1 {
 }
 
 
-
 /* =========================
-   INPUT TOOLS
+   INPUT
 ========================= */
 
 .input-tools {
@@ -156,11 +154,6 @@ h1 {
         10px 0;
 }
 
-
-
-/* =========================
-   TEXTAREA
-========================= */
 
 textarea {
 
@@ -193,9 +186,6 @@ textarea {
 
     outline:
         none;
-
-    -webkit-appearance:
-        none;
 }
 
 
@@ -206,9 +196,8 @@ textarea:focus {
 }
 
 
-
 /* =========================
-   BUTTONS
+   BUTTON
 ========================= */
 
 .row {
@@ -275,7 +264,6 @@ button {
 }
 
 
-
 /* =========================
    SPEED
 ========================= */
@@ -325,7 +313,6 @@ input[type="range"] {
 }
 
 
-
 /* =========================
    READER
 ========================= */
@@ -358,7 +345,6 @@ input[type="range"] {
 }
 
 
-
 /* =========================
    WORD
 ========================= */
@@ -384,9 +370,6 @@ input[type="range"] {
         background 0.08s,
         color 0.08s,
         transform 0.08s;
-
-    -webkit-tap-highlight-color:
-        transparent;
 
     user-select:
         none;
@@ -423,7 +406,6 @@ input[type="range"] {
 }
 
 
-
 /* =========================
    STATUS
 ========================= */
@@ -440,11 +422,6 @@ input[type="range"] {
         10px 3px;
 }
 
-
-
-/* =========================
-   NOTE
-========================= */
 
 .note {
 
@@ -474,9 +451,8 @@ input[type="range"] {
 }
 
 
-
 /* =========================
-   WORD POPUP
+   MODAL
 ========================= */
 
 .modal {
@@ -491,7 +467,7 @@ input[type="range"] {
         0;
 
     background:
-        rgba(0, 0, 0, 0.68);
+        rgba(0,0,0,.68);
 
     z-index:
         1000;
@@ -539,9 +515,7 @@ input[type="range"] {
         rgba(0,0,0,.4);
 
     animation:
-        slideUp
-        .18s
-        ease-out;
+        slideUp .18s ease-out;
 }
 
 
@@ -593,9 +567,6 @@ input[type="range"] {
 
     font-weight:
         800;
-
-    color:
-        #f8fafc;
 }
 
 
@@ -692,9 +663,6 @@ input[type="range"] {
 
     font-size:
         13px;
-
-    margin-bottom:
-        12px;
 }
 
 
@@ -759,12 +727,11 @@ input[type="range"] {
 }
 
 
-
 /* =========================
    MOBILE
 ========================= */
 
-@media (max-width: 480px) {
+@media(max-width:480px) {
 
     h1 {
 
@@ -814,10 +781,6 @@ input[type="range"] {
 <main>
 
 
-<!-- =========================
-     HEADER
-========================= -->
-
 <div class="header">
 
     <div>
@@ -827,27 +790,21 @@ input[type="range"] {
         </h1>
 
         <div class="sub">
-
             듣고 · 읽고 · 눌러서 배우기
-
         </div>
 
     </div>
 
 
     <div class="version">
-
-        Version 4.0
-
+        Version 5.0
     </div>
 
 </div>
 
 
 
-<!-- =========================
-     INPUT TOOLS
-========================= -->
+<!-- INPUT TOOLS -->
 
 <div class="input-tools">
 
@@ -872,116 +829,94 @@ input[type="range"] {
 
 
 
-<!-- =========================
-     TEXT INPUT
-========================= -->
-
 <textarea id="text">The platoon will assemble at the attack position, cross the line of departure when ordered, and move toward the objective, where it will seize the key terrain and secure the area.</textarea>
 
 
 
-<!-- =========================
-     CONTROLS
-========================= -->
+<!-- PLAYBACK -->
 
 <div class="row">
 
+    <button
+    class="play"
+    id="play">
 
-<button
-class="play"
-id="play">
+        ▶︎ 재생
 
-▶︎ 재생
-
-</button>
-
-
-<button
-class="dark"
-id="pause">
-
-Ⅱ 일시정지
-
-</button>
+    </button>
 
 
-<button
-class="dark"
-id="stop">
+    <button
+    class="dark"
+    id="pause">
 
-■ 정지
+        Ⅱ 일시정지
 
-</button>
+    </button>
 
+
+    <button
+    class="dark"
+    id="stop">
+
+        ■ 정지
+
+    </button>
 
 </div>
 
 
 
-<!-- =========================
-     SPEED
-========================= -->
+<!-- SPEED -->
 
 <div class="control">
 
+    <div class="speedline">
 
-<div class="speedline">
+        <span>
+            재생 속도
+        </span>
 
-<span>
+        <b id="sv">
+            0.85×
+        </b>
 
-재생 속도
-
-</span>
-
-
-<b id="sv">
-
-0.85×
-
-</b>
-
-</div>
+    </div>
 
 
-<input
-id="speed"
-type="range"
-min="0.5"
-max="1.5"
-step="0.05"
-value="0.85"
->
+    <input
+    id="speed"
+    type="range"
+    min="0.5"
+    max="1.5"
+    step="0.05"
+    value="0.85">
 
 </div>
 
 
 
-<!-- =========================
-     READER
-========================= -->
+<!-- READER -->
 
 <div
 class="reader"
 id="reader">
-
 </div>
-
 
 
 <div
 class="status"
 id="status">
 
-준비됨
+    준비됨
 
 </div>
 
 
-
 <div class="note">
 
-👆 단어를 누르면
-발음과 단어 정보를 확인할 수 있습니다.
+    👆 단어를 누르면
+    발음과 단어 정보를 확인할 수 있습니다.
 
 </div>
 
@@ -990,122 +925,109 @@ id="status">
 
 
 
-<!-- =========================
-     WORD INFO MODAL
-========================= -->
+<!-- WORD MODAL -->
 
 <div
 class="modal"
 id="wordModal">
 
 
-<div
-class="modal-card"
-onclick="event.stopPropagation()">
+    <div
+    class="modal-card"
+    id="modalCard">
 
 
-<div class="modal-top">
+        <div class="modal-top">
 
 
-<div>
+            <div>
 
-<div
-class="modal-word"
-id="modalWord">
-
-word
-
-</div>
+                <div
+                class="modal-word"
+                id="modalWord">
+                    word
+                </div>
 
 
-<div class="pronunciation">
+                <div class="pronunciation">
+
+                    <span
+                    class="ipa"
+                    id="modalIPA">
+                        /pronunciation/
+                    </span>
 
 
-<span
-class="ipa"
-id="modalIPA">
+                    <button
+                    class="small-play"
+                    id="modalPlay">
 
-/pronunciation/
+                        🔊 듣기
 
-</span>
+                    </button>
 
-
-<button
-class="small-play"
-id="modalPlay">
-
-🔊 듣기
-
-</button>
-
-</div>
+                </div>
 
 
-<span
-class="part"
-id="modalPart">
+                <span
+                class="part"
+                id="modalPart">
 
-noun
+                    noun
 
-</span>
+                </span>
 
-</div>
-
-
-
-<button
-class="close"
-id="closeModal">
-
-×
-
-</button>
+            </div>
 
 
-</div>
+            <button
+            class="close"
+            id="closeModal">
+
+                ×
+
+            </button>
+
+        </div>
 
 
 
-<div
-class="meaning"
-id="modalMeaning">
+        <div
+        class="meaning"
+        id="modalMeaning">
 
-뜻
+            뜻
 
-</div>
-
-
-
-<div class="example-title">
-
-K-ICTC Example
-
-</div>
+        </div>
 
 
-<div class="example">
+
+        <div class="example-title">
+
+            K-ICTC Example
+
+        </div>
 
 
-<div id="modalExample">
+        <div class="example">
 
-Example sentence.
-
-</div>
-
-
-<div
-class="example-ko"
-id="modalExampleKo">
-
-예문 해석
-
-</div>
+            <div id="modalExample">
+                Example sentence.
+            </div>
 
 
-</div>
+            <div
+            class="example-ko"
+            id="modalExampleKo">
+
+                예문 해석
+
+            </div>
+
+        </div>
 
 
-</div>
+    </div>
 
 </div>
 
@@ -1135,419 +1057,290 @@ let current = -1;
 let selectedWord = "";
 
 
+/*
+   Version 5.0
+   playback state
+*/
+
+let fallbackIndex = 0;
+
+let boundaryReceived = false;
+
+let fallbackStarted = false;
+
+let pausedByUser = false;
+
+let boundaryWatch = null;
+
+
 
 /* =========================
-   K-ICTC WORD DATABASE
+   WORD DATABASE
 ========================= */
 
 const wordData = {
 
-
-    "platoon": {
-
+    platoon: {
         ipa: "/pləˈtuːn/",
-
         part: "noun",
-
         meaning: "소대",
-
         example:
         "The platoon will move toward the objective.",
-
         exampleKo:
         "소대는 목표를 향해 이동할 것입니다."
-
     },
 
 
-    "attack": {
-
+    attack: {
         ipa: "/əˈtæk/",
-
         part: "noun / verb",
-
         meaning: "공격; 공격하다",
-
         example:
         "The attack will begin after the fire support is complete.",
-
         exampleKo:
         "화력지원이 완료된 후 공격이 시작될 것입니다."
-
     },
 
 
-    "position": {
-
+    position: {
         ipa: "/pəˈzɪʃən/",
-
         part: "noun",
-
         meaning: "위치; 진지",
-
         example:
         "The platoon will move to the attack position.",
-
         exampleKo:
         "소대는 공격대기지점으로 이동할 것입니다."
-
     },
 
 
-    "objective": {
-
+    objective: {
         ipa: "/əbˈdʒektɪv/",
-
         part: "noun",
-
         meaning: "목표",
-
         example:
         "Our primary objective is Hill 245.",
-
         exampleKo:
         "우리의 주요 목표는 245고지입니다."
-
     },
 
 
-    "secure": {
-
+    secure: {
         ipa: "/sɪˈkjʊr/",
-
         part: "verb",
-
         meaning: "확보하다",
-
         example:
         "The platoon will secure the objective.",
-
         exampleKo:
         "소대는 목표를 확보할 것입니다."
-
     },
 
 
-    "seize": {
-
+    seize: {
         ipa: "/siːz/",
-
         part: "verb",
-
         meaning: "점령하다; 탈취하다",
-
         example:
         "Our mission is to seize the key terrain.",
-
         exampleKo:
         "우리의 임무는 주요 지형을 점령하는 것입니다."
-
     },
 
 
-    "terrain": {
-
+    terrain: {
         ipa: "/təˈreɪn/",
-
         part: "noun",
-
         meaning: "지형",
-
         example:
         "The terrain is difficult to move through.",
-
         exampleKo:
         "해당 지형은 통과하기 어렵습니다."
-
     },
 
 
-    "destroy": {
-
+    destroy: {
         ipa: "/dɪˈstrɔɪ/",
-
         part: "verb",
-
         meaning: "격멸하다; 파괴하다",
-
         example:
         "Our priority is to destroy the enemy position.",
-
         exampleKo:
         "우리의 우선순위는 적 진지를 격멸하는 것입니다."
-
     },
 
 
-    "suppress": {
-
+    suppress: {
         ipa: "/səˈpres/",
-
         part: "verb",
-
         meaning: "제압하다",
-
         example:
         "The supporting element will suppress the enemy.",
-
         exampleKo:
         "조공부대가 적을 제압할 것입니다."
-
     },
 
 
-    "clear": {
-
+    clear: {
         ipa: "/klɪr/",
-
         part: "verb",
-
         meaning: "소탕하다; 제거하다",
-
         example:
         "We're going to clear the area before moving on.",
-
         exampleKo:
         "우리는 다음 단계로 넘어가기 전에 해당 지역을 소탕할 것입니다."
-
     },
 
 
-    "breach": {
-
+    breach: {
         ipa: "/briːtʃ/",
-
         part: "verb / noun",
-
         meaning: "돌파하다; 돌파",
-
         example:
         "The engineers will conduct the breach.",
-
         exampleKo:
         "공병이 돌파를 실시할 것입니다."
-
     },
 
 
-    "reserve": {
-
+    reserve: {
         ipa: "/rɪˈzɜːrv/",
-
         part: "noun",
-
         meaning: "예비대",
-
         example:
         "The reserve will remain ready to reinforce the main effort.",
-
         exampleKo:
         "예비대는 주공을 증원할 준비를 유지할 것입니다."
-
     },
 
 
-    "reconnaissance": {
-
+    reconnaissance: {
         ipa: "/rɪˈkɑːnəsəns/",
-
         part: "noun",
-
         meaning: "정찰",
-
         example:
         "Reconnaissance will be conducted before the main body moves forward.",
-
         exampleKo:
         "주력이 전진하기 전에 정찰이 실시될 것입니다."
-
     },
 
 
-    "recon": {
-
+    recon: {
         ipa: "/ˈrekɑːn/",
-
         part: "noun",
-
         meaning: "정찰",
-
         example:
         "We're going to conduct recon before moving forward.",
-
         exampleKo:
         "우리는 전진하기 전에 정찰을 실시할 것입니다."
-
     },
 
 
-    "front": {
-
+    front: {
         ipa: "/frʌnt/",
-
         part: "noun",
-
         meaning: "정면; 전방",
-
         example:
         "We expect enemy contact to our front.",
-
         exampleKo:
         "우리는 정면에서 적과 접촉할 것으로 예상합니다."
-
     },
 
 
-    "depth": {
-
+    depth: {
         ipa: "/depθ/",
-
         part: "noun",
-
         meaning: "종심",
-
         example:
         "Enemy reserves are positioned in depth.",
-
         exampleKo:
         "적 예비대는 종심에 배치되어 있습니다."
-
     },
 
 
-    "maneuver": {
-
+    maneuver: {
         ipa: "/məˈnuːvər/",
-
         part: "verb / noun",
-
         meaning: "기동하다; 기동",
-
         example:
         "The main effort will maneuver to the enemy's flank.",
-
         exampleKo:
         "주공은 적의 측방으로 기동할 것입니다."
-
     },
 
 
-    "bypass": {
-
+    bypass: {
         ipa: "/ˈbaɪpæs/",
-
         part: "verb",
-
         meaning: "우회하다",
-
         example:
         "We may bypass the enemy position if possible.",
-
         exampleKo:
         "가능하다면 적 진지를 우회할 수 있습니다."
-
     },
 
 
-    "fix": {
-
+    fix: {
         ipa: "/fɪks/",
-
         part: "verb",
-
         meaning: "고착시키다",
-
         example:
         "The supporting element will fix the enemy while the main effort maneuvers.",
-
         exampleKo:
         "주공이 기동하는 동안 조공부대가 적을 고착시킬 것입니다."
-
     },
 
 
-    "assault": {
-
+    assault: {
         ipa: "/əˈsɔːlt/",
-
         part: "noun / verb",
-
         meaning: "돌격; 돌격하다",
-
         example:
         "The assault will begin after the preparatory fires are complete.",
-
         exampleKo:
         "준비사격이 완료된 후 돌격이 시작될 것입니다."
-
     },
 
 
-    "flank": {
-
+    flank: {
         ipa: "/flæŋk/",
-
         part: "noun",
-
         meaning: "측방; 측면",
-
         example:
         "The main effort will attack the enemy's flank.",
-
         exampleKo:
         "주공은 적의 측방을 공격할 것입니다."
-
     },
 
 
-    "overwatch": {
-
+    overwatch: {
         ipa: "/ˈoʊvərwɑːtʃ/",
-
         part: "noun / verb",
-
         meaning: "엄호",
-
         example:
         "The second squad will provide overwatch.",
-
         exampleKo:
         "2분대가 엄호를 실시할 것입니다."
-
     },
 
 
-    "fire": {
-
+    fire: {
         ipa: "/faɪr/",
-
         part: "noun",
-
         meaning: "화력; 사격",
-
         example:
         "Fire support will be available during the assault.",
-
         exampleKo:
         "돌격 중에 화력지원이 제공될 것입니다."
-
     },
 
 
-    "supporting": {
-
+    supporting: {
         ipa: "/səˈpɔːrtɪŋ/",
-
         part: "adjective",
-
         meaning: "지원하는; 조공의",
-
         example:
         "The supporting element will fix the enemy.",
-
         exampleKo:
         "조공부대가 적을 고착시킬 것입니다."
-
     }
 
 };
@@ -1555,25 +1348,23 @@ const wordData = {
 
 
 /* =========================
-   ESCAPE HTML
+   RESET STATE
 ========================= */
 
-function escapeHTML(str) {
+function resetPlaybackState() {
 
-    return str.replace(
-        /[&<>"']/g,
+    clearInterval(timer);
 
-        c => ({
+    clearTimeout(boundaryWatch);
 
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            '"': '&quot;',
-            "'": '&#39;'
 
-        }[c])
+    fallbackIndex = 0;
 
-    );
+    boundaryReceived = false;
+
+    fallbackStarted = false;
+
+    pausedByUser = false;
 
 }
 
@@ -1585,14 +1376,13 @@ function escapeHTML(str) {
 
 function buildReader() {
 
-
     speechSynthesis.cancel();
 
     clearInterval(timer);
 
 
     const text =
-        $('text').value;
+        $("text").value;
 
 
     const regex =
@@ -1609,7 +1399,6 @@ function buildReader() {
     words = [];
 
     bounds = [];
-
 
 
     while (
@@ -1645,17 +1434,16 @@ function buildReader() {
         ]);
 
 
-
         output +=
 
             `<span
-                class="word"
-                data-index="${index}"
-                onclick="speakWord(${index})">
+            class="word"
+            data-index="${index}"
+            onclick="speakWord(${index})">
 
-                ${escapeHTML(
-                    match[0]
-                )}
+            ${escapeHTML(
+                match[0]
+            )}
 
             </span>`;
 
@@ -1667,14 +1455,13 @@ function buildReader() {
     }
 
 
-
     output +=
         escapeHTML(
             text.slice(last)
         );
 
 
-    $('reader').innerHTML =
+    $("reader").innerHTML =
         output;
 
 
@@ -1685,11 +1472,35 @@ function buildReader() {
 
 
 /* =========================
+   ESCAPE
+========================= */
+
+function escapeHTML(str) {
+
+    return str.replace(
+        /[&<>"']/g,
+
+        c => ({
+
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;"
+
+        }[c])
+
+    );
+
+}
+
+
+
+/* =========================
    HIGHLIGHT
 ========================= */
 
 function highlightWord(index) {
-
 
     if (
         index < 0 ||
@@ -1702,19 +1513,19 @@ function highlightWord(index) {
 
 
     document
-        .querySelectorAll('.word')
+        .querySelectorAll(".word")
         .forEach(
             (element, i) => {
 
 
                 element.classList.toggle(
-                    'done',
+                    "done",
                     i < index
                 );
 
 
                 element.classList.toggle(
-                    'current',
+                    "current",
                     i === index
                 );
 
@@ -1724,7 +1535,7 @@ function highlightWord(index) {
                 ) {
 
                     element.classList.remove(
-                        'clicked'
+                        "clicked"
                     );
 
                 }
@@ -1737,8 +1548,8 @@ function highlightWord(index) {
         index;
 
 
-    $('status').textContent =
-        '▶︎ ' +
+    $("status").textContent =
+        "▶︎ " +
         words[index];
 
 }
@@ -1746,7 +1557,7 @@ function highlightWord(index) {
 
 
 /* =========================
-   FIND WORD
+   CHARACTER → WORD
 ========================= */
 
 function findWordFromCharacter(
@@ -1790,37 +1601,64 @@ function findWordFromCharacter(
    FALLBACK
 ========================= */
 
-function fallbackHighlight() {
+function startFallback() {
+
+    if (
+        fallbackStarted ||
+        boundaryReceived
+    ) {
+
+        return;
+
+    }
+
+
+    fallbackStarted =
+        true;
 
 
     clearInterval(timer);
 
 
-    const wordCount =
-        words.length;
-
-
-    const rate =
-        Number(
-            $('speed').value
-        );
-
-
     const interval =
         Math.max(
+
             90,
+
             Math.round(
-                360 / rate
+
+                360 /
+                Number(
+                    $("speed").value
+                )
+
             )
+
         );
-
-
-    let index = 0;
 
 
     timer =
         setInterval(
             () => {
+
+
+                /*
+                   핵심:
+                   일시정지 중에는
+                   절대 화면을 진행하지 않는다.
+                */
+
+                if (
+
+                    pausedByUser ||
+
+                    speechSynthesis.paused
+
+                ) {
+
+                    return;
+
+                }
 
 
                 if (
@@ -1834,23 +1672,32 @@ function fallbackHighlight() {
                 }
 
 
-                highlightWord(index);
-
-
-                index++;
-
-
                 if (
-                    index >=
-                    wordCount
+                    fallbackIndex <
+                    words.length
                 ) {
+
+
+                    highlightWord(
+                        fallbackIndex
+                    );
+
+
+                    fallbackIndex++;
+
+
+                }
+
+                else {
 
                     clearInterval(timer);
 
                 }
 
             },
+
             interval
+
         );
 
 }
@@ -1896,23 +1743,13 @@ function openWordInfo(index) {
         originalWord;
 
 
-    const key =
-        getWordKey(
-            originalWord
-        );
-
-
-    const data =
-        wordData[key];
-
-
     document
-        .querySelectorAll('.word')
+        .querySelectorAll(".word")
         .forEach(
             element => {
 
                 element.classList.remove(
-                    'clicked'
+                    "clicked"
                 );
 
             }
@@ -1928,76 +1765,84 @@ function openWordInfo(index) {
     if (element) {
 
         element.classList.add(
-            'clicked'
+            "clicked"
         );
 
     }
 
 
-    $('modalWord').textContent =
-        originalWord;
+    const data =
+        wordData[
+            getWordKey(
+                originalWord
+            )
+        ];
 
+
+    $("modalWord").textContent =
+        originalWord;
 
 
     if (data) {
 
 
-        $('modalIPA').textContent =
+        $("modalIPA").textContent =
             data.ipa;
 
 
-        $('modalPart').textContent =
+        $("modalPart").textContent =
             data.part;
 
 
-        $('modalMeaning').textContent =
+        $("modalMeaning").textContent =
             data.meaning;
 
 
-        $('modalExample').textContent =
+        $("modalExample").textContent =
             data.example;
 
 
-        $('modalExampleKo').textContent =
+        $("modalExampleKo").textContent =
             data.exampleKo;
 
     }
 
+
     else {
 
 
-        $('modalIPA').textContent =
+        $("modalIPA").textContent =
             "IPA 정보 준비 중";
 
 
-        $('modalPart').textContent =
+        $("modalPart").textContent =
             "word";
 
 
-        $('modalMeaning').textContent =
+        $("modalMeaning").textContent =
             "단어 정보 준비 중";
 
 
-        $('modalExample').textContent =
+        $("modalExample").textContent =
             originalWord;
 
 
-        $('modalExampleKo').textContent =
-            "이 단어는 아직 K-ICTC 사전에 등록되지 않았습니다.";
+        $("modalExampleKo").textContent =
+            "아직 K-ICTC 사전에 등록되지 않은 단어입니다.";
 
     }
 
 
-    $('wordModal')
+    $("wordModal")
         .classList
-        .add('show');
+        .add("show");
 
 }
 
 
 
 /* =========================
-   SPEAK WORD
+   WORD SPEAK
 ========================= */
 
 function speakWord(index) {
@@ -2022,119 +1867,52 @@ function speakWord(index) {
     openWordInfo(index);
 
 
-    const wordUtterance =
+    const u =
         new SpeechSynthesisUtterance(
             word
         );
 
 
-    wordUtterance.lang =
+    u.lang =
         "en-US";
 
 
-    wordUtterance.rate =
+    u.rate =
         0.72;
 
 
-    wordUtterance.pitch =
+    u.pitch =
         1;
 
 
-    wordUtterance.onstart =
+    u.onstart =
         () => {
 
-            $('status').textContent =
-                '🔊 ' +
+            $("status").textContent =
+                "🔊 " +
                 word;
 
         };
 
 
-    wordUtterance.onend =
+    u.onend =
         () => {
 
-            $('status').textContent =
-                '✓ ' +
+            $("status").textContent =
+                "✓ " +
                 word;
 
         };
 
 
-    speechSynthesis.speak(
-        wordUtterance
-    );
+    speechSynthesis.speak(u);
 
 }
 
 
 
 /* =========================
-   MODAL PLAY
-========================= */
-
-$('modalPlay').onclick =
-    () => {
-
-
-        if (!selectedWord) {
-
-            return;
-
-        }
-
-
-        speechSynthesis.cancel();
-
-
-        const utterance =
-            new SpeechSynthesisUtterance(
-                selectedWord
-            );
-
-
-        utterance.lang =
-            "en-US";
-
-
-        utterance.rate =
-            0.72;
-
-
-        speechSynthesis.speak(
-            utterance
-        );
-
-    };
-
-
-
-/* =========================
-   CLOSE MODAL
-========================= */
-
-$('closeModal').onclick =
-    () => {
-
-        $('wordModal')
-            .classList
-            .remove('show');
-
-    };
-
-
-$('wordModal').onclick =
-    () => {
-
-        $('wordModal')
-            .classList
-            .remove('show');
-
-    };
-
-
-
-/* =========================
-   FULL SENTENCE
+   SENTENCE SPEAK
 ========================= */
 
 function startSpeaking() {
@@ -2142,14 +1920,15 @@ function startSpeaking() {
 
     speechSynthesis.cancel();
 
-    clearInterval(timer);
+
+    resetPlaybackState();
 
 
     buildReader();
 
 
     const text =
-        $('text')
+        $("text")
             .value
             .trim();
 
@@ -2173,7 +1952,7 @@ function startSpeaking() {
 
     utterance.rate =
         Number(
-            $('speed').value
+            $("speed").value
         );
 
 
@@ -2181,20 +1960,79 @@ function startSpeaking() {
         1;
 
 
+
+    /* =====================
+       START
+    ===================== */
+
     utterance.onstart =
         () => {
 
-            $('status').textContent =
+
+            pausedByUser =
+                false;
+
+
+            $("status").textContent =
                 "재생 중…";
 
 
-            fallbackHighlight();
+            /*
+               0.8초 동안 실제
+               boundary 이벤트가 없으면
+               fallback 사용
+            */
+
+            boundaryWatch =
+                setTimeout(
+                    () => {
+
+
+                        if (
+
+                            speechSynthesis.speaking
+
+                            &&
+
+                            !speechSynthesis.paused
+
+                            &&
+
+                            !boundaryReceived
+
+                        ) {
+
+                            startFallback();
+
+                        }
+
+                    },
+
+                    800
+
+                );
 
         };
 
 
+
+    /* =====================
+       REAL SYNC
+    ===================== */
+
     utterance.onboundary =
         event => {
+
+
+            boundaryReceived =
+                true;
+
+
+            clearInterval(timer);
+
+            clearTimeout(
+                boundaryWatch
+            );
 
 
             if (
@@ -2209,14 +2047,86 @@ function startSpeaking() {
                     );
 
 
-                highlightWord(
-                    index
-                );
+                if (
+                    index >= 0
+                ) {
+
+
+                    fallbackIndex =
+                        index + 1;
+
+
+                    highlightWord(
+                        index
+                    );
+
+                }
 
             }
 
         };
 
+
+
+    /* =====================
+       PAUSE
+    ===================== */
+
+    utterance.onpause =
+        () => {
+
+
+            pausedByUser =
+                true;
+
+
+            clearInterval(timer);
+
+
+            $("status").textContent =
+                "Ⅱ 일시정지";
+
+        };
+
+
+
+    /* =====================
+       RESUME
+    ===================== */
+
+    utterance.onresume =
+        () => {
+
+
+            pausedByUser =
+                false;
+
+
+            $("status").textContent =
+                "재생 중…";
+
+
+            if (
+
+                !boundaryReceived
+
+                &&
+
+                !fallbackStarted
+
+            ) {
+
+                startFallback();
+
+            }
+
+        };
+
+
+
+    /* =====================
+       END
+    ===================== */
 
     utterance.onend =
         () => {
@@ -2225,34 +2135,62 @@ function startSpeaking() {
             clearInterval(timer);
 
 
+            clearTimeout(
+                boundaryWatch
+            );
+
+
+            pausedByUser =
+                false;
+
+
             document
-                .querySelectorAll('.word')
+                .querySelectorAll(".word")
                 .forEach(
                     element => {
 
                         element.classList.remove(
-                            'current'
+                            "current"
                         );
 
+
                         element.classList.add(
-                            'done'
+                            "done"
                         );
 
                     }
                 );
 
 
-            $('status').textContent =
+            $("status").textContent =
                 "완료";
 
         };
 
 
+
+    /* =====================
+       ERROR
+    ===================== */
+
     utterance.onerror =
         event => {
 
-            $('status').textContent =
-                "음성 재생 오류: " +
+
+            clearInterval(timer);
+
+
+            clearTimeout(
+                boundaryWatch
+            );
+
+
+            $("status").textContent =
+
+                "음성 재생 오류: "
+
+                +
+
                 (
                     event.error ||
                     "unknown"
@@ -2273,25 +2211,57 @@ function startSpeaking() {
    PLAY
 ========================= */
 
-$('play').onclick =
+$("play").onclick =
     () => {
 
+
+        /*
+           일시정지 상태라면
+           현재 위치에서 resume
+        */
 
         if (
 
             speechSynthesis.speaking
+
             &&
+
             speechSynthesis.paused
 
         ) {
 
 
+            pausedByUser =
+                false;
+
+
             speechSynthesis.resume();
 
 
-            $('status').textContent =
+            $("status").textContent =
                 "재생 중…";
 
+
+            return;
+
+        }
+
+
+
+        /*
+           이미 재생 중이면
+           중복 재생하지 않는다.
+        */
+
+        if (
+
+            speechSynthesis.speaking
+
+            &&
+
+            !speechSynthesis.paused
+
+        ) {
 
             return;
 
@@ -2308,20 +2278,41 @@ $('play').onclick =
    PAUSE
 ========================= */
 
-$('pause').onclick =
+$("pause").onclick =
     () => {
 
 
         if (
+
             speechSynthesis.speaking
+
+            &&
+
+            !speechSynthesis.paused
+
         ) {
 
+
+            /*
+               화면 timer를 먼저 정지
+            */
+
+            pausedByUser =
+                true;
+
+
+            clearInterval(timer);
+
+
+            /*
+               음성 정지
+            */
 
             speechSynthesis.pause();
 
 
-            $('status').textContent =
-                "일시정지";
+            $("status").textContent =
+                "Ⅱ 일시정지";
 
         }
 
@@ -2333,20 +2324,20 @@ $('pause').onclick =
    STOP
 ========================= */
 
-$('stop').onclick =
+$("stop").onclick =
     () => {
 
 
         speechSynthesis.cancel();
 
 
-        clearInterval(timer);
+        resetPlaybackState();
 
 
         buildReader();
 
 
-        $('status').textContent =
+        $("status").textContent =
             "정지";
 
     };
@@ -2357,15 +2348,16 @@ $('stop').onclick =
    SPEED
 ========================= */
 
-$('speed').oninput =
+$("speed").oninput =
     () => {
 
 
-        $('sv').textContent =
+        $("sv").textContent =
 
             Number(
-                $('speed').value
-            ).toFixed(2)
+                $("speed").value
+            )
+            .toFixed(2)
 
             +
 
@@ -2379,74 +2371,73 @@ $('speed').oninput =
    TEXT CHANGE
 ========================= */
 
-$('text').oninput =
+$("text").oninput =
     () => {
 
 
         speechSynthesis.cancel();
 
 
-        clearInterval(timer);
+        resetPlaybackState();
 
 
         buildReader();
 
 
-        $('status').textContent =
+        $("status").textContent =
             "준비됨";
 
     };
 
 
 
-/* =====================================================
-   VERSION 4.0
-   전체 삭제
-===================================================== */
+/* =========================
+   CLEAR
+========================= */
 
-$('clearText').onclick =
+$("clearText").onclick =
     () => {
 
 
         speechSynthesis.cancel();
 
 
-        clearInterval(timer);
+        resetPlaybackState();
 
 
-        $('text').value =
+        $("text").value =
             "";
 
 
         buildReader();
 
 
-        $('status').textContent =
+        $("status").textContent =
             "문장이 삭제되었습니다.";
 
     };
 
 
 
-/* =====================================================
-   VERSION 4.0
-   Chrome 클립보드 붙여넣기
-===================================================== */
+/* =========================
+   CLIPBOARD
+========================= */
 
-$('pasteText').onclick =
+$("pasteText").onclick =
     async () => {
 
 
         try {
 
 
-            /*
-               Chrome의 Clipboard API 사용
-            */
-
             if (
-                !navigator.clipboard ||
+
+                !navigator.clipboard
+
+                ||
+
                 !navigator.clipboard.readText
+
             ) {
 
                 throw new Error(
@@ -2462,40 +2453,32 @@ $('pasteText').onclick =
                     .readText();
 
 
-
             if (!text) {
 
-                $('status').textContent =
+
+                $("status").textContent =
                     "클립보드에 텍스트가 없습니다.";
+
 
                 return;
 
             }
 
 
-
             speechSynthesis.cancel();
 
 
-            clearInterval(timer);
+            resetPlaybackState();
 
 
-            /*
-               클립보드 내용 입력
-            */
-
-            $('text').value =
+            $("text").value =
                 text;
 
-
-            /*
-               즉시 단어 분석
-            */
 
             buildReader();
 
 
-            $('status').textContent =
+            $("status").textContent =
                 "📋 클립보드 내용을 붙여넣었습니다.";
 
         }
@@ -2504,10 +2487,78 @@ $('pasteText').onclick =
         catch (error) {
 
 
-            $('status').textContent =
+            $("status").textContent =
+
                 "⚠️ 클립보드 접근이 차단되었습니다. Chrome의 권한을 확인해주세요.";
 
         }
+
+    };
+
+
+
+/* =========================
+   MODAL
+========================= */
+
+$("modalPlay").onclick =
+    () => {
+
+
+        if (!selectedWord) {
+
+            return;
+
+        }
+
+
+        speechSynthesis.cancel();
+
+
+        const u =
+            new SpeechSynthesisUtterance(
+                selectedWord
+            );
+
+
+        u.lang =
+            "en-US";
+
+
+        u.rate =
+            0.72;
+
+
+        speechSynthesis.speak(u);
+
+    };
+
+
+
+$("closeModal").onclick =
+    () => {
+
+        $("wordModal")
+            .classList
+            .remove("show");
+
+    };
+
+
+$("wordModal").onclick =
+    () => {
+
+        $("wordModal")
+            .classList
+            .remove("show");
+
+    };
+
+
+$("modalCard").onclick =
+    event => {
+
+        event.stopPropagation();
 
     };
 
@@ -2518,7 +2569,6 @@ $('pasteText').onclick =
 ========================= */
 
 buildReader();
-
 
 </script>
 
