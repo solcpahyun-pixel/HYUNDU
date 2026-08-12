@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width,
+initial-scale=1.0,
+maximum-scale=1.0,
+user-scalable=no">
+
+<meta name="apple-mobile-web-app-capable"
+content="yes">
+
+<meta name="apple-mobile-web-app-status-bar-style"
+content="black-translucent">
+
+<meta name="theme-color"
+content="#0b1220">
+
+<title>K-ICTC Speaking Reader</title>
+
+
+<style>
+
+/* =========================
+   기본 화면
+========================= */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+
+    margin: 0;
+
+    background: #0b1220;
+
+    color: #f8fafc;
+
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "SF Pro Display",
+        sans-serif;
+}
+
+
+main {
+
+    max-width: 720px;
+
+    margin: auto;
+
+    padding:
+        calc(18px + env(safe-area-inset-top))
+        16px
+        calc(30px + env(safe-area-inset-bottom));
+}
+
+
+h1 {
+
+    font-size: 26px;
+
+    margin:
+        0 0 6px;
+}
+
+
+.sub {
+
+    color: #94a3b8;
+
+    font-size: 14px;
+
+    margin-bottom: 18px;
+}
+
+
+
+/* =========================
+   문장 입력창
+========================= */
+
+textarea {
+
+    width: 100%;
+
+    min-height: 145px;
+
+    border:
+        1px solid #334155;
+
+    border-radius: 16px;
+
+    background: #111827;
+
+    color: white;
+
+    padding: 15px;
+
+    font-size: 18px;
+
+    line-height: 1.55;
+
+    outline: none;
+
+    -webkit-appearance: none;
+}
+
+
+textarea:focus {
+
+    border-color:
+        #22c55e;
+}
+
+
+
+/* =========================
+   버튼
+========================= */
+
+.row {
+
+    display: flex;
+
+    gap: 9px;
+
+    flex-wrap: wrap;
+
+    margin: 12px 0;
+}
+
+
+button {
+
+    min-height: 46px;
+
+    border: 0;
+
+    border-radius: 12px;
+
+    padding:
+        0 16px;
+
+    font-size: 16px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    -webkit-tap-highlight-color:
+        transparent;
+}
+
+
+.play {
+
+    background:
+        #22c55e;
+
+    color:
+        #052e16;
+}
+
+
+.dark {
+
+    background:
+        #263244;
+
+    color:
+        white;
+}
+
+
+
+/* =========================
+   속도 조절
+========================= */
+
+.control {
+
+    background:
+        #111827;
+
+    border:
+        1px solid #334155;
+
+    border-radius:
+        14px;
+
+    padding:
+        12px 14px;
+
+    margin:
+        10px 0;
+
+    color:
+        #cbd5e1;
+}
+
+
+.speedline {
+
+    display:
+        flex;
+
+    justify-content:
+        space-between;
+
+    margin-bottom:
+        7px;
+}
+
+
+input[type="range"] {
+
+    width:
+        100%;
+
+    accent-color:
+        #22c55e;
+}
+
+
+
+/* =========================
+   영어 문장
+========================= */
+
+.reader {
+
+    margin-top:
+        14px;
+
+    background:
+        #111827;
+
+    border:
+        1px solid #334155;
+
+    border-radius:
+        18px;
+
+    padding:
+        18px;
+
+    min-height:
+        190px;
+
+    font-size:
+        25px;
+
+    line-height:
+        1.9;
+}
+
+
+
+/* =========================
+   각각의 단어
+========================= */
+
+.word {
+
+    display:
+        inline-block;
+
+    margin-right:
+        0.12em;
+
+    padding:
+        0 0.08em;
+
+    border-radius:
+        7px;
+
+    cursor:
+        pointer;
+
+    transition:
+        background 0.08s,
+        color 0.08s,
+        transform 0.08s;
+
+    /*
+       아이폰에서 터치할 때
+       파란색 선택 표시 방지
+    */
+
+    -webkit-tap-highlight-color:
+        transparent;
+
+    user-select:
+        none;
+}
+
+
+
+/* 이미 읽은 단어 */
+
+.word.done {
+
+    color:
+        #86efac;
+}
+
+
+
+/* 현재 읽는 단어 */
+
+.word.current {
+
+    background:
+        #22c55e;
+
+    color:
+        #052e16;
+}
+
+
+
+/* 클릭한 단어 */
+
+.word.clicked {
+
+    background:
+        #facc15;
+
+    color:
+        #422006;
+
+    transform:
+        scale(1.04);
+}
+
+
+
+/* =========================
+   상태 표시
+========================= */
+
+.status {
+
+    color:
+        #94a3b8;
+
+    font-size:
+        13px;
+
+    margin:
+        10px 3px;
+}
+
+
+
+/* =========================
+   안내문
+========================= */
+
+.note {
+
+    font-size:
+        13px;
+
+    line-height:
+        1.55;
+
+    color:
+        #cbd5e1;
+
+    background:
+        #0f2a1a;
+
+    border-left:
+        4px solid #22c55e;
+
+    padding:
+        12px;
+
+    border-radius:
+        9px;
+
+    margin-top:
+        14px;
+}
+
+</style>
+
+</head>
+
+
+
+<body>
+
+
+<main>
+
+
+<h1>
+🎙️ K-ICTC Speaking Reader
+</h1>
+
+
+<div class="sub">
+
+문장을 듣고,
+단어를 눌러 발음을 연습해보세요.
+
+</div>
+
+
+
+<textarea id="text">
+
+The platoon will assemble at the attack position, cross the line of departure when ordered, and move toward the objective, where it will seize the key terrain and secure the area.
+
+</textarea>
+
+
+
+<div class="row">
+
+
+<button
+class="play"
+id="play">
+
+▶︎ 재생
+
+</button>
+
+
+
+<button
+class="dark"
+id="pause">
+
+Ⅱ 일시정지
+
+</button>
+
+
+
+<button
+class="dark"
+id="stop">
+
+■ 정지
+
+</button>
+
+
+</div>
+
+
+
+<div class="control">
+
+
+<div class="speedline">
+
+
+<span>
+
+재생 속도
+
+</span>
+
+
+<b id="sv">
+
+0.85×
+
+</b>
+
+
+</div>
+
+
+
+<input
+id="speed"
+type="range"
+min="0.5"
+max="1.5"
+step="0.05"
+value="0.85"
+>
+
+
+</div>
+
+
+
+<div
+class="reader"
+id="reader">
+
+</div>
+
+
+
+<div
+class="status"
+id="status">
+
+준비됨
+
+</div>
+
+
+
+<div class="note">
+
+👆 영어 단어를 누르면
+그 단어만 천천히 발음합니다.
+
+</div>
+
+
+</main>
+
+
+
+<script>
+
+
+/* =========================
+   기본 변수
+========================= */
+
+const $ =
+    id => document.getElementById(id);
+
+
+let utterance = null;
+
+let words = [];
+
+let bounds = [];
+
+let timer = null;
+
+let current = -1;
+
+
+
+/* =========================
+   HTML 특수문자 처리
+========================= */
+
+function escapeHTML(str) {
+
+    return str.replace(
+        /[&<>"']/g,
+
+        c => ({
+
+            '&': '&amp;',
+
+            '<': '&lt;',
+
+            '>': '&gt;',
+
+            '"': '&quot;',
+
+            "'": '&#39;'
+
+        }[c])
+
+    );
+
+}
+
+
+
+/* =========================
+   문장을 단어별로 분리
+========================= */
+
+function buildReader() {
+
+
+    speechSynthesis.cancel();
+
+
+    clearInterval(timer);
+
+
+    const text =
+        $('text').value;
+
+
+    const regex =
+        /\S+/g;
+
+
+    let match;
+
+    let last = 0;
+
+    let output = '';
+
+
+    words = [];
+
+    bounds = [];
+
+
+
+    while (
+        (match = regex.exec(text))
+    ) {
+
+
+        /*
+           단어 앞의 공백
+        */
+
+        output +=
+            escapeHTML(
+                text.slice(
+                    last,
+                    match.index
+                )
+            );
+
+
+
+        const index =
+            words.length;
+
+
+
+        words.push(
+            match[0]
+        );
+
+
+
+        bounds.push([
+
+            match.index,
+
+            match.index +
+            match[0].length
+
+        ]);
+
+
+
+        /*
+           ⭐ 중요
+           단어를 클릭하면
+           speakWord(index) 실행
+        */
+
+        output +=
+
+            `<span
+                class="word"
+                data-index="${index}"
+                onclick="speakWord(${index})">
+
+                ${escapeHTML(
+                    match[0]
+                )}
+
+            </span>`;
+
+
+
+        last =
+            match.index +
+            match[0].length;
+
+    }
+
+
+
+    /*
+       마지막 부분
+    */
+
+    output +=
+        escapeHTML(
+            text.slice(last)
+        );
+
+
+
+    $('reader').innerHTML =
+        output;
+
+
+    current = -1;
+
+}
+
+
+
+/* =========================
+   현재 단어 강조
+========================= */
+
+function highlightWord(index) {
+
+
+    if (
+        index < 0 ||
+        index >= words.length
+    ) {
+
+        return;
+
+    }
+
+
+
+    document
+        .querySelectorAll('.word')
+        .forEach(
+
+            (element, i) => {
+
+
+                element.classList.toggle(
+                    'done',
+                    i < index
+                );
+
+
+                element.classList.toggle(
+                    'current',
+                    i === index
+                );
+
+
+                /*
+                   클릭 효과 제거
+                */
+
+                if (
+                    i !== index
+                ) {
+
+                    element.classList.remove(
+                        'clicked'
+                    );
+
+                }
+
+            }
+
+        );
+
+
+
+    current =
+        index;
+
+
+    $('status').textContent =
+        '▶︎ ' +
+        words[index];
+
+}
+
+
+
+/* =========================
+   글자 위치 → 단어 찾기
+========================= */
+
+function findWordFromCharacter(
+    charIndex
+) {
+
+
+    for (
+        let i = 0;
+        i < bounds.length;
+        i++
+    ) {
+
+
+        if (
+
+            charIndex >=
+            bounds[i][0]
+
+            &&
+
+            charIndex <
+            bounds[i][1]
+
+        ) {
+
+            return i;
+
+        }
+
+    }
+
+
+    return -1;
+
+}
+
+
+
+/* =========================
+   백업용 단어 진행
+========================= */
+
+function fallbackHighlight() {
+
+
+    clearInterval(timer);
+
+
+    const wordCount =
+        words.length;
+
+
+    const rate =
+        Number(
+            $('speed').value
+        );
+
+
+    const interval =
+        Math.max(
+            90,
+            Math.round(
+                360 / rate
+            )
+        );
+
+
+    let index = 0;
+
+
+
+    timer =
+        setInterval(
+
+            () => {
+
+
+                if (
+                    !speechSynthesis.speaking
+                ) {
+
+                    clearInterval(
+                        timer
+                    );
+
+                    return;
+
+                }
+
+
+
+                highlightWord(
+                    index
+                );
+
+
+                index++;
+
+
+
+                if (
+                    index >=
+                    wordCount
+                ) {
+
+                    clearInterval(
+                        timer
+                    );
+
+                }
+
+            },
+
+            interval
+
+        );
+
+}
+
+
+
+/* =========================
+   ⭐ 단어 하나 발음
+========================= */
+
+function speakWord(index) {
+
+
+    const word =
+        words[index];
+
+
+    if (!word) {
+
+        return;
+
+    }
+
+
+
+    /*
+       현재 문장 전체 TTS 중지
+    */
+
+    speechSynthesis.cancel();
+
+
+    clearInterval(timer);
+
+
+
+    /*
+       단어 강조
+    */
+
+    document
+        .querySelectorAll('.word')
+        .forEach(
+            element => {
+
+                element.classList.remove(
+                    'clicked'
+                );
+
+            }
+        );
+
+
+
+    const element =
+        document.querySelector(
+            `[data-index="${index}"]`
+        );
+
+
+
+    if (element) {
+
+        element.classList.add(
+            'clicked'
+        );
+
+    }
+
+
+
+    /*
+       단어 발음
+    */
+
+    const wordUtterance =
+        new SpeechSynthesisUtterance(
+            word
+        );
+
+
+    /*
+       미국식 영어
+    */
+
+    wordUtterance.lang =
+        'en-US';
+
+
+
+    /*
+       단어는 천천히
+    */
+
+    wordUtterance.rate =
+        0.72;
+
+
+    wordUtterance.pitch =
+        1;
+
+
+
+    wordUtterance.onstart =
+        () => {
+
+            $('status').textContent =
+                '🔊 ' +
+                word;
+
+        };
+
+
+
+    wordUtterance.onend =
+        () => {
+
+            setTimeout(
+                () => {
+
+                    if (element) {
+
+                        element.classList.remove(
+                            'clicked'
+                        );
+
+                    }
+
+                },
+
+                300
+            );
+
+        };
+
+
+
+    speechSynthesis.speak(
+        wordUtterance
+    );
+
+}
+
+
+
+/* =========================
+   전체 문장 읽기
+========================= */
+
+function startSpeaking() {
+
+
+    speechSynthesis.cancel();
+
+
+    clearInterval(timer);
+
+
+    buildReader();
+
+
+
+    const text =
+        $('text')
+            .value
+            .trim();
+
+
+
+    if (!text) {
+
+        return;
+
+    }
+
+
+
+    utterance =
+        new SpeechSynthesisUtterance(
+            text
+        );
+
+
+
+    utterance.lang =
+        'en-US';
+
+
+
+    utterance.rate =
+        Number(
+            $('speed').value
+        );
+
+
+
+    utterance.pitch =
+        1;
+
+
+
+    utterance.onstart =
+        () => {
+
+
+            $('status').textContent =
+                '재생 중…';
+
+
+
+            fallbackHighlight();
+
+        };
+
+
+
+    /*
+       브라우저가 지원하면
+       실제 음성 위치를 이용
+    */
+
+    utterance.onboundary =
+        event => {
+
+
+            if (
+                typeof event.charIndex ===
+                'number'
+            ) {
+
+
+                const index =
+                    findWordFromCharacter(
+                        event.charIndex
+                    );
+
+
+                highlightWord(
+                    index
+                );
+
+            }
+
+        };
+
+
+
+    utterance.onend =
+        () => {
+
+
+            clearInterval(
+                timer
+            );
+
+
+
+            document
+                .querySelectorAll(
+                    '.word'
+                )
+                .forEach(
+                    element => {
+
+
+                        element.classList.remove(
+                            'current'
+                        );
+
+
+                        element.classList.add(
+                            'done'
+                        );
+
+                    }
+                );
+
+
+
+            $('status').textContent =
+                '완료';
+
+        };
+
+
+
+    utterance.onerror =
+        event => {
+
+
+            $('status').textContent =
+                '음성 재생 오류: ' +
+                (
+                    event.error ||
+                    'unknown'
+                );
+
+        };
+
+
+
+    speechSynthesis.speak(
+        utterance
+    );
+
+}
+
+
+
+/* =========================
+   재생 버튼
+========================= */
+
+$('play').onclick =
+    () => {
+
+
+        if (
+
+            speechSynthesis.speaking
+            &&
+            speechSynthesis.paused
+
+        ) {
+
+
+            speechSynthesis.resume();
+
+
+            $('status').textContent =
+                '재생 중…';
+
+
+            return;
+
+        }
+
+
+
+        startSpeaking();
+
+    };
+
+
+
+/* =========================
+   일시정지
+========================= */
+
+$('pause').onclick =
+    () => {
+
+
+        if (
+            speechSynthesis.speaking
+        ) {
+
+
+            speechSynthesis.pause();
+
+
+            $('status').textContent =
+                '일시정지';
+
+        }
+
+    };
+
+
+
+/* =========================
+   정지
+========================= */
+
+$('stop').onclick =
+    () => {
+
+
+        speechSynthesis.cancel();
+
+
+        clearInterval(
+            timer
+        );
+
+
+        buildReader();
+
+
+        $('status').textContent =
+            '정지';
+
+    };
+
+
+
+/* =========================
+   속도 변경
+========================= */
+
+$('speed').oninput =
+    () => {
+
+
+        $('sv').textContent =
+
+            Number(
+                $('speed').value
+            ).toFixed(2)
+
+            +
+
+            '×';
+
+    };
+
+
+
+/* =========================
+   문장 수정
+========================= */
+
+$('text').oninput =
+    () => {
+
+
+        speechSynthesis.cancel();
+
+
+        clearInterval(
+            timer
+        );
+
+
+        buildReader();
+
+
+        $('status').textContent =
+            '준비됨';
+
+    };
+
+
+
+/* =========================
+   최초 실행
+========================= */
+
+buildReader();
+
+
+</script>
+
+</body>
+
+</html>
