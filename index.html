@@ -1,19 +1,16 @@
+<!--
+K-ICTC Speaking Reader
+Version 4.0
+
+Version 4.0 Changes
+1. 전체 삭제 버튼
+2. Chrome 클립보드 붙여넣기 버튼
+-->
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-
-<!--
-K-ICTC Speaking Reader
-Version 3.0
-
-Version 3.0 Changes:
-- UI에 현재 버전 표시
-- 단어 클릭 시 발음 재생
-- 단어 정보 팝업 추가
-- IPA / 품사 / 뜻 / K-ICTC 예문 표시
-- 팝업에서 단어 발음 재생
--->
 
 <meta charset="UTF-8">
 
@@ -96,7 +93,8 @@ main {
 
 h1 {
 
-    font-size: 26px;
+    font-size:
+        26px;
 
     margin:
         0 0 6px;
@@ -135,6 +133,27 @@ h1 {
 
     white-space:
         nowrap;
+}
+
+
+
+/* =========================
+   INPUT TOOLS
+========================= */
+
+.input-tools {
+
+    display:
+        flex;
+
+    gap:
+        9px;
+
+    flex-wrap:
+        wrap;
+
+    margin:
+        10px 0;
 }
 
 
@@ -747,14 +766,6 @@ input[type="range"] {
 
 @media (max-width: 480px) {
 
-    .header {
-
-        align-items:
-            flex-start;
-
-    }
-
-
     h1 {
 
         font-size:
@@ -826,7 +837,7 @@ input[type="range"] {
 
     <div class="version">
 
-        Version 3.0
+        Version 4.0
 
     </div>
 
@@ -835,7 +846,34 @@ input[type="range"] {
 
 
 <!-- =========================
-     TEXT
+     INPUT TOOLS
+========================= -->
+
+<div class="input-tools">
+
+    <button
+    class="dark"
+    id="clearText">
+
+        🗑️ 전체 삭제
+
+    </button>
+
+
+    <button
+    class="dark"
+    id="pasteText">
+
+        📋 클립보드 붙여넣기
+
+    </button>
+
+</div>
+
+
+
+<!-- =========================
+     TEXT INPUT
 ========================= -->
 
 <textarea id="text">The platoon will assemble at the attack position, cross the line of departure when ordered, and move toward the objective, where it will seize the key terrain and secure the area.</textarea>
@@ -890,12 +928,16 @@ id="stop">
 <div class="speedline">
 
 <span>
+
 재생 속도
+
 </span>
 
 
 <b id="sv">
+
 0.85×
+
 </b>
 
 </div>
@@ -1016,6 +1058,7 @@ class="close"
 id="closeModal">
 
 ×
+
 </button>
 
 
@@ -1505,25 +1548,7 @@ const wordData = {
         exampleKo:
         "조공부대가 적을 고착시킬 것입니다."
 
-    },
-
-
-    "attack": {
-
-        ipa: "/əˈtæk/",
-
-        part: "noun / verb",
-
-        meaning: "공격; 공격하다",
-
-        example:
-        "The attack will begin at H-hour.",
-
-        exampleKo:
-        "공격은 H-hour에 시작될 것입니다."
-
     }
-
 
 };
 
@@ -1833,11 +1858,10 @@ function fallbackHighlight() {
 
 
 /* =========================
-   WORD INFO
+   WORD KEY
 ========================= */
 
 function getWordKey(word) {
-
 
     return word
         .toLowerCase()
@@ -1851,7 +1875,7 @@ function getWordKey(word) {
 
 
 /* =========================
-   OPEN WORD MODAL
+   WORD INFO
 ========================= */
 
 function openWordInfo(index) {
@@ -1872,7 +1896,6 @@ function openWordInfo(index) {
         originalWord;
 
 
-
     const key =
         getWordKey(
             originalWord
@@ -1882,11 +1905,6 @@ function openWordInfo(index) {
     const data =
         wordData[key];
 
-
-
-    /*
-       클릭 단어 강조
-    */
 
     document
         .querySelectorAll('.word')
@@ -1916,11 +1934,6 @@ function openWordInfo(index) {
     }
 
 
-
-    /*
-       기본값
-    */
-
     $('modalWord').textContent =
         originalWord;
 
@@ -1948,15 +1961,10 @@ function openWordInfo(index) {
         $('modalExampleKo').textContent =
             data.exampleKo;
 
-
     }
 
     else {
 
-
-        /*
-           아직 사전에 없는 단어
-        */
 
         $('modalIPA').textContent =
             "IPA 정보 준비 중";
@@ -1978,7 +1986,6 @@ function openWordInfo(index) {
             "이 단어는 아직 K-ICTC 사전에 등록되지 않았습니다.";
 
     }
-
 
 
     $('wordModal')
@@ -2007,27 +2014,13 @@ function speakWord(index) {
     }
 
 
-    /*
-       기존 음성 중지
-    */
-
     speechSynthesis.cancel();
 
     clearInterval(timer);
 
 
-
-    /*
-       단어 정보 표시
-    */
-
     openWordInfo(index);
 
-
-
-    /*
-       단어 발음
-    */
 
     const wordUtterance =
         new SpeechSynthesisUtterance(
@@ -2076,7 +2069,7 @@ function speakWord(index) {
 
 
 /* =========================
-   MODAL PLAY BUTTON
+   MODAL PLAY
 ========================= */
 
 $('modalPlay').onclick =
@@ -2128,11 +2121,6 @@ $('closeModal').onclick =
 
     };
 
-
-
-/*
-   팝업 바깥 클릭
-*/
 
 $('wordModal').onclick =
     () => {
@@ -2411,11 +2399,126 @@ $('text').oninput =
 
 
 
+/* =====================================================
+   VERSION 4.0
+   전체 삭제
+===================================================== */
+
+$('clearText').onclick =
+    () => {
+
+
+        speechSynthesis.cancel();
+
+
+        clearInterval(timer);
+
+
+        $('text').value =
+            "";
+
+
+        buildReader();
+
+
+        $('status').textContent =
+            "문장이 삭제되었습니다.";
+
+    };
+
+
+
+/* =====================================================
+   VERSION 4.0
+   Chrome 클립보드 붙여넣기
+===================================================== */
+
+$('pasteText').onclick =
+    async () => {
+
+
+        try {
+
+
+            /*
+               Chrome의 Clipboard API 사용
+            */
+
+            if (
+                !navigator.clipboard ||
+                !navigator.clipboard.readText
+            ) {
+
+                throw new Error(
+                    "Clipboard API unavailable"
+                );
+
+            }
+
+
+            const text =
+                await navigator
+                    .clipboard
+                    .readText();
+
+
+
+            if (!text) {
+
+                $('status').textContent =
+                    "클립보드에 텍스트가 없습니다.";
+
+                return;
+
+            }
+
+
+
+            speechSynthesis.cancel();
+
+
+            clearInterval(timer);
+
+
+            /*
+               클립보드 내용 입력
+            */
+
+            $('text').value =
+                text;
+
+
+            /*
+               즉시 단어 분석
+            */
+
+            buildReader();
+
+
+            $('status').textContent =
+                "📋 클립보드 내용을 붙여넣었습니다.";
+
+        }
+
+
+        catch (error) {
+
+
+            $('status').textContent =
+                "⚠️ 클립보드 접근이 차단되었습니다. Chrome의 권한을 확인해주세요.";
+
+        }
+
+    };
+
+
+
 /* =========================
    INITIALIZE
 ========================= */
 
 buildReader();
+
 
 </script>
 
