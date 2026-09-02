@@ -155,6 +155,7 @@ function playPodcastSentence(){
     if(!podcastPlaying)
         return;
 
+
     if(
         podcastIndex>=
         podcastSentences.length
@@ -179,36 +180,58 @@ function playPodcastSentence(){
 
     }
 
+
     showPodcastSentence();
+
 
     const sentence=
         podcastSentences[podcastIndex];
 
+
+    /*
+        Podcast는 Reader와 별도의
+        SpeechSynthesisUtterance를 사용한다.
+    */
+
     podcastUtterance=
         new SpeechSynthesisUtterance(sentence);
 
+
     podcastUtterance.lang="en-US";
+
 
     podcastUtterance.rate=
         Number($("podcastSpeed").value);
 
-    const voice=getEnglishVoice();
+
+    const voice=
+        getEnglishVoice();
+
 
     if(voice)
         podcastUtterance.voice=voice;
 
+
+    /*
+        문장 하나가 끝나면
+        다음 문장으로 넘어간다.
+    */
 
     podcastUtterance.onend=()=>{
 
         if(!podcastPlaying)
             return;
 
+
         podcastIndex++;
+
 
         podcastTimer=setTimeout(
             ()=>{
+
                 if(podcastPlaying)
                     playPodcastSentence();
+
             },
             180
         );
@@ -216,10 +239,15 @@ function playPodcastSentence(){
     };
 
 
+    /*
+        TTS 오류
+    */
+
     podcastUtterance.onerror=e=>{
 
         if(!podcastPlaying)
             return;
+
 
         /*
             iOS에서 cancel 직후 발생하는
@@ -229,11 +257,16 @@ function playPodcastSentence(){
         if(e.error==="canceled")
             return;
 
+
         $("podcastStatus").textContent=
             "⚠️ TTS 오류";
 
     };
 
+
+    /*
+        실제 음성 재생
+    */
 
     speechSynthesis.speak(
         podcastUtterance
@@ -284,6 +317,10 @@ $("podcastPlay").onclick=()=>{
 
     }
 
+
+    /*
+        새로운 Podcast 시작
+    */
 
     speechSynthesis.cancel();
 

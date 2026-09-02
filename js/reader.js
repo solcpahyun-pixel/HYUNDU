@@ -7,6 +7,9 @@
 let words = [];
 let currentUtterance = null;
 
+let pausedCharIndex = 0;
+let lastCharIndex = 0;
+
 
 // =====================================================
 // BUILD READER
@@ -139,10 +142,10 @@ function highlightWordAt(charIndex){
 
 $("play").onclick = () => {
 
-    const text =
+    const fullText =
         $("text").value.trim();
 
-    if(!text){
+    if(!fullText){
 
         $("status").textContent =
             "문장을 입력해주세요.";
@@ -152,28 +155,129 @@ $("play").onclick = () => {
     }
 
 
- // Resume
-if(speechSynthesis.paused){
+    // -------------------------------------------------
+    // RESUME FROM SAVED POSITION
+    // -------------------------------------------------
 
-    resumeSpeech();
+    if(pausedCharIndex > 0){
 
-    $("status").textContent =
-        "🔊 읽는 중…";
+        const resumeText =
+            fullText.slice(pausedCharIndex);
 
-    return;
+        const startIndex =
+            pausedCharIndex;
 
-}
+        const rate =
+            Number($("speed").value);
 
 
-// Already playing
-if(speechSynthesis.speaking){
+        currentUtterance =
+            speakText(
+                resumeText,
+                rate,
+                {
 
-    return;
+                    onStart: () => {
 
-}
+                        $("status").textContent =
+                            "🔊 읽는 중…";
+
+                    },
+
+
+                    onBoundary: event => {
+
+                        if(
+                            !event.name ||
+                            event.name === "word"
+                        ){
+
+                            if(
+                                typeof event.charIndex ===
+                                "number"
+                            ){
+
+                                const actualCharIndex =
+                                    startIndex +
+                                    event.charIndex;
+
+                                lastCharIndex =
+                                    actualCharIndex;
+
+                                highlightWordAt(
+                                    actualCharIndex
+                                );
+
+                            }
+
+                        }
+
+                    },
+
+
+                    onEnd: () => {
+
+                        words.forEach(
+                            (_, index) => {
+
+                                const el =
+                                    $(`word-${index}`);
+
+                                if(el){
+
+                                    el.classList.remove(
+                                        "current"
+                                    );
+
+                                    el.classList.add(
+                                        "done"
+                                    );
+
+                                }
+
+                            }
+                        );
+
+                        pausedCharIndex = 0;
+                        lastCharIndex = 0;
+
+                        $("status").textContent =
+                            "✓ 완료";
+
+                    },
+
+
+                    onError: event => {
+
+                        $("status").textContent =
+                            "⚠️ TTS 오류: " +
+                            (event.error || "unknown");
+
+                    }
+
+                }
+            );
+
+        return;
+
+    }
+
+
+    // -------------------------------------------------
+    // ALREADY PLAYING
+    // -------------------------------------------------
+
+    if(speechSynthesis.speaking){
+
+        return;
+
+    }
 
 
     resetHighlights();
+
+    pausedCharIndex = 0;
+    lastCharIndex = 0;
 
 
     const rate =
@@ -182,7 +286,7 @@ if(speechSynthesis.speaking){
 
     currentUtterance =
         speakText(
-            text,
+            fullText,
             rate,
             {
 
@@ -205,6 +309,9 @@ if(speechSynthesis.speaking){
                             typeof event.charIndex ===
                             "number"
                         ){
+
+                            lastCharIndex =
+                                event.charIndex;
 
                             highlightWordAt(
                                 event.charIndex
@@ -240,6 +347,8 @@ if(speechSynthesis.speaking){
                         }
                     );
 
+                    pausedCharIndex = 0;
+                    lastCharIndex = 0;
 
                     $("status").textContent =
                         "✓ 완료";
@@ -272,7 +381,24 @@ $("pause").onclick = () => {
         !speechSynthesis.paused
     ){
 
-        pauseSpeech();
+        /*
+            TTS boundary 이벤트에서 마지막으로
+            확인된 실제 문자 위치를 저장한다.
+        */
+
+        pausedCharIndex =
+            lastCharIndex;
+
+
+        /*
+            native resume()을 사용하지 않고
+            현재 음성을 정지한다.
+        */
+
+        stopSpeech();
+
+        currentUtterance = null;
+
 
         $("status").textContent =
             "Ⅱ 일시정지";
@@ -291,6 +417,9 @@ $("stop").onclick = () => {
     stopSpeech();
 
     currentUtterance = null;
+
+    pausedCharIndex = 0;
+    lastCharIndex = 0;
 
     resetHighlights();
 
@@ -322,6 +451,9 @@ $("text").oninput = () => {
 
     stopSpeech();
 
+    pausedCharIndex = 0;
+    lastCharIndex = 0;
+
     buildReader();
 
     $("charCount").textContent =
@@ -340,6 +472,9 @@ $("text").oninput = () => {
 $("clearText").onclick = () => {
 
     stopSpeech();
+
+    pausedCharIndex = 0;
+    lastCharIndex = 0;
 
     $("text").value = "";
 
@@ -390,6 +525,9 @@ $("pasteText").onclick = async () => {
 
         stopSpeech();
 
+        pausedCharIndex = 0;
+        lastCharIndex = 0;
+
         $("text").value =
             text
                 .replace(/<[^>]*>/g, " ")
@@ -418,10 +556,3 @@ $("pasteText").onclick = async () => {
     }
 
 };
-
-
-// =====================================================
-// INITIALIZE READER
-// =====================================================
-
-buildReader();

@@ -5,15 +5,23 @@
    ===================================================== */
 
 /*
-   현재는 브라우저 SpeechSynthesis를 사용한다.
+   브라우저 SpeechSynthesis를 사용하는 공통 TTS 엔진.
 
-   Reader / Flashcard / Podcast는
-   직접 speechSynthesis를 호출하지 않고
-   이 파일의 함수를 사용한다.
-
-   추후 Kokoro 등의 TTS 엔진으로 교체할 때
-   이 파일만 수정하는 것을 목표로 한다.
+   Reader / Flashcard / Podcast에서 사용하는
+   재생 / 일시정지 / 재개 / 정지 기능을
+   한 곳에서 관리하는 것을 목표로 한다.
 */
+
+
+// =====================================================
+// TTS STATE
+// =====================================================
+
+let currentTTSUtterance = null;
+let ttsState = "idle";
+
+// 현재 TTS 요청을 구분하기 위한 ID
+let ttsRequestId = 0;
 
 
 // =====================================================
@@ -44,18 +52,22 @@ function speakText(
     options = {}
 ){
 
-    speechSynthesis.cancel();
+    // 새로운 TTS 요청
+    const requestId = ++ttsRequestId;
 
-    const utterance =
+if(options.cancelPrevious !== false){
+    speechSynthesis.cancel();
+}
+    currentTTSUtterance =
         new SpeechSynthesisUtterance(text);
 
-    utterance.lang = "en-US";
-    utterance.rate = rate;
+    currentTTSUtterance.lang = "en-US";
+    currentTTSUtterance.rate = rate;
 
     const voice = getEnglishVoice();
 
     if(voice){
-        utterance.voice = voice;
+        currentTTSUtterance.voice = voice;
     }
 
 
@@ -63,26 +75,73 @@ function speakText(
     // CALLBACK
     // -------------------------------------------------
 
-    if(options.onStart){
-        utterance.onstart = options.onStart;
-    }
+    currentTTSUtterance.onstart = e => {
 
-    if(options.onBoundary){
-        utterance.onboundary = options.onBoundary;
-    }
+        // 이전 TTS의 이벤트라면 무시
+        if(requestId !== ttsRequestId){
+            return;
+        }
 
-    if(options.onEnd){
-        utterance.onend = options.onEnd;
-    }
+        ttsState = "playing";
 
-    if(options.onError){
-        utterance.onerror = options.onError;
-    }
+        if(options.onStart){
+            options.onStart(e);
+        }
+
+    };
 
 
-    speechSynthesis.speak(utterance);
+    currentTTSUtterance.onboundary = e => {
 
-    return utterance;
+        // 이전 TTS의 이벤트라면 무시
+        if(requestId !== ttsRequestId){
+            return;
+        }
+
+        if(options.onBoundary){
+            options.onBoundary(e);
+        }
+
+    };
+
+
+    currentTTSUtterance.onend = e => {
+
+        // 이전 TTS의 이벤트라면 무시
+        if(requestId !== ttsRequestId){
+            return;
+        }
+
+        ttsState = "idle";
+        currentTTSUtterance = null;
+
+        if(options.onEnd){
+            options.onEnd(e);
+        }
+
+    };
+
+
+    currentTTSUtterance.onerror = e => {
+
+        // 이전 TTS의 이벤트라면 무시
+        if(requestId !== ttsRequestId){
+            return;
+        }
+
+        ttsState = "idle";
+        currentTTSUtterance = null;
+
+        if(options.onError){
+            options.onError(e);
+        }
+
+    };
+
+
+    speechSynthesis.speak(currentTTSUtterance);
+
+    return currentTTSUtterance;
 }
 
 
@@ -92,9 +151,14 @@ function speakText(
 
 function pauseSpeech(){
 
-    if(speechSynthesis.speaking){
+    if(
+        speechSynthesis.speaking &&
+        !speechSynthesis.paused
+    ){
 
         speechSynthesis.pause();
+
+        ttsState = "paused";
 
     }
 
@@ -111,6 +175,8 @@ function resumeSpeech(){
 
         speechSynthesis.resume();
 
+        ttsState = "playing";
+
     }
 
 }
@@ -122,7 +188,13 @@ function resumeSpeech(){
 
 function stopSpeech(){
 
+    // 현재 요청을 무효화
+    ttsRequestId++;
+
     speechSynthesis.cancel();
+
+    currentTTSUtterance = null;
+    ttsState = "idle";
 
 }
 
@@ -141,6 +213,13 @@ function isSpeaking(){
 function isPaused(){
 
     return speechSynthesis.paused;
+
+}
+
+
+function getTTSState(){
+
+    return ttsState;
 
 }
 
