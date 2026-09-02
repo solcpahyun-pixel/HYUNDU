@@ -1,0 +1,427 @@
+/* =====================================================
+   CURRENT READER
+   K-ICTC Speaking Reader
+   V8.4
+   ===================================================== */
+
+let words = [];
+let currentUtterance = null;
+
+
+// =====================================================
+// BUILD READER
+// =====================================================
+
+function buildReader(){
+
+    const text = $("text").value;
+
+    const regex = /\S+/g;
+
+    let match;
+    let last = 0;
+    let output = "";
+
+    words = [];
+
+    while((match = regex.exec(text))){
+
+        output += escapeHTML(
+            text.slice(last, match.index)
+        );
+
+        const index = words.length;
+
+        words.push(match[0]);
+
+        output += `
+            <span
+                class="word"
+                id="word-${index}"
+                onclick="speakWord(${index})">
+                ${escapeHTML(match[0])}
+            </span>
+        `;
+
+        last =
+            match.index +
+            match[0].length;
+    }
+
+    output += escapeHTML(
+        text.slice(last)
+    );
+
+    $("reader").innerHTML = output;
+}
+
+
+// =====================================================
+// RESET HIGHLIGHTS
+// =====================================================
+
+function resetHighlights(){
+
+    document
+        .querySelectorAll(".word")
+        .forEach(el => {
+
+            el.classList.remove("current");
+            el.classList.remove("done");
+
+        });
+
+}
+
+
+// =====================================================
+// HIGHLIGHT WORD
+// =====================================================
+
+function highlightWordAt(charIndex){
+
+    const text = $("text").value;
+
+    const before =
+        text.slice(0, charIndex);
+
+    const matches =
+        before.match(/\S+/g);
+
+    let index =
+        matches ? matches.length : 0;
+
+    if(index >= words.length){
+
+        index = words.length - 1;
+
+    }
+
+    if(index < 0) return;
+
+
+    for(let i = 0; i < index; i++){
+
+        const el =
+            $(`word-${i}`);
+
+        if(el){
+
+            el.classList.add("done");
+            el.classList.remove("current");
+
+        }
+
+    }
+
+
+    const current =
+        $(`word-${index}`);
+
+    if(current){
+
+        current.classList.remove("done");
+        current.classList.add("current");
+
+        current.scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+        });
+
+    }
+
+}
+
+
+// =====================================================
+// PLAY
+// =====================================================
+
+$("play").onclick = () => {
+
+    const text =
+        $("text").value.trim();
+
+    if(!text){
+
+        $("status").textContent =
+            "문장을 입력해주세요.";
+
+        return;
+
+    }
+
+
+ // Resume
+if(speechSynthesis.paused){
+
+    resumeSpeech();
+
+    $("status").textContent =
+        "🔊 읽는 중…";
+
+    return;
+
+}
+
+
+// Already playing
+if(speechSynthesis.speaking){
+
+    return;
+
+}
+
+
+    resetHighlights();
+
+
+    const rate =
+        Number($("speed").value);
+
+
+    currentUtterance =
+        speakText(
+            text,
+            rate,
+            {
+
+                onStart: () => {
+
+                    $("status").textContent =
+                        "🔊 읽는 중…";
+
+                },
+
+
+                onBoundary: event => {
+
+                    if(
+                        !event.name ||
+                        event.name === "word"
+                    ){
+
+                        if(
+                            typeof event.charIndex ===
+                            "number"
+                        ){
+
+                            highlightWordAt(
+                                event.charIndex
+                            );
+
+                        }
+
+                    }
+
+                },
+
+
+                onEnd: () => {
+
+                    words.forEach(
+                        (_, index) => {
+
+                            const el =
+                                $(`word-${index}`);
+
+                            if(el){
+
+                                el.classList.remove(
+                                    "current"
+                                );
+
+                                el.classList.add(
+                                    "done"
+                                );
+
+                            }
+
+                        }
+                    );
+
+
+                    $("status").textContent =
+                        "✓ 완료";
+
+                },
+
+
+                onError: event => {
+
+                    $("status").textContent =
+                        "⚠️ TTS 오류: " +
+                        (event.error || "unknown");
+
+                }
+
+            }
+        );
+
+};
+
+
+// =====================================================
+// PAUSE
+// =====================================================
+
+$("pause").onclick = () => {
+
+    if(
+        speechSynthesis.speaking &&
+        !speechSynthesis.paused
+    ){
+
+        pauseSpeech();
+
+        $("status").textContent =
+            "Ⅱ 일시정지";
+
+    }
+
+};
+
+
+// =====================================================
+// STOP
+// =====================================================
+
+$("stop").onclick = () => {
+
+    stopSpeech();
+
+    currentUtterance = null;
+
+    resetHighlights();
+
+    $("status").textContent =
+        "정지";
+
+};
+
+
+// =====================================================
+// SPEED
+// =====================================================
+
+$("speed").oninput = () => {
+
+    $("sv").textContent =
+        Number($("speed").value)
+        .toFixed(2) +
+        "×";
+
+};
+
+
+// =====================================================
+// TEXT INPUT
+// =====================================================
+
+$("text").oninput = () => {
+
+    stopSpeech();
+
+    buildReader();
+
+    $("charCount").textContent =
+        `${$("text").value.length.toLocaleString()} characters`;
+
+    $("status").textContent =
+        "준비됨";
+
+};
+
+
+// =====================================================
+// CLEAR
+// =====================================================
+
+$("clearText").onclick = () => {
+
+    stopSpeech();
+
+    $("text").value = "";
+
+    buildReader();
+
+    $("charCount").textContent =
+        "0 characters";
+
+    $("status").textContent =
+        "문장이 삭제되었습니다.";
+
+};
+
+
+// =====================================================
+// PASTE
+// =====================================================
+
+$("pasteText").onclick = async () => {
+
+    try{
+
+        if(
+            !navigator.clipboard ||
+            !navigator.clipboard.readText
+        ){
+
+            throw new Error(
+                "Clipboard API unavailable"
+            );
+
+        }
+
+
+        const text =
+            await navigator.clipboard.readText();
+
+
+        if(!text){
+
+            $("status").textContent =
+                "클립보드에 텍스트가 없습니다.";
+
+            return;
+
+        }
+
+
+        stopSpeech();
+
+        $("text").value =
+            text
+                .replace(/<[^>]*>/g, " ")
+                .trim();
+
+        buildReader();
+
+        $("charCount").textContent =
+            `${$("text").value.length.toLocaleString()} characters`;
+
+        $("status").textContent =
+            "📋 클립보드 내용을 붙여넣었습니다.";
+
+    }
+
+    catch(error){
+
+        console.error(
+            "Clipboard error:",
+            error
+        );
+
+        $("status").textContent =
+            "⚠️ 클립보드 접근이 차단되었습니다.";
+
+    }
+
+};
+
+
+// =====================================================
+// INITIALIZE READER
+// =====================================================
+
+buildReader();
