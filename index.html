@@ -298,6 +298,10 @@ NATO 방문객 응대 문장
 ＋ 문장 추가
 </button>
 
+<button class="dark bulk-sentence-button" id="openBulkSentenceAdd">
+📋 여러 문장 붙여넣기
+</button>
+
 <div id="sentenceList"></div>
 
 </div>
@@ -605,6 +609,46 @@ value="0.85">
 </section>
 
 </main>
+
+
+<!-- =====================================================
+ADD BULK SENTENCES MODAL
+===================================================== -->
+
+<div class="modal modal-center" id="bulkSentenceAddModal">
+
+<div class="modal-card">
+
+<div class="modal-top">
+
+<h2>📋 여러 문장 붙여넣기</h2>
+
+<button class="dark close" id="closeBulkSentenceAdd">×</button>
+
+</div>
+
+<div class="form-label">
+영어 문장을 한 줄에 하나씩 입력하세요. 빈 줄은 무시됩니다.
+</div>
+
+<textarea
+class="form-input form-textarea"
+id="bulkSentenceText"
+placeholder="Good morning, everyone.
+We're heading to the venue now.
+Please come this way."
+></textarea>
+
+<div class="form-message" id="bulkSentenceAddMessage"></div>
+
+<div class="form-actions">
+<button class="dark" id="cancelBulkSentenceAdd">취소</button>
+<button class="green" id="confirmBulkSentenceAdd">✓ 문장 저장</button>
+</div>
+
+</div>
+
+</div>
 
 
 <!-- =====================================================

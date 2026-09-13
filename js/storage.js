@@ -1,10 +1,97 @@
 /* =====================================================
 SENTENCE STORAGE
 ===================================================== */
+const natoEscortSentences = [
+    "Good morning, everyone. Did you sleep well?",
+    "Are you all ready for today's schedule?",
+    "Please wear your battle uniforms and wait in the lobby by 8:40.",
+    "We'll head out now.",
+    "If everyone is ready, we'll head out.",
+    "We're heading to the Inje Indoor Gymnasium now.",
+    "It should take about 30 minutes.",
+    "We have a reception and opening ceremony scheduled for this morning.",
+    "After the opening ceremony, there will be a Taekwondo demonstration and an equipment exhibition.",
+    "After lunch, the delegation will split into two groups.",
+    "We've arrived at the reception venue.",
+    "Please come this way.",
+    "Please wait here for a moment.",
+    "The event will begin shortly.",
+    "We'll now watch an introductory video about the K-ICTC.",
+    "The opening ceremony is about to begin.",
+    "Please remain seated during the ceremony.",
+    "They are now introducing the participating countries and teams.",
+    "The opening remarks and congratulatory speeches will follow.",
+    "We'll now move to the equipment exhibition.",
+    "What is this equipment used for?",
+    "What is the primary purpose of this equipment?",
+    "Is this equipment also used in actual operations?",
+    "I'll check the exact specifications for you.",
+    "We'll have lunch now.",
+    "General, your table is Table One.",
+    "The rest of you will be at Table Five.",
+    "I hope you enjoy your meal.",
+    "We'll meet again at 1 p.m. after lunch.",
+    "From here, the delegation will split into two groups.",
+    "Ms. Pasini and Lieutenant Colonel Robert will go to the training center.",
+    "The rest of the group will go to the Gimburi Training Area.",
+    "I'll be accompanying the Gimburi team.",
+    "The vehicles are this way.",
+    "We've arrived at the Gimburi Training Area.",
+    "Our first stop is the operations room.",
+    "First, we'll check the current situation displayed on the monitors.",
+    "This is where we can see the current battlefield situation.",
+    "This screen shows the current positions and situation of the units.",
+    "We'll now move to the B Competition Area.",
+    "First, we'll receive an introduction to the B Competition Area.",
+    "Then, we'll learn about the unit's operational planning process.",
+    "This is one of the main areas of interest for the NATO delegation.",
+    "You will be able to see how the unit analyzes the situation and plans its operations.",
+    "We'll now move to the observation point.",
+    "You can observe the A Competition Area from here.",
+    "We'll now observe the competition.",
+    "The main purpose of today's observation is to see how the unit conducts combat operations.",
+    "In particular, you can observe what equipment and weapons they use.",
+    "You can also observe the tactics they employ.",
+    "Another important point is how the unit operates as a team.",
+    "You can also observe how the commander controls the unit.",
+    "The unit is currently moving toward the objective.",
+    "They are currently establishing a defensive position.",
+    "They are using the terrain to their advantage.",
+    "They are using cover and concealment.",
+    "The platoon leader is controlling the squads.",
+    "The squads are moving while providing mutual support.",
+    "They are currently engaging the enemy.",
+    "You can see how the unit responds to this situation.",
+    "That's a good question.",
+    "Let me confirm that for you.",
+    "As far as I know, that's correct.",
+    "I'll need to confirm the exact figure.",
+    "I'll check with the person in charge.",
+    "Please give me a moment.",
+    "The observation is now complete.",
+    "We'll return to the unit now.",
+    "We'll all regroup now.",
+    "We'll move to Support Facility C for dinner.",
+    "After dinner, we'll head to the Speadium.",
+    "We've arrived at the hotel.",
+    "Thank you for your cooperation today."
+];
+
 const defaultSentenceDecks = [
     {id:"nato",name:"NATO 환영",description:"NATO 방문객 응대 문장",icon:"📕",sentences:[]},
     {id:"gimburi",name:"김부리 브리핑",description:"김부리 훈련장 설명 문장",icon:"📗",sentences:[]},
-    {id:"competition",name:"경기장 참관",description:"경기 진행 설명 문장",icon:"📘",sentences:[]}
+    {id:"competition",name:"경기장 참관",description:"경기 진행 설명 문장",icon:"📘",sentences:[]},
+    {
+        id:"nato-escort",
+        name:"NATO 대표단 에스코트 · 내일 일정",
+        description:"호텔부터 복귀까지 현우 에스코트 문장",
+        icon:"🚌",
+        sentences:natoEscortSentences.map((text,index)=>({
+            id:`nato-escort-${index+1}`,
+            text:text,
+            created:"2026-09-14"
+        }))
+    }
 ];
 
 let sentenceDecks=[];
@@ -98,7 +185,9 @@ function renderCustomSentenceDecks(){
     const container=$("customSentenceDecks");
     container.innerHTML="";
 
-    sentenceDecks.slice(defaultSentenceDecks.length).forEach(deck=>{
+    sentenceDecks.filter(deck=>
+        !["nato","gimburi","competition"].includes(deck.id)
+    ).forEach(deck=>{
         const card=document.createElement("button");
         card.className="deck-card";
         card.innerHTML=`
@@ -188,6 +277,28 @@ function addSentenceToSelectedDeck(text){
     return true;
 }
 
+function addBulkSentencesToSelectedDeck(texts){
+    const deck=getSentenceDeck(selectedSentenceDeckId);
+
+    if(!deck)return 0;
+
+    const created=new Date().toLocaleString();
+
+    texts.forEach(text=>{
+        deck.sentences.push({
+            id:createSentenceId(),
+            text:text,
+            created:created
+        });
+    });
+
+    saveSentenceDecks();
+    renderStorage();
+    renderSentenceDeckStudy();
+
+    return texts.length;
+}
+
 $("natoSentenceDeck").onclick=()=>openSentenceDeck("nato");
 $("gimburiSentenceDeck").onclick=()=>openSentenceDeck("gimburi");
 $("competitionSentenceDeck").onclick=()=>openSentenceDeck("competition");
@@ -221,6 +332,39 @@ $("newSentence").onclick=()=>{
     $("addText").value="";
     $("addMessage").textContent="";
     $("addModal").classList.add("show");
+};
+
+$("openBulkSentenceAdd").onclick=()=>{
+    $("bulkSentenceText").value="";
+    $("bulkSentenceAddMessage").textContent="";
+    $("bulkSentenceAddModal").classList.add("show");
+};
+
+function closeBulkSentenceAddModal(){
+    $("bulkSentenceAddModal").classList.remove("show");
+}
+
+$("closeBulkSentenceAdd").onclick=closeBulkSentenceAddModal;
+$("cancelBulkSentenceAdd").onclick=closeBulkSentenceAddModal;
+$("confirmBulkSentenceAdd").onclick=()=>{
+    const texts=$("bulkSentenceText").value
+        .split(/\r?\n/)
+        .map(text=>text.trim())
+        .filter(Boolean);
+
+    if(!texts.length){
+        $("bulkSentenceAddMessage").textContent="저장할 문장을 입력해주세요.";
+        return;
+    }
+
+    const count=addBulkSentencesToSelectedDeck(texts);
+
+    if(!count){
+        $("bulkSentenceAddMessage").textContent="문장집을 먼저 선택해주세요.";
+        return;
+    }
+
+    closeBulkSentenceAddModal();
 };
 
 function closeSentenceAddModal(){

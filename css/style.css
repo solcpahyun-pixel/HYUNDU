@@ -347,6 +347,11 @@ input[type="range"]{
     margin-bottom:15px;
 }
 
+.bulk-sentence-button{
+    width:100%;
+    margin:-5px 0 15px;
+}
+
 .add-sentence-deck-button{
     width:100%;
 }
