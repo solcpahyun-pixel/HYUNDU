@@ -1,7 +1,23 @@
 /* =====================================================
 SENTENCE STORAGE
 ===================================================== */
-
+const sentenceDecks = [
+    {
+        id: "nato",
+        name: "NATO 환영",
+        description: "NATO 방문객 응대 문장"
+    },
+    {
+        id: "gimburi",
+        name: "김부리 브리핑",
+        description: "김부리 훈련장 설명 문장"
+    },
+    {
+        id: "competition",
+        name: "경기장 참관",
+        description: "경기 진행 설명 문장"
+    }
+];
 function getSavedSentences(){
 
     try{

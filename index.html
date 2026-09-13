@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -163,11 +163,11 @@ STORAGE
 <div>
 
 <div class="storage-title">
-📚 문장 저장소
+📚 문장집
 </div>
 
 <div class="storage-sub">
-저장한 영어 문장
+학습할 문장집을 선택하세요.
 </div>
 
 </div>
@@ -175,16 +175,68 @@ STORAGE
 </div>
 
 <div class="version">
-Version 8.3
+Version 8.4.1
 </div>
 
 </div>
 
-<button class="green new-sentence" id="newSentence">
-＋ 새 문장 추가
+<div id="sentenceDeckSelection">
+
+<button class="deck-card" id="natoSentenceDeck">
+
+<div class="deck-icon">📕</div>
+
+<div class="deck-name">
+NATO 환영
+</div>
+
+<div class="deck-description">
+NATO 방문객 응대 문장
+</div>
+
+<div class="deck-count" id="natoSentenceCount">
+0 sentences
+</div>
+
 </button>
 
-<div id="sentenceList"></div>
+<button class="deck-card" id="gimburiSentenceDeck">
+
+<div class="deck-icon">📗</div>
+
+<div class="deck-name">
+김부리 브리핑
+</div>
+
+<div class="deck-description">
+김부리 훈련장 설명 문장
+</div>
+
+<div class="deck-count" id="gimburiSentenceCount">
+0 sentences
+</div>
+
+</button>
+
+<button class="deck-card" id="competitionSentenceDeck">
+
+<div class="deck-icon">📘</div>
+
+<div class="deck-name">
+경기장 참관
+</div>
+
+<div class="deck-description">
+경기 진행 설명 문장
+</div>
+
+<div class="deck-count" id="competitionSentenceCount">
+0 sentences
+</div>
+
+</button>
+
+</div>
 
 </section>
 
