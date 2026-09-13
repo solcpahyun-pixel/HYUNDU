@@ -20,7 +20,7 @@
     </div>
 
     <div class="menu-version">
-        Speaking Reader · Version 8.3
+        Speaking Reader · Version 8.4.1
     </div>
 
     <button class="menu-item active" id="menuCurrent">
@@ -70,7 +70,7 @@ CURRENT PAGE
 </div>
 
 <div class="version">
-Version 8.3
+Version 8.4.1
 </div>
 
 </div>
@@ -135,9 +135,30 @@ value="0.85">
 준비됨
 </div>
 
+<div class="sentence-deck-picker">
+
+<label for="currentSentenceDeckSelect">학습 · 저장할 문장집</label>
+
+<select id="currentSentenceDeckSelect">
+<option value="">문장집을 선택하세요</option>
+</select>
+
+</div>
+
 <button class="save-button" id="saveSentence">
 ⭐ 이 문장 저장
 </button>
+
+<div class="sentence-reader-navigation" id="sentenceReaderNavigation" style="display:none;">
+
+<div class="sentence-reader-position" id="sentenceReaderPosition">1 / 1</div>
+
+<div class="sentence-reader-controls">
+<button class="dark" id="sentenceReaderPrev">← 이전</button>
+<button class="dark" id="sentenceReaderNext">다음 →</button>
+</div>
+
+</div>
 
 <div class="note">
 👆 단어를 누르면 발음과 단어 정보를 확인할 수 있습니다.
@@ -236,8 +257,50 @@ NATO 방문객 응대 문장
 
 </button>
 
+<div id="customSentenceDecks"></div>
+
+<button class="green add-sentence-deck-button" id="openAddSentenceDeck">
+＋ 문장집 추가
+</button>
+
 </div>
 
+<div id="sentenceDeckStudy" style="display:none;">
+
+<div class="header">
+
+<div class="header-left">
+
+<button class="dark menu-button" id="sentenceDeckBack">
+←
+</button>
+
+<div>
+
+<div class="storage-title" id="selectedSentenceDeckName">
+문장집
+</div>
+
+<div class="storage-sub" id="selectedSentenceDeckDescription">
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="sentence-deck-summary" id="selectedSentenceDeckCount">
+0 sentences
+</div>
+
+<button class="green new-sentence" id="newSentence">
+＋ 문장 추가
+</button>
+
+<div id="sentenceList"></div>
+
+</div>
 </section>
 
 
@@ -542,6 +605,36 @@ value="0.85">
 </section>
 
 </main>
+
+
+<!-- =====================================================
+ADD SENTENCE DECK MODAL
+===================================================== -->
+
+<div class="modal modal-center" id="sentenceDeckAddModal">
+
+<div class="modal-card">
+
+<div class="modal-top">
+
+<h2>＋ 문장집 추가</h2>
+
+<button class="dark close" id="closeSentenceDeckAdd">×</button>
+
+</div>
+
+<input class="form-input" id="newSentenceDeckName" placeholder="문장집 이름을 입력하세요.">
+
+<div class="form-message" id="sentenceDeckAddMessage"></div>
+
+<div class="form-actions">
+<button class="dark" id="cancelSentenceDeckAdd">취소</button>
+<button class="green" id="confirmSentenceDeckAdd">✓ 저장</button>
+</div>
+
+</div>
+
+</div>
 
 
 <!-- =====================================================
@@ -915,53 +1008,11 @@ $("modalCard").onclick=e=>{
 ADD SENTENCE
 ===================================================== */
 
-$("newSentence").onclick=()=>{
-
-    $("addText").value="";
-
-    $("addMessage").textContent="";
-
-    $("addModal").classList.add("show");
-
-};
-
 function closeAddModal(){
 
     $("addModal").classList.remove("show");
 
 }
-
-$("closeAddModal").onclick=closeAddModal;
-$("cancelAdd").onclick=closeAddModal;
-
-$("confirmAdd").onclick=()=>{
-
-    const text=$("addText").value.trim();
-
-    if(!text){
-
-        $("addMessage").textContent=
-            "문장을 입력해주세요.";
-
-        return;
-
-    }
-
-    const saved=getSavedSentences();
-
-    saved.unshift({
-        id:Date.now(),
-        text:text,
-        created:new Date().toLocaleString()
-    });
-
-    saveSentences(saved);
-
-    closeAddModal();
-
-    renderStorage();
-
-};
 
 /* =====================================================
 ADD WORD
@@ -1049,6 +1100,7 @@ buildReader();
 $("charCount").textContent=
     `${$("text").value.length.toLocaleString()} characters`;
 
+loadSentenceDecks();
 renderStorage();
 
 showDeckSelection();

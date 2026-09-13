@@ -9,6 +9,89 @@ let currentUtterance = null;
 
 let pausedCharIndex = 0;
 let lastCharIndex = 0;
+let sentenceReaderDeckId = null;
+let sentenceReaderIndex = 0;
+
+
+// =====================================================
+// SENTENCE DECK READER
+// =====================================================
+
+function updateSentenceDeckReader(){
+
+    const deck = getSentenceDeck(sentenceReaderDeckId);
+
+    if(!deck || !deck.sentences.length){
+
+        sentenceReaderDeckId = null;
+        $("sentenceReaderNavigation").style.display = "none";
+
+        return;
+
+    }
+
+    if(sentenceReaderIndex < 0){
+        sentenceReaderIndex = deck.sentences.length - 1;
+    }
+
+    if(sentenceReaderIndex >= deck.sentences.length){
+        sentenceReaderIndex = 0;
+    }
+
+    const item = deck.sentences[sentenceReaderIndex];
+
+    stopSpeech();
+
+    pausedCharIndex = 0;
+    lastCharIndex = 0;
+
+    $("text").value = item.text;
+    $("charCount").textContent =
+        `${item.text.length.toLocaleString()} characters`;
+    $("status").textContent =
+        `${deck.name} · 문장 ${sentenceReaderIndex + 1}`;
+    $("sentenceReaderPosition").textContent =
+        `${sentenceReaderIndex + 1} / ${deck.sentences.length}`;
+    $("sentenceReaderNavigation").style.display = "block";
+
+    buildReader();
+
+}
+
+function startSentenceDeckReader(deckId,index){
+
+    const deck = getSentenceDeck(deckId);
+
+    if(!deck || !deck.sentences.length)return;
+
+    sentenceReaderDeckId = deckId;
+    sentenceReaderIndex = index;
+
+    updateSentenceDeckReader();
+    showPage("current");
+
+}
+
+function leaveSentenceDeckReader(){
+
+    sentenceReaderDeckId = null;
+    $("sentenceReaderNavigation").style.display = "none";
+
+}
+
+$("sentenceReaderPrev").onclick = () => {
+
+    sentenceReaderIndex--;
+    updateSentenceDeckReader();
+
+};
+
+$("sentenceReaderNext").onclick = () => {
+
+    sentenceReaderIndex++;
+    updateSentenceDeckReader();
+
+};
 
 
 // =====================================================
@@ -451,6 +534,8 @@ $("text").oninput = () => {
 
     stopSpeech();
 
+    leaveSentenceDeckReader();
+
     pausedCharIndex = 0;
     lastCharIndex = 0;
 
@@ -472,6 +557,8 @@ $("text").oninput = () => {
 $("clearText").onclick = () => {
 
     stopSpeech();
+
+    leaveSentenceDeckReader();
 
     pausedCharIndex = 0;
     lastCharIndex = 0;
@@ -524,6 +611,8 @@ $("pasteText").onclick = async () => {
 
 
         stopSpeech();
+
+        leaveSentenceDeckReader();
 
         pausedCharIndex = 0;
         lastCharIndex = 0;
