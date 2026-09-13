@@ -166,7 +166,7 @@ function autoPlayFlash(){
 
 function nextFlash(){
 
-    speechSynthesis.cancel();
+    stopSpeech();
 
     flashIndex++;
 
@@ -183,7 +183,7 @@ function nextFlash(){
 
 function prevFlash(){
 
-    speechSynthesis.cancel();
+    stopSpeech();
 
     flashIndex--;
 
@@ -205,7 +205,7 @@ $("flashAudio").onclick=playFlashAudio;
 
 $("flashBackToDeck").onclick=()=>{
 
-    speechSynthesis.cancel();
+    stopSpeech();
 
     showDeckSelection();
 
@@ -213,7 +213,7 @@ $("flashBackToDeck").onclick=()=>{
 
 $("restartFlash").onclick=()=>{
 
-    speechSynthesis.cancel();
+    stopSpeech();
 
     flashIndex=0;
     flashPage=1;

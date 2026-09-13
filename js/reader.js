@@ -350,7 +350,7 @@ $("play").onclick = () => {
     // ALREADY PLAYING
     // -------------------------------------------------
 
-    if(speechSynthesis.speaking){
+    if(isSpeaking()){
 
         return;
 
@@ -459,32 +459,20 @@ $("play").onclick = () => {
 
 $("pause").onclick = () => {
 
-    if(
-        speechSynthesis.speaking &&
-        !speechSynthesis.paused
-    ){
+    if(isSpeaking()){
 
-        /*
-            TTS boundary 이벤트에서 마지막으로
-            확인된 실제 문자 위치를 저장한다.
-        */
-
-        pausedCharIndex =
-            lastCharIndex;
-
-
-        /*
-            native resume()을 사용하지 않고
-            현재 음성을 정지한다.
-        */
-
-        stopSpeech();
-
-        currentUtterance = null;
-
-
+        pauseSpeech();
         $("status").textContent =
             "Ⅱ 일시정지";
+
+    }
+
+    else if(isPaused()){
+
+        resumeSpeech();
+
+        $("status").textContent =
+            "🔊 읽는 중…";
 
     }
 
