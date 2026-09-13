@@ -1,239 +1,136 @@
-/* =====================================================
-   TTS ENGINE
-   K-ICTC Speaking Reader
-   V8.4
-   ===================================================== */
-
-/*
-   브라우저 SpeechSynthesis를 사용하는 공통 TTS 엔진.
-
-   Reader / Flashcard / Podcast에서 사용하는
-   재생 / 일시정지 / 재개 / 정지 기능을
-   한 곳에서 관리하는 것을 목표로 한다.
-*/
-
-
-// =====================================================
-// TTS STATE
-// =====================================================
-
-let currentTTSUtterance = null;
+console.log("🔥 tts.js 로드됨");
+let currentAudio = null;
 let ttsState = "idle";
 
-// 현재 TTS 요청을 구분하기 위한 ID
-let ttsRequestId = 0;
+async function speakText(text, rate = 0.85, options = {}) {
+console.log("🔥 GOOGLE TTS speakText 실행");
+    stopSpeech();
 
+    try {
 
-// =====================================================
-// ENGLISH VOICE
-// =====================================================
+        if (options.onStart) {
+            options.onStart();
+        }
 
-function getEnglishVoice(){
+        ttsState = "loading";
 
-    const voices = speechSynthesis.getVoices();
+const response = await fetch("https://hyundu-tts-487744215139.asia-northeast3.run.app/tts", {            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                text: text
+            })
+        });
 
-    return voices.find(
-        v => v.lang.toLowerCase() === "en-us"
-    )
-    || voices.find(
-        v => v.lang.toLowerCase().startsWith("en")
-    )
-    || null;
-}
+        if (!response.ok) {
+            throw new Error(await response.text());
+        }
 
+        const blob = await response.blob();
+        const audioURL = URL.createObjectURL(blob);
 
-// =====================================================
-// SPEAK
-// =====================================================
+        currentAudio = new Audio(audioURL);
 
-function speakText(
-    text,
-    rate = 0.85,
-    options = {}
-){
+        /*
+         * Google TTS는 이미 음성 파일을 만들어 주므로
+         * 현재 rate 값은 우선 사용하지 않는다.
+         */
 
-    // 새로운 TTS 요청
-    const requestId = ++ttsRequestId;
+        currentAudio.onplay = () => {
+            ttsState = "playing";
+        };
 
-if(options.cancelPrevious !== false){
-    speechSynthesis.cancel();
-}
-    currentTTSUtterance =
-        new SpeechSynthesisUtterance(text);
+        currentAudio.onended = () => {
+            ttsState = "idle";
 
-    currentTTSUtterance.lang = "en-US";
-    currentTTSUtterance.rate = rate;
+            if (options.onEnd) {
+                options.onEnd();
+            }
 
-    const voice = getEnglishVoice();
+            URL.revokeObjectURL(audioURL);
+            currentAudio = null;
+        };
 
-    if(voice){
-        currentTTSUtterance.voice = voice;
+        currentAudio.onerror = (event) => {
+            ttsState = "idle";
+
+            if (options.onError) {
+                options.onError(event);
+            }
+
+            URL.revokeObjectURL(audioURL);
+            currentAudio = null;
+        };
+
+        await currentAudio.play();
+
+        return currentAudio;
+
+    } catch (error) {
+
+        ttsState = "idle";
+
+        console.error("Google TTS Error:", error);
+
+        if (options.onError) {
+            options.onError(error);
+        }
+
+        return null;
     }
-
-
-    // -------------------------------------------------
-    // CALLBACK
-    // -------------------------------------------------
-
-    currentTTSUtterance.onstart = e => {
-
-        // 이전 TTS의 이벤트라면 무시
-        if(requestId !== ttsRequestId){
-            return;
-        }
-
-        ttsState = "playing";
-
-        if(options.onStart){
-            options.onStart(e);
-        }
-
-    };
-
-
-    currentTTSUtterance.onboundary = e => {
-
-        // 이전 TTS의 이벤트라면 무시
-        if(requestId !== ttsRequestId){
-            return;
-        }
-
-        if(options.onBoundary){
-            options.onBoundary(e);
-        }
-
-    };
-
-
-    currentTTSUtterance.onend = e => {
-
-        // 이전 TTS의 이벤트라면 무시
-        if(requestId !== ttsRequestId){
-            return;
-        }
-
-        ttsState = "idle";
-        currentTTSUtterance = null;
-
-        if(options.onEnd){
-            options.onEnd(e);
-        }
-
-    };
-
-
-    currentTTSUtterance.onerror = e => {
-
-        // 이전 TTS의 이벤트라면 무시
-        if(requestId !== ttsRequestId){
-            return;
-        }
-
-        ttsState = "idle";
-        currentTTSUtterance = null;
-
-        if(options.onError){
-            options.onError(e);
-        }
-
-    };
-
-
-    speechSynthesis.speak(currentTTSUtterance);
-
-    return currentTTSUtterance;
 }
 
 
-// =====================================================
-// PAUSE
-// =====================================================
+function pauseSpeech() {
 
-function pauseSpeech(){
-
-    if(
-        speechSynthesis.speaking &&
-        !speechSynthesis.paused
-    ){
-
-        speechSynthesis.pause();
-
+    if (currentAudio && !currentAudio.paused) {
+        currentAudio.pause();
         ttsState = "paused";
-
     }
-
 }
 
 
-// =====================================================
-// RESUME
-// =====================================================
+function resumeSpeech() {
 
-function resumeSpeech(){
-
-    if(speechSynthesis.paused){
-
-        speechSynthesis.resume();
-
+    if (currentAudio && currentAudio.paused) {
+        currentAudio.play();
         ttsState = "playing";
+    }
+}
 
+
+function stopSpeech() {
+
+    if (currentAudio) {
+
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+
+        currentAudio = null;
     }
 
-}
-
-
-// =====================================================
-// STOP
-// =====================================================
-
-function stopSpeech(){
-
-    // 현재 요청을 무효화
-    ttsRequestId++;
-
-    speechSynthesis.cancel();
-
-    currentTTSUtterance = null;
     ttsState = "idle";
-
 }
 
 
-// =====================================================
-// STATUS
-// =====================================================
+function isSpeaking() {
 
-function isSpeaking(){
-
-    return speechSynthesis.speaking;
-
+    return currentAudio &&
+           !currentAudio.paused &&
+           !currentAudio.ended;
 }
 
 
-function isPaused(){
+function isPaused() {
 
-    return speechSynthesis.paused;
-
+    return currentAudio &&
+           currentAudio.paused &&
+           currentAudio.currentTime > 0;
 }
 
 
-function getTTSState(){
+function getTTSState() {
 
     return ttsState;
-
-}
-
-
-// =====================================================
-// VOICE INITIALIZATION
-// =====================================================
-
-if("speechSynthesis" in window){
-
-    speechSynthesis.onvoiceschanged = () => {
-
-        getEnglishVoice();
-
-    };
-
 }

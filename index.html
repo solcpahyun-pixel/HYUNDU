@@ -774,43 +774,6 @@ $("menuFlash").onclick=()=>showPage("flash");
 $("menuPodcast").onclick=()=>showPage("podcast");
 
 
-/* =====================================================
-VOICE
-===================================================== */
-
-function getEnglishVoice(){
-
-    const voices=speechSynthesis.getVoices();
-
-    return voices.find(
-        v=>v.lang.toLowerCase()==="en-us"
-    )
-    ||
-    voices.find(
-        v=>v.lang.toLowerCase().startsWith("en")
-    )
-    ||
-    null;
-
-}
-
-function speakText(text,rate=.85){
-
-    speechSynthesis.cancel();
-
-    const u=new SpeechSynthesisUtterance(text);
-
-    u.lang="en-US";
-    u.rate=rate;
-
-    const voice=getEnglishVoice();
-
-    if(voice) u.voice=voice;
-
-    speechSynthesis.speak(u);
-
-}
-
 
 /* =====================================================
 WORD INFO
@@ -1041,20 +1004,6 @@ showDeckSelection();
 $("myDeckCount").textContent=
     `${getMyWords().length} words`;
 
-
-/*
-    iPhone / Chrome 음성 목록 로딩
-*/
-
-if(
-    "speechSynthesis" in window
-){
-
-    speechSynthesis.onvoiceschanged=()=>{
-        getEnglishVoice();
-    };
-
-}
 
 </script>
 

@@ -83,7 +83,7 @@ $("podcastPaste").onclick=async()=>{
 
 $("podcastClear").onclick=()=>{
 
-    speechSynthesis.cancel();
+    stopSpeech();
 
     podcastPlaying=false;
 
@@ -189,88 +189,50 @@ function playPodcastSentence(){
 
 
     /*
-        Podcast는 Reader와 별도의
-        SpeechSynthesisUtterance를 사용한다.
+        Google TTS를 사용한다.
     */
 
     podcastUtterance=
-        new SpeechSynthesisUtterance(sentence);
+        speakText(
+            sentence,
+            Number($("podcastSpeed").value),
+            {
+
+                onEnd:()=>{
+
+                    if(!podcastPlaying)
+                        return;
 
 
-    podcastUtterance.lang="en-US";
+                    podcastIndex++;
 
 
-    podcastUtterance.rate=
-        Number($("podcastSpeed").value);
+                    podcastTimer=setTimeout(
+                        ()=>{
+
+                            if(podcastPlaying)
+                                playPodcastSentence();
+
+                        },
+                        180
+                    );
+
+                },
 
 
-    const voice=
-        getEnglishVoice();
+                onError:e=>{
+
+                    if(!podcastPlaying)
+                        return;
 
 
-    if(voice)
-        podcastUtterance.voice=voice;
+                    $("podcastStatus").textContent=
+                        "⚠️ TTS 오류";
 
+                }
 
-    /*
-        문장 하나가 끝나면
-        다음 문장으로 넘어간다.
-    */
-
-    podcastUtterance.onend=()=>{
-
-        if(!podcastPlaying)
-            return;
-
-
-        podcastIndex++;
-
-
-        podcastTimer=setTimeout(
-            ()=>{
-
-                if(podcastPlaying)
-                    playPodcastSentence();
-
-            },
-            180
+            }
         );
-
-    };
-
-
-    /*
-        TTS 오류
-    */
-
-    podcastUtterance.onerror=e=>{
-
-        if(!podcastPlaying)
-            return;
-
-
-        /*
-            iOS에서 cancel 직후 발생하는
-            오류는 무시한다.
-        */
-
-        if(e.error==="canceled")
-            return;
-
-
-        $("podcastStatus").textContent=
-            "⚠️ TTS 오류";
-
-    };
-
-
-    /*
-        실제 음성 재생
-    */
-
-    speechSynthesis.speak(
-        podcastUtterance
-    );
 
 }
 
@@ -304,11 +266,11 @@ $("podcastPlay").onclick=()=>{
     */
 
     if(
-        speechSynthesis.paused &&
+        isPaused() &&
         podcastPlaying
     ){
 
-        speechSynthesis.resume();
+        resumeSpeech();
 
         $("podcastStatus").textContent=
             `🔊 ${podcastIndex+1} / ${podcastSentences.length} 문장`;
@@ -322,7 +284,7 @@ $("podcastPlay").onclick=()=>{
         새로운 Podcast 시작
     */
 
-    speechSynthesis.cancel();
+    stopSpeech();
 
     clearTimeout(podcastTimer);
 
@@ -357,11 +319,10 @@ $("podcastPlay").onclick=()=>{
 $("podcastPause").onclick=()=>{
 
     if(
-        speechSynthesis.speaking &&
-        !speechSynthesis.paused
+        isSpeaking()
     ){
 
-        speechSynthesis.pause();
+        pauseSpeech();
 
         $("podcastStatus").textContent=
             `Ⅱ 일시정지 · ${podcastIndex+1} / ${podcastSentences.length}`;
@@ -369,10 +330,10 @@ $("podcastPause").onclick=()=>{
     }
 
     else if(
-        speechSynthesis.paused
+        isPaused()
     ){
 
-        speechSynthesis.resume();
+        resumeSpeech();
 
         $("podcastStatus").textContent=
             `🔊 ${podcastIndex+1} / ${podcastSentences.length} 문장`;
@@ -390,7 +351,7 @@ $("podcastStop").onclick=()=>{
 
     podcastPlaying=false;
 
-    speechSynthesis.cancel();
+    stopSpeech();
 
     clearTimeout(podcastTimer);
 
